@@ -1,0 +1,49 @@
+version: "1.0"
+mesh:
+  enabled: true
+  node_id: "mobius-hive"
+  node_name: "Mobius HIVE"
+  tier: "client"
+  role: "world_node"
+repository:
+  full_name: "kaizencycle/mobius-hive"
+  default_branch: "main"
+pulse:
+  enabled: true
+  feed_url: "https://raw.githubusercontent.com/kaizencycle/mobius-hive/main/ledger/feed.json"
+  freshness_sla_seconds: 1800
+  lanes:
+    - world
+    - lore
+    - quests
+    - sentinel_state
+ingest:
+  enabled: true
+  mode: "client_of_other_node"
+  sources:
+    terminal_snapshot:
+      node_id: "mobius-terminal"
+      read_url: "https://mobius-civic-ai-terminal.vercel.app/api/terminal/snapshot-lite"
+    cycle_state:
+      node_id: "mobius-substrate"
+      read_url: "https://raw.githubusercontent.com/kaizencycle/Mobius-Substrate/main/ledger/mobius-pulse.json"
+    sovereign_memory:
+      node_id: "oaa-api-library"
+      read_url: "https://oaa.example.invalid/api/oaa/kv/latest"
+jobs:
+  enabled: true
+  workflows:
+    - id: "world-update"
+      file: ".github/workflows/world-update.yml"
+      trigger: "schedule"
+      cron: "*/15 * * * *"
+    - id: "quest-proposal"
+      file: ".github/workflows/quest-proposal.yml"
+      trigger: "workflow_dispatch"
+      cron: "0 * * * *"
+governance:
+  agent_prs_allowed: true
+  auto_merge_allowed: false
+  required_reviewers:
+    - "ZEUS"
+    - "ATLAS"
