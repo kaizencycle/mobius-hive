@@ -1,6 +1,10 @@
 {
-  "ok": false,
+  "ok": true,
   "source": "fixture",
   "url": "fixture://oaa-kv-latest",
-  "error": "fixture: OAA not wired (expected in scaffold)"
+  "data": {
+    "kv_status": "degraded",
+    "gi": 0.74,
+    "vault_progress": 0.82
+  }
 }

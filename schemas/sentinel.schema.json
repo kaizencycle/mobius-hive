@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "required": ["id", "title", "role"],
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "role": { "type": "string" },
+    "mood": { "type": "string" },
+    "location": { "type": "string" },
+    "dialogue": { "type": "object" },
+    "abilities": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "cycle_id": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "display_name": { "type": "string" },
+    "voice": { "type": "string" },
+    "runtime_overlay": {
+      "type": "object",
+      "properties": {
+        "display_name": { "type": "string" },
+        "voice": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

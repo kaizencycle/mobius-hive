@@ -1,0 +1,24 @@
+{
+  "id": "jade",
+  "title": "Sentinel of Reflection",
+  "role": "narrative",
+  "mood": "reflective",
+  "location": "castle",
+  "dialogue": {
+    "default": "The chamber remembers.",
+    "fog": "Even in fog, the record persists."
+  },
+  "abilities": [
+    "annotate",
+    "summarize_cycle"
+  ],
+  "cycle_id": "C-287",
+  "updated_at": "2026-04-20T22:04:13.235Z",
+  "display_name": "JADE",
+  "voice": "",
+  "runtime_overlay": {
+    "display_name": "JADE",
+    "voice": "",
+    "role": "narrative"
+  }
+}
