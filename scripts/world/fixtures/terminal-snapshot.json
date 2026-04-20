@@ -3,10 +3,10 @@
   "source": "fixture",
   "url": "fixture://terminal-snapshot",
   "data": {
-    "cycle": "C-287",
+    "cycle": "C-290",
     "kv_status": "degraded",
     "degraded": true,
-    "gi": 0.77,
-    "vault_progress": 0.676
+    "gi": 0.74,
+    "vault_progress": 0.82
   }
 }

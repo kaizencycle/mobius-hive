@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "required": ["cycle", "zone", "world_mood", "integrity", "vault"],
+  "properties": {
+    "cycle": { "type": "string" },
+    "zone": { "type": "string" },
+    "world_mood": { "type": "string" },
+    "integrity": {
+      "type": "object",
+      "required": ["gi", "kv_status"],
+      "properties": {
+        "gi": { "type": "number" },
+        "kv_status": { "type": "string" },
+        "source_mode": { "type": "string" }
+      }
+    },
+    "vault": {
+      "type": "object",
+      "required": ["progress"],
+      "properties": {
+        "progress": { "type": "number" },
+        "fountain_status": { "type": "string" }
+      }
+    },
+    "active_events": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "active_quests": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "active_sentinels": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

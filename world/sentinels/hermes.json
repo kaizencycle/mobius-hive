@@ -1,0 +1,24 @@
+{
+  "id": "hermes",
+  "title": "Sentinel of Flow",
+  "role": "economy",
+  "mood": "watching",
+  "location": "castle",
+  "dialogue": {
+    "default": "Movement gathers near the Fountain.",
+    "vault_rising": "Flow strengthens; keep it steady."
+  },
+  "abilities": [
+    "signal_economy",
+    "prepare_fountain"
+  ],
+  "cycle_id": "C-290",
+  "updated_at": "2026-04-20T20:50:38.433Z",
+  "display_name": "HERMES",
+  "voice": "",
+  "runtime_overlay": {
+    "display_name": "HERMES",
+    "voice": "",
+    "role": "economy"
+  }
+}

@@ -75,7 +75,7 @@ async function main() {
         terminal_snapshot: { ok: true, url: "fixture://terminal-snapshot" },
         cycle_state: { ok: true, url: "fixture://cycle-state" },
         mesh_pulse: { ok: true, url: "fixture://mobius-pulse" },
-        sovereign_memory: { ok: false, url: "fixture://oaa-kv-latest" },
+        sovereign_memory: { ok: true, url: "fixture://oaa-kv-latest" },
       },
     };
     writeJson(path.join(OUT_DIR, "manifest.json"), manifest);

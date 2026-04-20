@@ -28,7 +28,7 @@ This repo participates in the Mobius mesh as a **world node**:
 - `.github/workflows/world-update.yml` — pulls remote mesh inputs and refreshes `world/` + `ledger/hive-world-state.json`
 - `.github/workflows/quest-proposal.yml` — generates a proposal artifact and (in GitHub Actions) opens a **draft** PR for sentinel/human review
 
-Human-facing rendering belongs in `mobius-browser-shell`, which should treat `world/current-cycle.json` and friends as read-only inputs.
+Human-facing rendering belongs in `mobius-browser-shell`, which should treat `world/current-cycle.json`, **`world/current-world.json`** (HIVE Sims v1), and friends as read-only inputs.
 
 ### C-287 flywheel lock — canonical world artifacts
 
@@ -37,11 +37,20 @@ Committed JSON under `world/` is the **state projection** the browser shell and 
 | Path | Role |
 |------|------|
 | `world/current-cycle.json` | Active cycle id, rules fired, signal snapshot, ingest health |
+| `world/current-world.json` | **C-290 Sims** — compact mood + integrity + vault summary for UI shells |
 | `world/events/<id>.json` | Active world event (e.g. `signal-fog`) |
 | `world/quests/<id>.json` | Active quest (e.g. `restore-the-beacon`) |
-| `world/sentinels/<id>.json` | Active sentinel voice (e.g. `zeus`) |
+| `world/sentinels/<id>.json` | Sentinel bios (Sims v1 keeps **ZEUS, JADE, HERMES** on every tick; primary sentinel from rules is highlighted in `current-cycle`) |
+| `world/zones/<id>.json` | Zone card data (v1: **Castle**) |
 | `ledger/hive-world-state.json` | Ledger-shaped projection of the same tick |
 | `ledger/feed.json` | Pulse lane summary for Substrate-style aggregation |
+
+### C-290 — HIVE Sims UI v1 (spec in repo)
+
+- **Schemas:** `schemas/*.schema.json` — validated in CI via `npm run world:validate-schemas` (also runs after each scheduled `world-update` build).
+- **Action loop:** `POST /api/hive/action` lives in **mobius-browser-shell** (this repo only ships the **world JSON contract** the shell fetches). Guardrails (OAA log, no MIC mint, no direct canonical edits) are enforced in the shell implementation.
+
+**Browser shell mapping (reference):** `TopStatusBar` ← `current-world.json`; `WorldZoneCard` ← `world/zones/castle.json` + event `ui.overlay`; `SentinelRail` ← `world/sentinels/*.json`; `EventCard` / `QuestTracker` ← `world/events/*`, `world/quests/*`; `ActionRibbon` → `/api/hive/action`.
 
 Ingest order (see `mobius.yaml`): **terminal** `snapshot-lite` (hot lanes), **terminal** `ledger/cycle-state.json` (cycle continuity), **Substrate** `mobius-pulse.json` (mesh MII / pulse envelope), **OAA** latest KV (optional; placeholder URL until the real OAA read surface is wired). Until the terminal serves `ledger/cycle-state.json` at that public path, `ingest_health.cycle_state` may read false while the rest of the tick still succeeds.
 
