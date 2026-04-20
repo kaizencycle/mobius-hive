@@ -1,0 +1,6 @@
+{
+  "ok": false,
+  "source": "fixture",
+  "url": "fixture://oaa-kv-latest",
+  "error": "fixture: OAA not wired (expected in scaffold)"
+}

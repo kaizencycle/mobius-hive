@@ -49,3 +49,16 @@ export function readIngestReadUrls() {
 
   return urls;
 }
+
+/**
+ * @param {Record<string, string>} urls
+ */
+export function ingestUrlsForFetch(urls) {
+  const meshPulse = urls.mesh_pulse ?? urls.cycle_state;
+  return {
+    terminal_snapshot: urls.terminal_snapshot,
+    cycle_state: urls.cycle_state,
+    mesh_pulse: meshPulse,
+    sovereign_memory: urls.sovereign_memory,
+  };
+}

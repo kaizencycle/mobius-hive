@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+    inputs:
+      use_fixtures:
+        description: "Use deterministic fixtures instead of live mesh fetches"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -25,6 +31,8 @@ jobs:
           node-version: "20"
 
       - name: Fetch pulse + cycle state
+        env:
+          HIVE_USE_FIXTURES: ${{ github.event_name == 'workflow_dispatch' && inputs.use_fixtures && '1' || '' }}
         run: node scripts/world/fetch-inputs.js
 
       - name: Build world state

@@ -25,6 +25,9 @@ ingest:
       node_id: "mobius-terminal"
       read_url: "https://mobius-civic-ai-terminal.vercel.app/api/terminal/snapshot-lite"
     cycle_state:
+      node_id: "mobius-terminal"
+      read_url: "https://mobius-civic-ai-terminal.vercel.app/ledger/cycle-state.json"
+    mesh_pulse:
       node_id: "mobius-substrate"
       read_url: "https://raw.githubusercontent.com/kaizencycle/Mobius-Substrate/main/ledger/mobius-pulse.json"
     sovereign_memory:

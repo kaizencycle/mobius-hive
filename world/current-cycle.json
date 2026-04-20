@@ -1,6 +1,6 @@
 {
   "cycle_id": "C-287",
-  "updated_at": "2026-04-20T17:52:28.202Z",
+  "updated_at": "2026-04-20T18:09:20.032Z",
   "rules_fired": [
     "kv_degraded"
   ],
@@ -14,6 +14,7 @@
   },
   "ingest_health": {
     "terminal_snapshot": true,
+    "cycle_state": true,
     "mobius_pulse": true,
     "oaa_kv_latest": false
   }

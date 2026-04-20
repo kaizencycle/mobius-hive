@@ -29,3 +29,26 @@ This repo participates in the Mobius mesh as a **world node**:
 - `.github/workflows/quest-proposal.yml` — generates a proposal artifact and (in GitHub Actions) opens a **draft** PR for sentinel/human review
 
 Human-facing rendering belongs in `mobius-browser-shell`, which should treat `world/current-cycle.json` and friends as read-only inputs.
+
+### C-287 flywheel lock — canonical world artifacts
+
+Committed JSON under `world/` is the **state projection** the browser shell and mesh consumers expect:
+
+| Path | Role |
+|------|------|
+| `world/current-cycle.json` | Active cycle id, rules fired, signal snapshot, ingest health |
+| `world/events/<id>.json` | Active world event (e.g. `signal-fog`) |
+| `world/quests/<id>.json` | Active quest (e.g. `restore-the-beacon`) |
+| `world/sentinels/<id>.json` | Active sentinel voice (e.g. `zeus`) |
+| `ledger/hive-world-state.json` | Ledger-shaped projection of the same tick |
+| `ledger/feed.json` | Pulse lane summary for Substrate-style aggregation |
+
+Ingest order (see `mobius.yaml`): **terminal** `snapshot-lite` (hot lanes), **terminal** `ledger/cycle-state.json` (cycle continuity), **Substrate** `mobius-pulse.json` (mesh MII / pulse envelope), **OAA** latest KV (optional; placeholder URL until the real OAA read surface is wired). Until the terminal serves `ledger/cycle-state.json` at that public path, `ingest_health.cycle_state` may read false while the rest of the tick still succeeds.
+
+### Deterministic CI (fixtures)
+
+Set `HIVE_USE_FIXTURES=1` before `fetch-inputs` to copy `scripts/world/fixtures/*.json` into `ledger/inputs/` instead of calling the network. In Actions, run **World Update → workflow_dispatch** and enable **Use deterministic fixtures** so scheduled runs stay live while manual runs can stay deterministic.
+
+### OAA memory path (browser shell)
+
+Player actions that dual-write sovereign memory should target the **documented** OAA write surface (`/api/oaa/memory` per OAA README). If shell code still points at `/api/oaa/memory/append`, align it there or add a thin alias route — that alignment lives in the shell/OAA repos, not here.
