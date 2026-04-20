@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "source": "fixture",
+  "url": "fixture://mobius-pulse",
+  "data": {
+    "cycle": { "id": "C-287" },
+    "global_integrity": { "score": 0.77 },
+    "network_mii": 0.76
+  }
+}

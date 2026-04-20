@@ -1,11 +1,24 @@
 {
   "node_id": "mobius-hive",
   "schema_version": 1,
-  "updated_at": "2026-04-20T00:00:00.000Z",
+  "updated_at": "2026-04-20T18:09:20.032Z",
+  "cycle_id": "C-287",
   "lanes": {
-    "world": { "status": "seed", "summary": "HIVE mesh contract v1 scaffolded in-repo." },
-    "quests": { "status": "dormant", "summary": "Awaiting first automated quest proposal PR." },
-    "lore": { "status": "seed", "summary": "Canon lives under docs/lore/." },
-    "sentinel_state": { "status": "watch", "summary": "Sentinels idle until world-update rules fire." }
+    "world": {
+      "status": "alarm",
+      "summary": "Signal Fog: Operator memory lanes are noisy; continuity is at risk."
+    },
+    "quests": {
+      "status": "active",
+      "summary": "Restore the Beacon"
+    },
+    "lore": {
+      "status": "seed",
+      "summary": "Canon lives under docs/lore/."
+    },
+    "sentinel_state": {
+      "status": "watch",
+      "summary": "ZEUS — stabilization"
+    }
   }
 }

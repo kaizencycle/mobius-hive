@@ -13,10 +13,21 @@ function readJson(file, fallback) {
   }
 }
 
-function pickKvStatus(terminalPayload, oaaPayload) {
+function unwrapEnvelope(payload) {
+  if (!payload?.ok) return null;
+  const d = payload.data;
+  if (d && typeof d === "object" && "data" in d) return d.data;
+  return d;
+}
+
+function pickKvStatus(terminalPayload, cycleStatePayload, oaaPayload) {
   const t = terminalPayload?.ok ? terminalPayload.data : null;
+  const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const o = oaaPayload?.ok ? oaaPayload.data : null;
   const direct =
+    c?.kv_status ??
+    c?.kv?.status ??
+    c?.lanes?.kv?.status ??
     t?.kv_status ??
     t?.kv?.status ??
     t?.status?.kv ??
@@ -24,18 +35,22 @@ function pickKvStatus(terminalPayload, oaaPayload) {
     o?.status ??
     null;
   if (typeof direct === "string") return direct.toLowerCase();
-  if (t?.degraded === true) return "degraded";
+  if (c?.degraded === true || t?.degraded === true) return "degraded";
   if (t?.lanes?.kv && t.lanes.kv.ok === false) return "degraded";
   return "unknown";
 }
 
-function pickGi(pulsePayload, terminalPayload) {
+function pickGi(pulsePayload, cycleStatePayload, terminalPayload) {
   const p = pulsePayload?.ok ? pulsePayload.data : null;
+  const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const t = terminalPayload?.ok ? terminalPayload.data : null;
   const gi =
     p?.terminal_snapshot?.gi ??
     p?.global_integrity?.score ??
     p?.gi ??
+    c?.gi ??
+    c?.global_integrity?.score ??
+    c?.lanes?.integrity?.gi ??
     t?.gi ??
     t?.lanes?.integrity?.gi ??
     p?.network_mii ??
@@ -50,10 +65,13 @@ function pickGi(pulsePayload, terminalPayload) {
   return null;
 }
 
-function pickVaultProgress(terminalPayload, oaaPayload) {
+function pickVaultProgress(terminalPayload, cycleStatePayload, oaaPayload) {
   const t = terminalPayload?.ok ? terminalPayload.data : null;
+  const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const o = oaaPayload?.ok ? oaaPayload.data : null;
   const v =
+    c?.vault_progress ??
+    c?.vault?.progress ??
     t?.vault_progress ??
     t?.vault?.progress ??
     t?.lanes?.pulse?.composite ??
@@ -69,10 +87,14 @@ function pickVaultProgress(terminalPayload, oaaPayload) {
   return null;
 }
 
-function pickCycleId(pulsePayload, terminalPayload) {
+function pickCycleId(cycleStatePayload, pulsePayload, terminalPayload) {
+  const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const p = pulsePayload?.ok ? pulsePayload.data : null;
   const t = terminalPayload?.ok ? terminalPayload.data : null;
   const id =
+    c?.cycle_id ??
+    c?.cycle?.id ??
+    c?.cycle ??
     p?.cycle?.id ??
     p?.cycle ??
     p?.current_cycle ??
@@ -82,7 +104,7 @@ function pickCycleId(pulsePayload, terminalPayload) {
     t?.lanes?.echo?.cycle ??
     null;
   if (typeof id === "string" && id.trim()) return id.trim();
-  return "C-288";
+  return "C-287";
 }
 
 function ensureDir(dir) {
@@ -95,17 +117,55 @@ function writeJson(rel, data) {
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
+function laneStatusFromTone(tone) {
+  if (tone === "warning") return "alarm";
+  if (tone === "hope") return "rising";
+  if (tone === "calm") return "steady";
+  return "watch";
+}
+
+function writeLedgerFeed(root, currentCycle, activeEvent, activeQuest, activeSentinel) {
+  const feed = {
+    node_id: "mobius-hive",
+    schema_version: 1,
+    updated_at: currentCycle.updated_at,
+    cycle_id: currentCycle.cycle_id,
+    lanes: {
+      world: {
+        status: laneStatusFromTone(activeEvent.tone),
+        summary: `${activeEvent.title}: ${activeEvent.summary}`,
+      },
+      quests: {
+        status: currentCycle.active_quest_id ? "active" : "dormant",
+        summary: activeQuest.title,
+      },
+      lore: { status: "seed", summary: "Canon lives under docs/lore/." },
+      sentinel_state: {
+        status: "watch",
+        summary: `${activeSentinel.display_name} — ${activeSentinel.role}`,
+      },
+    },
+  };
+  fs.mkdirSync(path.join(root, "ledger"), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, "ledger", "feed.json"),
+    `${JSON.stringify(feed, null, 2)}\n`,
+    "utf8",
+  );
+}
+
 function main() {
   const previousCycle = readJson(path.join(WORLD, "current-cycle.json"), null);
 
   const terminal = readJson(path.join(IN_DIR, "terminal-snapshot.json"), null);
+  const cycleState = readJson(path.join(IN_DIR, "cycle-state.json"), null);
   const pulse = readJson(path.join(IN_DIR, "mobius-pulse.json"), null);
   const oaa = readJson(path.join(IN_DIR, "oaa-kv-latest.json"), null);
 
-  const kvStatus = pickKvStatus(terminal, oaa);
-  const gi = pickGi(pulse, terminal);
-  const vaultProgress = pickVaultProgress(terminal, oaa);
-  const cycleId = pickCycleId(pulse, terminal);
+  const kvStatus = pickKvStatus(terminal, cycleState, oaa);
+  const gi = pickGi(pulse, cycleState, terminal);
+  const vaultProgress = pickVaultProgress(terminal, cycleState, oaa);
+  const cycleId = pickCycleId(cycleState, pulse, terminal);
 
   const prevVault = previousCycle?.signals?.vault_progress;
   const prevGi = previousCycle?.signals?.gi;
@@ -202,6 +262,7 @@ function main() {
     },
     ingest_health: {
       terminal_snapshot: Boolean(terminal?.ok),
+      cycle_state: Boolean(cycleState?.ok),
       mobius_pulse: Boolean(pulse?.ok),
       oaa_kv_latest: Boolean(oaa?.ok),
     },
@@ -242,6 +303,8 @@ function main() {
     `${JSON.stringify(ledgerWorld, null, 2)}\n`,
     "utf8",
   );
+
+  writeLedgerFeed(ROOT, currentCycle, activeEvent, activeQuest, activeSentinel);
 
   console.log(
     `mobius-hive: world state refreshed for ${cycleId} (rules: ${rules.join(", ")})`,

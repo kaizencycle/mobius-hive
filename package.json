@@ -7,6 +7,7 @@
   },
   "scripts": {
     "world:fetch-inputs": "node scripts/world/fetch-inputs.js",
+    "world:fetch-inputs:fixtures": "HIVE_USE_FIXTURES=1 node scripts/world/fetch-inputs.js",
     "world:build": "node scripts/world/build-world-state.js",
     "world:quest-proposal": "node scripts/world/generate-quest-proposal.js",
     "world:open-pr": "node scripts/world/open-quest-pr.js"

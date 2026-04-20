@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "source": "fixture",
+  "url": "fixture://terminal-snapshot",
+  "data": {
+    "cycle": "C-287",
+    "kv_status": "degraded",
+    "degraded": true,
+    "gi": 0.77,
+    "vault_progress": 0.676
+  }
+}
