@@ -19,3 +19,13 @@ Mobius HIVE is the civilization shell of Mobius: a ledger-native social world wh
 - player loop diagram
 - building progression model
 - MVP screen flow
+
+## Mobius Mesh (v1)
+
+This repo participates in the Mobius mesh as a **world node**:
+
+- `mobius.yaml` — declares node identity, ingest sources, scheduled jobs, and governance gates
+- `.github/workflows/world-update.yml` — pulls remote mesh inputs and refreshes `world/` + `ledger/hive-world-state.json`
+- `.github/workflows/quest-proposal.yml` — generates a proposal artifact and (in GitHub Actions) opens a **draft** PR for sentinel/human review
+
+Human-facing rendering belongs in `mobius-browser-shell`, which should treat `world/current-cycle.json` and friends as read-only inputs.

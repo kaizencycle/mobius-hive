@@ -1,0 +1,23 @@
+{
+  "cycle_id": "C-287",
+  "updated_at": "2026-04-20T17:52:28.202Z",
+  "hive": {
+    "active_event": {
+      "id": "signal-fog",
+      "title": "Signal Fog",
+      "tone": "warning",
+      "summary": "Operator memory lanes are noisy; continuity is at risk."
+    },
+    "active_quest": {
+      "id": "restore-the-beacon",
+      "title": "Restore the Beacon",
+      "summary": "Re-stabilize KV paths and confirm OAA fallbacks are healthy."
+    },
+    "active_sentinel": {
+      "id": "zeus",
+      "display_name": "ZEUS",
+      "role": "stabilization",
+      "voice": "Hold the line. We do not ship fog as truth."
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "restore-the-beacon",
+  "title": "Restore the Beacon",
+  "summary": "Re-stabilize KV paths and confirm OAA fallbacks are healthy.",
+  "cycle_id": "C-287",
+  "updated_at": "2026-04-20T17:52:28.202Z",
+  "sentinel_id": "zeus"
+}

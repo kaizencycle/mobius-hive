@@ -1,0 +1,32 @@
+name: Quest Proposal
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: hive-quest-proposal
+  cancel-in-progress: true
+
+jobs:
+  quest-proposal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate quest proposal
+        run: node scripts/world/generate-quest-proposal.js
+
+      - name: Open PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/world/open-quest-pr.js

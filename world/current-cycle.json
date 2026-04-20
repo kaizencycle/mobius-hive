@@ -1,0 +1,20 @@
+{
+  "cycle_id": "C-287",
+  "updated_at": "2026-04-20T17:52:28.202Z",
+  "rules_fired": [
+    "kv_degraded"
+  ],
+  "active_event_id": "signal-fog",
+  "active_quest_id": "restore-the-beacon",
+  "active_sentinel_id": "zeus",
+  "signals": {
+    "kv_status": "degraded",
+    "gi": 0.77,
+    "vault_progress": 0.676
+  },
+  "ingest_health": {
+    "terminal_snapshot": true,
+    "mobius_pulse": true,
+    "oaa_kv_latest": false
+  }
+}

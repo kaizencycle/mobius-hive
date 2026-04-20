@@ -1,0 +1,41 @@
+name: World Update
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hive-world-update
+  cancel-in-progress: true
+
+jobs:
+  world-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch pulse + cycle state
+        run: node scripts/world/fetch-inputs.js
+
+      - name: Build world state
+        run: node scripts/world/build-world-state.js
+
+      - name: Commit world update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "mobius-hive-bot"
+          git config user.email "bot@mobius.systems"
+          git add world/ ledger/
+          git commit -m "chore(hive): refresh world state from pulse" || exit 0
+          git push
