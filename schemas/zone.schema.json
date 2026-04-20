@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "required": ["id", "title"],
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "default_overlay": { "type": "string" },
+    "cycle_id": { "type": "string" },
+    "updated_at": { "type": "string" }
+  },
+  "additionalProperties": true
+}

@@ -44,6 +44,9 @@ jobs:
       file: ".github/workflows/quest-proposal.yml"
       trigger: "workflow_dispatch"
       cron: "0 * * * *"
+    - id: "world-schemas"
+      file: ".github/workflows/world-schemas.yml"
+      trigger: "pull_request"
 governance:
   agent_prs_allowed: true
   auto_merge_allowed: false

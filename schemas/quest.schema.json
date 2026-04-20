@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "required": ["id", "title"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "assigned_by": { "type": "string" },
+    "status": { "type": "string" },
+    "progress": { "type": "number" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "completed"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "completed": { "type": "boolean" }
+        }
+      }
+    },
+    "reward_preview": { "type": "object" },
+    "cycle_id": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "sentinel_id": { "type": "string" },
+    "summary": { "type": "string" }
+  },
+  "additionalProperties": true
+}

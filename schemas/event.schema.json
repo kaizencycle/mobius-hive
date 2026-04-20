@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": ["id", "title"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "severity": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "trigger": { "type": "object" },
+    "sentinel_owner": { "type": "string" },
+    "ui": { "type": "object" },
+    "cycle_id": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "tone": { "type": "string" },
+    "summary": { "type": "string" }
+  },
+  "additionalProperties": true
+}

@@ -1,8 +1,27 @@
 {
   "id": "zeus",
+  "title": "Sentinel of Integrity",
+  "role": "integrity",
+  "mood": "alert",
+  "location": "castle",
+  "dialogue": {
+    "default": "The signal is unstable.",
+    "inspect_pending": "The Beacon has not been examined.",
+    "fallback_pending": "You see the fracture. Now stabilize it.",
+    "complete": "The signal stabilizes. The fog recedes."
+  },
+  "abilities": [
+    "warn",
+    "open_integrity_quest",
+    "gate_unsafe_actions"
+  ],
+  "cycle_id": "C-290",
+  "updated_at": "2026-04-20T20:50:38.433Z",
   "display_name": "ZEUS",
-  "role": "stabilization",
   "voice": "Hold the line. We do not ship fog as truth.",
-  "cycle_id": "C-287",
-  "updated_at": "2026-04-20T20:07:52.402Z"
+  "runtime_overlay": {
+    "display_name": "ZEUS",
+    "voice": "Hold the line. We do not ship fog as truth.",
+    "role": "stabilization"
+  }
 }

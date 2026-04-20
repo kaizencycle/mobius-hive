@@ -5,10 +5,10 @@
   "data": {
     "ok": true,
     "data": {
-      "cycle_id": "C-287",
+      "cycle_id": "C-290",
       "kv_status": "degraded",
-      "gi": 0.77,
-      "vault_progress": 0.676
+      "gi": 0.74,
+      "vault_progress": 0.82
     }
   }
 }

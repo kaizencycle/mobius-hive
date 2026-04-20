@@ -3,8 +3,8 @@
   "source": "fixture",
   "url": "fixture://mobius-pulse",
   "data": {
-    "cycle": { "id": "C-287" },
-    "global_integrity": { "score": 0.77 },
-    "network_mii": 0.76
+    "cycle": { "id": "C-290" },
+    "global_integrity": { "score": 0.74 },
+    "network_mii": 0.72
   }
 }

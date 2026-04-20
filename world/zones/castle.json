@@ -1,0 +1,13 @@
+{
+  "id": "castle",
+  "title": "Castle",
+  "description": "Central chamber of oversight and coordination.",
+  "features": [
+    "sentinel_rail",
+    "event_overlay",
+    "quest_panel"
+  ],
+  "default_overlay": "clear",
+  "cycle_id": "C-290",
+  "updated_at": "2026-04-20T20:50:38.433Z"
+}
