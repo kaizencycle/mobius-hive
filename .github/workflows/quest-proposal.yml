@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: hive-quest-proposal
@@ -18,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -26,7 +27,17 @@ jobs:
       - name: Generate quest proposal
         run: node scripts/world/generate-quest-proposal.js
 
-      - name: Open PR
+      - name: Write quest marker (no PR branch)
+        run: node scripts/world/write-quest-proposal-marker.js
+
+      - name: Commit marker to default branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/world/open-quest-pr.js
+        run: |
+          git config user.name "mobius-hive-bot"
+          git config user.email "bot@mobius.systems"
+          git add ledger/quest-proposals/*.marker.json
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(hive): quest proposal marker (${{ github.run_id }})"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"

@@ -26,7 +26,7 @@ This repo participates in the Mobius mesh as a **world node**:
 
 - `mobius.yaml` — declares node identity, ingest sources, scheduled jobs, and governance gates
 - `.github/workflows/world-update.yml` — pulls remote mesh inputs and refreshes `world/` + `ledger/hive-world-state.json`
-- `.github/workflows/quest-proposal.yml` — generates a proposal artifact and (in GitHub Actions) opens a **draft** PR for sentinel/human review
+- `.github/workflows/quest-proposal.yml` — generates a proposal artifact and **commits a marker JSON to the default branch** (no ephemeral `cursor/hive-quest-*` PR branches)
 
 Human-facing rendering belongs in `mobius-browser-shell`, which should treat `world/current-cycle.json`, **`world/current-world.json`** (HIVE Sims v1), and friends as read-only inputs.
 

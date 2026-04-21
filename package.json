@@ -11,7 +11,7 @@
     "world:build": "node scripts/world/build-world-state.js",
     "world:validate-schemas": "node scripts/world/validate-schemas.mjs",
     "world:quest-proposal": "node scripts/world/generate-quest-proposal.js",
-    "world:open-pr": "node scripts/world/open-quest-pr.js"
+    "world:write-quest-marker": "node scripts/world/write-quest-proposal-marker.js"
   },
   "devDependencies": {
     "ajv": "^8.17.1"
