@@ -5,7 +5,7 @@ const ROOT = path.resolve(import.meta.dirname, "..", "..");
 const IN_DIR = path.join(ROOT, "ledger", "inputs");
 const WORLD = path.join(ROOT, "world");
 
-/** C-290 HIVE Sims — static bios + UI contract (cycle timestamps refreshed each build). */
+/** C-288 HIVE world projection — static bios + UI contract (cycle timestamps refreshed each build). */
 const SIM_SENTINELS = {
   zeus: {
     id: "zeus",
@@ -247,7 +247,7 @@ function pickCycleId(cycleStatePayload, pulsePayload, terminalPayload) {
     t?.lanes?.echo?.cycle ??
     null;
   if (typeof id === "string" && id.trim()) return id.trim();
-  return "C-290";
+  return "C-288";
 }
 
 function pickSourceMode(kvStatus, terminalPayload, cycleStatePayload, oaaPayload) {

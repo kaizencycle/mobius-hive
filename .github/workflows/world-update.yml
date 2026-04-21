@@ -44,6 +44,11 @@ jobs:
       - name: Validate world JSON schemas
         run: npm run world:validate-schemas
 
+      - name: Placeholder derive step
+        run: |
+          echo "v1 world-update uses repo-canonical world files"
+          echo "Later: derive from terminal snapshot + pulse + OAA"
+
       - name: Commit world update
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
