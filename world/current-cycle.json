@@ -14,8 +14,8 @@
   },
   "ingest_health": {
     "terminal_snapshot": true,
-    "cycle_state": false,
+    "cycle_state": true,
     "mobius_pulse": true,
-    "oaa_kv_latest": false
+    "oaa_kv_latest": true
   }
 }

@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "required": ["id", "title"],
+  "required": ["id", "type", "title", "status"],
   "properties": {
     "id": { "type": "string" },
     "type": { "type": "string" },

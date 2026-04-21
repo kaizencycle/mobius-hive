@@ -1,11 +1,11 @@
 {
-  "cycle": "C-287",
+  "cycle": "C-288",
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
     "gi": 0.78,
     "kv_status": "degraded",
-    "source_mode": "kv_preferred"
+    "source_mode": "verified_memory"
   },
   "vault": {
     "progress": 0.72,

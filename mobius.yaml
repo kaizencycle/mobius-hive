@@ -4,7 +4,7 @@ mesh:
   node_id: "mobius-hive"
   node_name: "Mobius HIVE"
   tier: "client"
-  role: "world_node"
+  role: "world_projection"
 repository:
   full_name: "kaizencycle/mobius-hive"
   default_branch: "main"
@@ -19,14 +19,14 @@ pulse:
     - sentinel_state
 ingest:
   enabled: true
-  mode: "client_of_other_node"
+  mode: "projection"
   sources:
     terminal_snapshot:
       node_id: "mobius-terminal"
       read_url: "https://mobius-civic-ai-terminal.vercel.app/api/terminal/snapshot-lite"
     cycle_state:
       node_id: "mobius-terminal"
-      read_url: "https://mobius-civic-ai-terminal.vercel.app/ledger/cycle-state.json"
+      read_url: "https://raw.githubusercontent.com/kaizencycle/mobius-civic-ai-terminal/main/ledger/cycle-state.json"
     mesh_pulse:
       node_id: "mobius-substrate"
       read_url: "https://raw.githubusercontent.com/kaizencycle/Mobius-Substrate/main/ledger/mobius-pulse.json"
@@ -40,6 +40,7 @@ jobs:
       file: ".github/workflows/world-update.yml"
       trigger: "schedule"
       cron: "*/15 * * * *"
+      description: "Validate and refresh HIVE world state"
     - id: "quest-proposal"
       file: ".github/workflows/quest-proposal.yml"
       trigger: "workflow_dispatch"
