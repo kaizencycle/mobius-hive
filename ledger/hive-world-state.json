@@ -1,23 +1,23 @@
 {
   "cycle_id": "C-288",
-  "updated_at": "2026-04-21T16:43:37.993Z",
+  "updated_at": "2026-04-21T17:45:27.559Z",
   "hive": {
     "active_event": {
-      "id": "signal-fog",
-      "title": "Signal Fog",
-      "tone": "warning",
-      "summary": "Operator memory lanes are noisy; continuity is at risk."
+      "id": "quiet-grid",
+      "title": "Quiet Grid",
+      "tone": "calm",
+      "summary": "No mesh alarms fired on this tick."
     },
     "active_quest": {
-      "id": "restore-the-beacon",
-      "title": "Restore the Beacon",
-      "summary": "Re-stabilize KV paths and confirm OAA fallbacks are healthy."
+      "id": "patrol-the-lanes",
+      "title": "Patrol the Lanes",
+      "summary": "Keep watch: terminal heartbeat, pulse freshness, OAA seals."
     },
     "active_sentinel": {
-      "id": "zeus",
-      "display_name": "ZEUS",
-      "role": "stabilization",
-      "voice": "Hold the line. We do not ship fog as truth."
+      "id": "atlas",
+      "display_name": "ATLAS",
+      "role": "verification",
+      "voice": "No drama is also data. Log the null result."
     }
   }
 }

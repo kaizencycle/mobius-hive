@@ -1,0 +1,23 @@
+{
+  "id": "atlas",
+  "title": "Sentinel of Verification",
+  "role": "verification",
+  "mood": "calm",
+  "location": "castle",
+  "dialogue": {
+    "default": "No drama is also data. Log the null result."
+  },
+  "abilities": [
+    "verify_null",
+    "log_quiet_grid"
+  ],
+  "cycle_id": "C-288",
+  "updated_at": "2026-04-21T17:45:27.559Z",
+  "display_name": "ATLAS",
+  "voice": "No drama is also data. Log the null result.",
+  "runtime_overlay": {
+    "display_name": "ATLAS",
+    "voice": "No drama is also data. Log the null result.",
+    "role": "verification"
+  }
+}
