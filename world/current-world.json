@@ -5,10 +5,10 @@
   "integrity": {
     "gi": 0.78,
     "kv_status": "degraded",
-    "source_mode": "verified_memory"
+    "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.72,
+    "progress": 0.657,
     "fountain_status": "locked"
   },
   "active_events": [
