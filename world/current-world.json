@@ -3,7 +3,7 @@
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
-    "gi": 0.649,
+    "gi": 0.686,
     "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
