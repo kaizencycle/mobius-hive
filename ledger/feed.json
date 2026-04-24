@@ -1,16 +1,16 @@
 {
   "node_id": "mobius-hive",
   "schema_version": 1,
-  "updated_at": "2026-04-24T08:24:30.457Z",
+  "updated_at": "2026-04-24T10:06:52.898Z",
   "cycle_id": "C-291",
   "lanes": {
     "world": {
-      "status": "alarm",
-      "summary": "Signal Fog: Operator memory lanes are noisy; continuity is at risk."
+      "status": "steady",
+      "summary": "Quiet Grid: No mesh alarms fired on this tick."
     },
     "quests": {
       "status": "active",
-      "summary": "Restore the Beacon"
+      "summary": "Patrol the Lanes"
     },
     "lore": {
       "status": "seed",
@@ -18,7 +18,7 @@
     },
     "sentinel_state": {
       "status": "watch",
-      "summary": "ZEUS — stabilization"
+      "summary": "ATLAS — verification"
     }
   }
 }
