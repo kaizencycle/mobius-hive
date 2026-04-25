@@ -169,15 +169,9 @@ function pickKvStatus(terminalPayload, cycleStatePayload, oaaPayload) {
   const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const o = oaaPayload?.ok ? oaaPayload.data : null;
   const direct =
-    c?.kv_status ??
-    c?.kv?.status ??
-    c?.lanes?.kv?.status ??
-    t?.kv_status ??
-    t?.kv?.status ??
-    t?.status?.kv ??
-    o?.kv_status ??
-    o?.status ??
-    null;
+    c?.kv_status ?? c?.kv?.status ?? c?.lanes?.kv?.status ??
+    t?.kv_status ?? t?.kv?.status ?? t?.status?.kv ??
+    o?.kv_status ?? o?.status ?? null;
   if (typeof direct === "string") return direct.toLowerCase();
   if (c?.degraded === true || t?.degraded === true) return "degraded";
   if (t?.lanes?.kv && t.lanes.kv.ok === false) return "degraded";
@@ -189,18 +183,9 @@ function pickGi(pulsePayload, cycleStatePayload, terminalPayload) {
   const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const t = terminalPayload?.ok ? terminalPayload.data : null;
   const gi =
-    p?.terminal_snapshot?.gi ??
-    p?.global_integrity?.score ??
-    p?.gi ??
-    c?.gi ??
-    c?.global_integrity?.score ??
-    c?.lanes?.integrity?.gi ??
-    t?.gi ??
-    t?.lanes?.integrity?.gi ??
-    p?.network_mii ??
-    p?.integrity?.global ??
-    p?.mesh?.gi ??
-    null;
+    p?.terminal_snapshot?.gi ?? p?.global_integrity?.score ?? p?.gi ??
+    c?.gi ?? c?.global_integrity?.score ?? c?.lanes?.integrity?.gi ??
+    t?.gi ?? t?.lanes?.integrity?.gi ?? p?.network_mii ?? p?.integrity?.global ?? p?.mesh?.gi ?? null;
   if (typeof gi === "number") return gi;
   if (typeof gi === "string") {
     const n = Number(gi);
@@ -214,15 +199,8 @@ function pickVaultProgress(terminalPayload, cycleStatePayload, oaaPayload) {
   const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const o = oaaPayload?.ok ? oaaPayload.data : null;
   const v =
-    c?.vault_progress ??
-    c?.vault?.progress ??
-    t?.vault_progress ??
-    t?.vault?.progress ??
-    t?.lanes?.pulse?.composite ??
-    t?.lanes?.signals?.composite ??
-    o?.vault_progress ??
-    o?.vault?.progress ??
-    null;
+    c?.vault_progress ?? c?.vault?.progress ?? t?.vault_progress ?? t?.vault?.progress ??
+    t?.lanes?.pulse?.composite ?? t?.lanes?.signals?.composite ?? o?.vault_progress ?? o?.vault?.progress ?? null;
   if (typeof v === "number") return v;
   if (typeof v === "string") {
     const n = Number(v);
@@ -235,18 +213,7 @@ function pickCycleId(cycleStatePayload, pulsePayload, terminalPayload) {
   const c = unwrapEnvelope(cycleStatePayload) ?? (cycleStatePayload?.ok ? cycleStatePayload.data : null);
   const p = pulsePayload?.ok ? pulsePayload.data : null;
   const t = terminalPayload?.ok ? terminalPayload.data : null;
-  const id =
-    c?.cycle_id ??
-    c?.cycle?.id ??
-    c?.cycle ??
-    p?.cycle?.id ??
-    p?.cycle ??
-    p?.current_cycle ??
-    p?.cycle_id ??
-    p?.mesh?.cycle_id ??
-    t?.cycle ??
-    t?.lanes?.echo?.cycle ??
-    null;
+  const id = c?.cycle_id ?? c?.cycle?.id ?? c?.cycle ?? p?.cycle?.id ?? p?.cycle ?? p?.current_cycle ?? p?.cycle_id ?? p?.mesh?.cycle_id ?? t?.cycle ?? t?.lanes?.echo?.cycle ?? null;
   if (typeof id === "string" && id.trim()) return id.trim();
   return "C-288";
 }
@@ -279,8 +246,20 @@ function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function stableStringify(value) {
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function sha256(payload) {
   return crypto.createHash("sha256").update(payload).digest("hex");
+}
+
+function sourceHashFor(payload) {
+  return sha256(stableStringify(payload));
 }
 
 function buildIdempotencyKey(eventType, cycleId, sourceHash, workflowId = "world-update") {
@@ -289,32 +268,13 @@ function buildIdempotencyKey(eventType, cycleId, sourceHash, workflowId = "world
 
 function buildRichEvent(activeEvent, cycleId, updatedAt) {
   const spec = SIM_EVENT_SPECS[activeEvent.id];
-  if (!spec) {
-    return {
-      ...activeEvent,
-      cycle_id: cycleId,
-      updated_at: updatedAt,
-    };
-  }
-  return {
-    ...spec,
-    tone: activeEvent.tone,
-    summary: activeEvent.summary,
-    cycle_id: cycleId,
-    updated_at: updatedAt,
-  };
+  if (!spec) return { ...activeEvent, cycle_id: cycleId, updated_at: updatedAt };
+  return { ...spec, tone: activeEvent.tone, summary: activeEvent.summary, cycle_id: cycleId, updated_at: updatedAt };
 }
 
 function buildRichQuest(activeQuest, sentinelId, cycleId, updatedAt) {
   const spec = SIM_QUEST_SPECS[activeQuest.id];
-  if (!spec) {
-    return {
-      ...activeQuest,
-      cycle_id: cycleId,
-      updated_at: updatedAt,
-      sentinel_id: sentinelId,
-    };
-  }
+  if (!spec) return { ...activeQuest, cycle_id: cycleId, updated_at: updatedAt, sentinel_id: sentinelId };
   const q = clone(spec);
   q.cycle_id = cycleId;
   q.updated_at = updatedAt;
@@ -330,35 +290,16 @@ function buildRichSentinel(sentinelId, runtime, cycleId, updatedAt) {
       updated_at: updatedAt,
       display_name: runtime.display_name,
       voice: runtime.voice,
-      runtime_overlay: {
-        display_name: runtime.display_name,
-        voice: runtime.voice,
-        role: runtime.role,
-      },
+      runtime_overlay: { display_name: runtime.display_name, voice: runtime.voice, role: runtime.role },
     };
   }
   const base = SIM_SENTINELS[sentinelId];
-  if (!base) {
-    return {
-      ...runtime,
-      id: sentinelId,
-      cycle_id: cycleId,
-      updated_at: updatedAt,
-    };
-  }
-  const out = {
-    ...clone(base),
-    cycle_id: cycleId,
-    updated_at: updatedAt,
-  };
+  if (!base) return { ...runtime, id: sentinelId, cycle_id: cycleId, updated_at: updatedAt };
+  const out = { ...clone(base), cycle_id: cycleId, updated_at: updatedAt };
   if (runtime && runtime.id === sentinelId) {
     out.display_name = runtime.display_name;
     out.voice = runtime.voice;
-    out.runtime_overlay = {
-      display_name: runtime.display_name,
-      voice: runtime.voice,
-      role: runtime.role,
-    };
+    out.runtime_overlay = { display_name: runtime.display_name, voice: runtime.voice, role: runtime.role };
   }
   return out;
 }
@@ -366,59 +307,25 @@ function buildRichSentinel(sentinelId, runtime, cycleId, updatedAt) {
 function writeSimSentinelRail(cycleId, updatedAt, primaryRuntime) {
   const ids = ["zeus", "jade", "hermes"];
   for (const id of ids) {
-    const runtime =
-      primaryRuntime.id === id
-        ? primaryRuntime
-        : {
-            id,
-            display_name: id.toUpperCase(),
-            role: SIM_SENTINELS[id].role,
-            voice: "",
-          };
+    const runtime = primaryRuntime.id === id ? primaryRuntime : { id, display_name: id.toUpperCase(), role: SIM_SENTINELS[id].role, voice: "" };
     writeJson(path.join("sentinels", `${id}.json`), buildRichSentinel(id, runtime, cycleId, updatedAt));
   }
-  if (primaryRuntime.id === "atlas") {
-    writeJson(
-      path.join("sentinels", "atlas.json"),
-      buildRichSentinel("atlas", primaryRuntime, cycleId, updatedAt),
-    );
-  }
+  if (primaryRuntime.id === "atlas") writeJson(path.join("sentinels", "atlas.json"), buildRichSentinel("atlas", primaryRuntime, cycleId, updatedAt));
 }
 
 function writeCastleZone(cycleId, updatedAt) {
-  writeJson(path.join("zones", "castle.json"), {
-    ...clone(SIM_ZONE_CASTLE),
-    cycle_id: cycleId,
-    updated_at: updatedAt,
-  });
+  writeJson(path.join("zones", "castle.json"), { ...clone(SIM_ZONE_CASTLE), cycle_id: cycleId, updated_at: updatedAt });
 }
 
-function writeCurrentWorldSummary({
-  cycleId,
-  updatedAt,
-  kvStatus,
-  gi,
-  vaultProgress,
-  rules,
-  activeEvent,
-  activeQuest,
-  sourceMode,
-}) {
+function writeCurrentWorldSummary({ cycleId, updatedAt, kvStatus, gi, vaultProgress, rules, activeEvent, activeQuest, sourceMode }) {
   const worldMood = pickWorldMood(kvStatus, gi, rules);
   const fountainStatus = pickFountainStatus(rules);
   const body = {
     cycle: cycleId,
     zone: "castle",
     world_mood: worldMood,
-    integrity: {
-      gi: typeof gi === "number" ? gi : 0,
-      kv_status: kvStatus,
-      source_mode: sourceMode,
-    },
-    vault: {
-      progress: typeof vaultProgress === "number" ? vaultProgress : 0,
-      fountain_status: fountainStatus,
-    },
+    integrity: { gi: typeof gi === "number" ? gi : 0, kv_status: kvStatus, source_mode: sourceMode },
+    vault: { progress: typeof vaultProgress === "number" ? vaultProgress : 0, fountain_status: fountainStatus },
     active_events: [activeEvent.id],
     active_quests: [activeQuest.id],
     active_sentinels: ["zeus", "jade", "hermes"],
@@ -433,12 +340,6 @@ function ensureDir(dir) {
 
 function writeJson(rel, data) {
   const file = path.join(WORLD, rel);
-  ensureDir(path.dirname(file));
-  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, "utf8");
-}
-
-function writeRootJson(rel, data) {
-  const file = path.join(ROOT, rel);
   ensureDir(path.dirname(file));
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
@@ -486,38 +387,19 @@ function hiveWorldPulse({ cycleId, updatedAt, currentCycle, activeEvent, activeQ
     generated_at: updatedAt,
     cycle: cycleId,
     current_cycle: currentCycle,
-    world: {
-      active_event: activeEvent,
-      active_quest: activeQuest,
-      active_sentinel: activeSentinel,
-    },
-    civic_signal: {
-      world_pressure: civicSignal.world_pressure,
-      recommendation: civicSignal.recommendation,
-      rules_fired: civicSignal.rules_fired,
-    },
-    route: [
-      "HIVE_WORLD_STATE",
-      "HIVE_WORLD_PULSE",
-      "BROWSER_SHELL_SURFACE",
-      "TERMINAL_BIG_PULSE",
-      "SUBSTRATE_MEMORY",
-      "CIVIC_LEDGER_PROOF",
-    ],
+    world: { active_event: activeEvent, active_quest: activeQuest, active_sentinel: activeSentinel },
+    civic_signal: { world_pressure: civicSignal.world_pressure, recommendation: civicSignal.recommendation, rules_fired: civicSignal.rules_fired },
+    route: ["HIVE_WORLD_STATE", "HIVE_WORLD_PULSE", "BROWSER_SHELL_SURFACE", "TERMINAL_BIG_PULSE", "SUBSTRATE_MEMORY", "CIVIC_LEDGER_PROOF"],
   };
-  const sourceHash = sha256(JSON.stringify(pulse, Object.keys(pulse).sort()));
+  const sourceHash = sourceHashFor(pulse);
   pulse.source_hash = sourceHash;
   pulse.idempotency_key = buildIdempotencyKey("HIVE_WORLD_PULSE_V1", cycleId, sourceHash);
   return pulse;
 }
 
 function withProofMetadata(payload, eventType, cycleId) {
-  const sourceHash = sha256(JSON.stringify(payload, Object.keys(payload).sort()));
-  return {
-    ...payload,
-    source_hash: sourceHash,
-    idempotency_key: buildIdempotencyKey(eventType, cycleId, sourceHash),
-  };
+  const sourceHash = sourceHashFor(payload);
+  return { ...payload, source_hash: sourceHash, idempotency_key: buildIdempotencyKey(eventType, cycleId, sourceHash) };
 }
 
 function writeLedgerFeed(root, currentCycle, activeEvent, activeQuest, activeSentinel) {
@@ -527,32 +409,18 @@ function writeLedgerFeed(root, currentCycle, activeEvent, activeQuest, activeSen
     updated_at: currentCycle.updated_at,
     cycle_id: currentCycle.cycle_id,
     lanes: {
-      world: {
-        status: laneStatusFromTone(activeEvent.tone),
-        summary: `${activeEvent.title}: ${activeEvent.summary}`,
-      },
-      quests: {
-        status: currentCycle.active_quest_id ? "active" : "dormant",
-        summary: activeQuest.title,
-      },
+      world: { status: laneStatusFromTone(activeEvent.tone), summary: `${activeEvent.title}: ${activeEvent.summary}` },
+      quests: { status: currentCycle.active_quest_id ? "active" : "dormant", summary: activeQuest.title },
       lore: { status: "seed", summary: "Canon lives under docs/lore/." },
-      sentinel_state: {
-        status: "watch",
-        summary: `${activeSentinel.display_name} — ${activeSentinel.role}`,
-      },
+      sentinel_state: { status: "watch", summary: `${activeSentinel.display_name} — ${activeSentinel.role}` },
     },
   };
   fs.mkdirSync(path.join(root, "ledger"), { recursive: true });
-  fs.writeFileSync(
-    path.join(root, "ledger", "feed.json"),
-    `${JSON.stringify(feed, null, 2)}\n`,
-    "utf8",
-  );
+  fs.writeFileSync(path.join(root, "ledger", "feed.json"), `${JSON.stringify(feed, null, 2)}\n`, "utf8");
 }
 
 function main() {
   const previousCycle = readJson(path.join(WORLD, "current-cycle.json"), null);
-
   const terminal = readJson(path.join(IN_DIR, "terminal-snapshot.json"), null);
   const cycleState = readJson(path.join(IN_DIR, "cycle-state.json"), null);
   const pulse = readJson(path.join(IN_DIR, "mobius-pulse.json"), null);
@@ -562,86 +430,32 @@ function main() {
   const gi = pickGi(pulse, cycleState, terminal);
   const vaultProgress = pickVaultProgress(terminal, cycleState, oaa);
   const cycleId = pickCycleId(cycleState, pulse, terminal);
-
   const prevVault = previousCycle?.signals?.vault_progress;
   const prevGi = previousCycle?.signals?.gi;
-
-  const vaultDelta =
-    typeof vaultProgress === "number" && typeof prevVault === "number"
-      ? vaultProgress - prevVault
-      : null;
-
-  const giRising =
-    typeof gi === "number" && typeof prevGi === "number" ? gi > prevGi : false;
-
+  const vaultDelta = typeof vaultProgress === "number" && typeof prevVault === "number" ? vaultProgress - prevVault : null;
+  const giRising = typeof gi === "number" && typeof prevGi === "number" ? gi > prevGi : false;
   const vaultRising = typeof vaultDelta === "number" ? vaultDelta > 0 : false;
-
-  const giStrong =
-    typeof gi === "number" && (giRising || gi >= 0.95);
-
+  const giStrong = typeof gi === "number" && (giRising || gi >= 0.95);
   const rules = [];
-
   let activeEvent = null;
   let activeQuest = null;
   let activeSentinel = null;
 
   if (kvStatus === "degraded") {
     rules.push("kv_degraded");
-    activeEvent = {
-      id: "signal-fog",
-      title: "Signal Fog",
-      tone: "warning",
-      summary: "Operator memory lanes are noisy; continuity is at risk.",
-    };
-    activeQuest = {
-      id: "restore-the-beacon",
-      title: "Restore the Beacon",
-      summary: "Re-stabilize KV paths and confirm OAA fallbacks are healthy.",
-    };
-    activeSentinel = {
-      id: "zeus",
-      display_name: "ZEUS",
-      role: "stabilization",
-      voice: "Hold the line. We do not ship fog as truth.",
-    };
+    activeEvent = { id: "signal-fog", title: "Signal Fog", tone: "warning", summary: "Operator memory lanes are noisy; continuity is at risk." };
+    activeQuest = { id: "restore-the-beacon", title: "Restore the Beacon", summary: "Re-stabilize KV paths and confirm OAA fallbacks are healthy." };
+    activeSentinel = { id: "zeus", display_name: "ZEUS", role: "stabilization", voice: "Hold the line. We do not ship fog as truth." };
   } else if (vaultRising && giStrong) {
     rules.push("vault_rising_and_gi");
-    activeEvent = {
-      id: "fountain-murmur",
-      title: "Fountain Murmur",
-      tone: "hope",
-      summary: "The vault deepens and integrity rises; the city hears water again.",
-    };
-    activeQuest = {
-      id: "prepare-the-seal",
-      title: "Prepare the Seal",
-      summary: "Align proofs and ledger anchors before the next cycle boundary.",
-    };
-    activeSentinel = {
-      id: "hermes",
-      display_name: "HERMES",
-      role: "courier",
-      voice: "Carry the proof, not the rumor. Speed without drift.",
-    };
+    activeEvent = { id: "fountain-murmur", title: "Fountain Murmur", tone: "hope", summary: "The vault deepens and integrity rises; the city hears water again." };
+    activeQuest = { id: "prepare-the-seal", title: "Prepare the Seal", summary: "Align proofs and ledger anchors before the next cycle boundary." };
+    activeSentinel = { id: "hermes", display_name: "HERMES", role: "courier", voice: "Carry the proof, not the rumor. Speed without drift." };
   } else {
     rules.push("steady_state");
-    activeEvent = {
-      id: "quiet-grid",
-      title: "Quiet Grid",
-      tone: "calm",
-      summary: "No mesh alarms fired on this tick.",
-    };
-    activeQuest = {
-      id: "patrol-the-lanes",
-      title: "Patrol the Lanes",
-      summary: "Keep watch: terminal heartbeat, pulse freshness, OAA seals.",
-    };
-    activeSentinel = {
-      id: "atlas",
-      display_name: "ATLAS",
-      role: "verification",
-      voice: "No drama is also data. Log the null result.",
-    };
+    activeEvent = { id: "quiet-grid", title: "Quiet Grid", tone: "calm", summary: "No mesh alarms fired on this tick." };
+    activeQuest = { id: "patrol-the-lanes", title: "Patrol the Lanes", summary: "Keep watch: terminal heartbeat, pulse freshness, OAA seals." };
+    activeSentinel = { id: "atlas", display_name: "ATLAS", role: "verification", voice: "No drama is also data. Log the null result." };
   }
 
   const currentCycle = {
@@ -651,22 +465,12 @@ function main() {
     active_event_id: activeEvent.id,
     active_quest_id: activeQuest.id,
     active_sentinel_id: activeSentinel.id,
-    signals: {
-      kv_status: kvStatus,
-      gi,
-      vault_progress: vaultProgress,
-    },
-    ingest_health: {
-      terminal_snapshot: Boolean(terminal?.ok),
-      cycle_state: Boolean(cycleState?.ok),
-      mobius_pulse: Boolean(pulse?.ok),
-      oaa_kv_latest: Boolean(oaa?.ok),
-    },
+    signals: { kv_status: kvStatus, gi, vault_progress: vaultProgress },
+    ingest_health: { terminal_snapshot: Boolean(terminal?.ok), cycle_state: Boolean(cycleState?.ok), mobius_pulse: Boolean(pulse?.ok), oaa_kv_latest: Boolean(oaa?.ok) },
   };
 
   ensureDir(WORLD);
   writeJson("current-cycle.json", currentCycle);
-
   const updatedAt = currentCycle.updated_at;
   const sourceMode = pickSourceMode(kvStatus, terminal, cycleState, oaa);
   const richEvent = buildRichEvent(activeEvent, cycleId, updatedAt);
@@ -675,45 +479,16 @@ function main() {
 
   writeJson(path.join("events", `${activeEvent.id}.json`), richEvent);
   writeJson(path.join("quests", `${activeQuest.id}.json`), richQuest);
-
   writeSimSentinelRail(cycleId, updatedAt, activeSentinel);
   writeCastleZone(cycleId, updatedAt);
-  writeCurrentWorldSummary({
-    cycleId,
-    updatedAt,
-    kvStatus,
-    gi,
-    vaultProgress,
-    rules,
-    activeEvent,
-    activeQuest,
-    sourceMode,
-  });
+  writeCurrentWorldSummary({ cycleId, updatedAt, kvStatus, gi, vaultProgress, rules, activeEvent, activeQuest, sourceMode });
 
   const civicSignal = withProofMetadata(
-    civicSignalFromWorld({
-      cycleId,
-      updatedAt,
-      kvStatus,
-      gi,
-      rules,
-      activeEvent: richEvent,
-      activeQuest: richQuest,
-      activeSentinel: richSentinel,
-      sourceMode,
-    }),
+    civicSignalFromWorld({ cycleId, updatedAt, kvStatus, gi, rules, activeEvent: richEvent, activeQuest: richQuest, activeSentinel: richSentinel, sourceMode }),
     "QUEST_SIGNAL_V1",
     cycleId,
   );
-  const worldPulse = hiveWorldPulse({
-    cycleId,
-    updatedAt,
-    currentCycle,
-    activeEvent: richEvent,
-    activeQuest: richQuest,
-    activeSentinel: richSentinel,
-    civicSignal,
-  });
+  const worldPulse = hiveWorldPulse({ cycleId, updatedAt, currentCycle, activeEvent: richEvent, activeQuest: richQuest, activeSentinel: richSentinel, civicSignal });
 
   writeJson("civic-signal.json", civicSignal);
   writeJson("hive-world-pulse.json", worldPulse);
@@ -725,26 +500,14 @@ function main() {
     workflow_id: "world-update",
     cycle_id: cycleId,
     updated_at: currentCycle.updated_at,
-    hive: {
-      active_event: richEvent,
-      active_quest: richQuest,
-      active_sentinel: richSentinel,
-    },
+    hive: { active_event: richEvent, active_quest: richQuest, active_sentinel: richSentinel },
     civic_signal: civicSignal,
   };
   const ledgerWorldWithProof = withProofMetadata(ledgerWorld, "WORLD_STATE_V1", cycleId);
   fs.mkdirSync(path.join(ROOT, "ledger"), { recursive: true });
-  fs.writeFileSync(
-    path.join(ROOT, "ledger", "hive-world-state.json"),
-    `${JSON.stringify(ledgerWorldWithProof, null, 2)}\n`,
-    "utf8",
-  );
-
+  fs.writeFileSync(path.join(ROOT, "ledger", "hive-world-state.json"), `${JSON.stringify(ledgerWorldWithProof, null, 2)}\n`, "utf8");
   writeLedgerFeed(ROOT, currentCycle, activeEvent, activeQuest, activeSentinel);
-
-  console.log(
-    `mobius-hive: world state refreshed for ${cycleId} (rules: ${rules.join(", ")})`,
-  );
+  console.log(`mobius-hive: world state refreshed for ${cycleId} (rules: ${rules.join(", ")})`);
 }
 
 main();
