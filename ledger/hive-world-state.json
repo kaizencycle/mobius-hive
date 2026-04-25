@@ -1,23 +1,23 @@
 {
   "cycle_id": "C-291",
-  "updated_at": "2026-04-24T23:52:06.456Z",
+  "updated_at": "2026-04-25T02:51:08.383Z",
   "hive": {
     "active_event": {
-      "id": "fountain-murmur",
-      "title": "Fountain Murmur",
-      "tone": "hope",
-      "summary": "The vault deepens and integrity rises; the city hears water again."
+      "id": "signal-fog",
+      "title": "Signal Fog",
+      "tone": "warning",
+      "summary": "Operator memory lanes are noisy; continuity is at risk."
     },
     "active_quest": {
-      "id": "prepare-the-seal",
-      "title": "Prepare the Seal",
-      "summary": "Align proofs and ledger anchors before the next cycle boundary."
+      "id": "restore-the-beacon",
+      "title": "Restore the Beacon",
+      "summary": "Re-stabilize KV paths and confirm OAA fallbacks are healthy."
     },
     "active_sentinel": {
-      "id": "hermes",
-      "display_name": "HERMES",
-      "role": "courier",
-      "voice": "Carry the proof, not the rumor. Speed without drift."
+      "id": "zeus",
+      "display_name": "ZEUS",
+      "role": "stabilization",
+      "voice": "Hold the line. We do not ship fog as truth."
     }
   }
 }
