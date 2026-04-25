@@ -1,0 +1,141 @@
+{
+  "schema": "HIVE_WORLD_PULSE_V1",
+  "node_id": "mobius-hive",
+  "event_type": "HIVE_WORLD_PULSE_V1",
+  "workflow_id": "world-update",
+  "generated_at": "2026-04-25T18:29:34.574Z",
+  "cycle": "C-292",
+  "current_cycle": {
+    "cycle_id": "C-292",
+    "updated_at": "2026-04-25T18:29:34.532Z",
+    "rules_fired": [
+      "steady_state"
+    ],
+    "active_event_id": "quiet-grid",
+    "active_quest_id": "patrol-the-lanes",
+    "active_sentinel_id": "atlas",
+    "signals": {
+      "kv_status": "unknown",
+      "gi": 0.684,
+      "vault_progress": 0.662
+    },
+    "ingest_health": {
+      "terminal_snapshot": true,
+      "cycle_state": true,
+      "mobius_pulse": true,
+      "oaa_kv_latest": false
+    }
+  },
+  "current_world": {
+    "cycle": "C-292",
+    "zone": "castle",
+    "world_mood": "fogged",
+    "integrity": {
+      "gi": 0.684,
+      "kv_status": "unknown",
+      "source_mode": "kv_preferred"
+    },
+    "vault": {
+      "progress": 0.662,
+      "fountain_status": "locked"
+    },
+    "active_events": [
+      "quiet-grid"
+    ],
+    "active_quests": [
+      "patrol-the-lanes"
+    ],
+    "active_sentinels": [
+      "zeus",
+      "jade",
+      "hermes"
+    ]
+  },
+  "world": {
+    "active_event": {
+      "id": "quiet-grid",
+      "type": "calm_event",
+      "severity": "low",
+      "title": "Quiet Grid",
+      "description": "No mesh alarms fired on this tick.",
+      "sentinel_owner": "atlas",
+      "ui": {
+        "overlay": "clear",
+        "color": "neutral",
+        "priority": 0
+      },
+      "tone": "calm",
+      "summary": "No mesh alarms fired on this tick.",
+      "cycle_id": "C-292",
+      "updated_at": "2026-04-25T18:29:34.532Z"
+    },
+    "active_quest": {
+      "id": "patrol-the-lanes",
+      "type": "vigil_quest",
+      "title": "Patrol the Lanes",
+      "description": "Keep watch: terminal heartbeat, pulse freshness, OAA seals.",
+      "assigned_by": "atlas",
+      "status": "active",
+      "progress": 0,
+      "steps": [
+        {
+          "id": "heartbeat",
+          "label": "Log heartbeat",
+          "completed": false
+        },
+        {
+          "id": "freshness",
+          "label": "Check pulse freshness",
+          "completed": false
+        }
+      ],
+      "reward_preview": {
+        "vault_effect": "none",
+        "mic_effect": "none_until_eligible"
+      },
+      "cycle_id": "C-292",
+      "updated_at": "2026-04-25T18:29:34.532Z",
+      "sentinel_id": "atlas"
+    },
+    "active_sentinel": {
+      "id": "atlas",
+      "title": "Sentinel of Verification",
+      "role": "verification",
+      "mood": "calm",
+      "location": "castle",
+      "dialogue": {
+        "default": "No drama is also data. Log the null result."
+      },
+      "abilities": [
+        "verify_null",
+        "log_quiet_grid"
+      ],
+      "cycle_id": "C-292",
+      "updated_at": "2026-04-25T18:29:34.532Z",
+      "display_name": "ATLAS",
+      "voice": "No drama is also data. Log the null result.",
+      "runtime_overlay": {
+        "display_name": "ATLAS",
+        "voice": "No drama is also data. Log the null result.",
+        "role": "verification"
+      }
+    }
+  },
+  "civic_signal": {
+    "world_pressure": "elevated",
+    "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
+    "rules_fired": [
+      "steady_state"
+    ]
+  },
+  "route": [
+    "HIVE_WORLD_STATE",
+    "HIVE_WORLD_PULSE",
+    "BROWSER_SHELL_SURFACE",
+    "TERMINAL_BIG_PULSE",
+    "SUBSTRATE_MEMORY",
+    "CIVIC_LEDGER_PROOF"
+  ],
+  "source_hash": "096351e3d96433e0b67fe6250d76590cd0ea3adb743f7d869d691ceaac94a5ef",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-292:096351e3d96433e0:world-update"
+}
