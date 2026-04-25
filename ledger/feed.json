@@ -1,16 +1,16 @@
 {
   "node_id": "mobius-hive",
   "schema_version": 1,
-  "updated_at": "2026-04-25T11:55:12.469Z",
+  "updated_at": "2026-04-25T13:15:15.941Z",
   "cycle_id": "C-292",
   "lanes": {
     "world": {
-      "status": "steady",
-      "summary": "Quiet Grid: No mesh alarms fired on this tick."
+      "status": "rising",
+      "summary": "Fountain Murmur: The vault deepens and integrity rises; the city hears water again."
     },
     "quests": {
       "status": "active",
-      "summary": "Patrol the Lanes"
+      "summary": "Prepare the Seal"
     },
     "lore": {
       "status": "seed",
@@ -18,7 +18,7 @@
     },
     "sentinel_state": {
       "status": "watch",
-      "summary": "ATLAS — verification"
+      "summary": "HERMES — courier"
     }
   }
 }
