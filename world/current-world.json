@@ -3,19 +3,19 @@
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
-    "gi": 0.696,
+    "gi": 0.66,
     "kv_status": "unknown",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.698,
-    "fountain_status": "stirring"
+    "progress": 0.658,
+    "fountain_status": "locked"
   },
   "active_events": [
-    "fountain-murmur"
+    "quiet-grid"
   ],
   "active_quests": [
-    "prepare-the-seal"
+    "patrol-the-lanes"
   ],
   "active_sentinels": [
     "zeus",
