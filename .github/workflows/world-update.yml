@@ -38,16 +38,24 @@ jobs:
       - name: Build world state
         run: node scripts/world/build-world-state.js
 
+      - name: Emit civic signal packets
+        run: node scripts/world/emit-civic-signal.js
+
       - name: Install validators
         run: npm install --no-audit --no-fund
 
       - name: Validate world JSON schemas
         run: npm run world:validate-schemas
 
-      - name: Placeholder derive step
+      - name: Report Phase 4 outputs
         run: |
-          echo "v1 world-update uses repo-canonical world files"
-          echo "Later: derive from terminal snapshot + pulse + OAA"
+          echo "Phase 4 HIVE world signal outputs:"
+          echo "- world/current-cycle.json"
+          echo "- world/current-world.json"
+          echo "- world/hive-world-pulse.json"
+          echo "- world/civic-signal.json"
+          echo "- ledger/hive-world-state.json"
+          echo "- ledger/feed.json"
 
       - name: Commit world update
         env:
@@ -56,5 +64,5 @@ jobs:
           git config user.name "mobius-hive-bot"
           git config user.email "bot@mobius.systems"
           git add world/ ledger/ schemas/
-          git commit -m "chore(hive): refresh world state from pulse" || exit 0
+          git commit -m "chore(hive): refresh world state from pulse [skip ci]" || exit 0
           git push
