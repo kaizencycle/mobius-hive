@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -278,6 +279,14 @@ function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function sha256(payload) {
+  return crypto.createHash("sha256").update(payload).digest("hex");
+}
+
+function buildIdempotencyKey(eventType, cycleId, sourceHash, workflowId = "world-update") {
+  return `mobius-hive:${eventType}:${cycleId}:${sourceHash.slice(0, 16)}:${workflowId}`;
+}
+
 function buildRichEvent(activeEvent, cycleId, updatedAt) {
   const spec = SIM_EVENT_SPECS[activeEvent.id];
   if (!spec) {
@@ -413,6 +422,7 @@ function writeCurrentWorldSummary({
     active_events: [activeEvent.id],
     active_quests: [activeQuest.id],
     active_sentinels: ["zeus", "jade", "hermes"],
+    updated_at: updatedAt,
   };
   writeJson("current-world.json", body);
 }
@@ -427,11 +437,87 @@ function writeJson(rel, data) {
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
+function writeRootJson(rel, data) {
+  const file = path.join(ROOT, rel);
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+}
+
 function laneStatusFromTone(tone) {
   if (tone === "warning") return "alarm";
   if (tone === "hope") return "rising";
   if (tone === "calm") return "steady";
   return "watch";
+}
+
+function civicSignalFromWorld({ cycleId, updatedAt, kvStatus, gi, rules, activeEvent, activeQuest, activeSentinel, sourceMode }) {
+  const pressure = activeEvent.id === "signal-fog" ? "elevated" : activeEvent.id === "fountain-murmur" ? "rising" : "nominal";
+  const recommendation = activeEvent.id === "signal-fog"
+    ? "Prioritize ZEUS verification and lane recovery before canon promotion."
+    : activeEvent.id === "fountain-murmur"
+      ? "Prepare proof anchors and monitor seal readiness."
+      : "Continue patrol and log quiet-grid stability.";
+  return {
+    schema: "QUEST_SIGNAL_V1",
+    node_id: "mobius-hive",
+    event_type: "QUEST_SIGNAL_V1",
+    workflow_id: "world-update",
+    generated_at: updatedAt,
+    cycle: cycleId,
+    world_pressure: pressure,
+    gi: typeof gi === "number" ? gi : null,
+    kv_status: kvStatus,
+    source_mode: sourceMode,
+    rules_fired: rules,
+    active_event: activeEvent,
+    active_quest: activeQuest,
+    active_sentinel: activeSentinel,
+    recommendation,
+    canon_rule: "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
+  };
+}
+
+function hiveWorldPulse({ cycleId, updatedAt, currentCycle, activeEvent, activeQuest, activeSentinel, civicSignal }) {
+  const pulse = {
+    schema: "HIVE_WORLD_PULSE_V1",
+    node_id: "mobius-hive",
+    event_type: "HIVE_WORLD_PULSE_V1",
+    workflow_id: "world-update",
+    generated_at: updatedAt,
+    cycle: cycleId,
+    current_cycle: currentCycle,
+    world: {
+      active_event: activeEvent,
+      active_quest: activeQuest,
+      active_sentinel: activeSentinel,
+    },
+    civic_signal: {
+      world_pressure: civicSignal.world_pressure,
+      recommendation: civicSignal.recommendation,
+      rules_fired: civicSignal.rules_fired,
+    },
+    route: [
+      "HIVE_WORLD_STATE",
+      "HIVE_WORLD_PULSE",
+      "BROWSER_SHELL_SURFACE",
+      "TERMINAL_BIG_PULSE",
+      "SUBSTRATE_MEMORY",
+      "CIVIC_LEDGER_PROOF",
+    ],
+  };
+  const sourceHash = sha256(JSON.stringify(pulse, Object.keys(pulse).sort()));
+  pulse.source_hash = sourceHash;
+  pulse.idempotency_key = buildIdempotencyKey("HIVE_WORLD_PULSE_V1", cycleId, sourceHash);
+  return pulse;
+}
+
+function withProofMetadata(payload, eventType, cycleId) {
+  const sourceHash = sha256(JSON.stringify(payload, Object.keys(payload).sort()));
+  return {
+    ...payload,
+    source_hash: sourceHash,
+    idempotency_key: buildIdempotencyKey(eventType, cycleId, sourceHash),
+  };
 }
 
 function writeLedgerFeed(root, currentCycle, activeEvent, activeQuest, activeSentinel) {
@@ -583,15 +669,12 @@ function main() {
 
   const updatedAt = currentCycle.updated_at;
   const sourceMode = pickSourceMode(kvStatus, terminal, cycleState, oaa);
+  const richEvent = buildRichEvent(activeEvent, cycleId, updatedAt);
+  const richQuest = buildRichQuest(activeQuest, activeSentinel.id, cycleId, updatedAt);
+  const richSentinel = buildRichSentinel(activeSentinel.id, activeSentinel, cycleId, updatedAt);
 
-  writeJson(
-    path.join("events", `${activeEvent.id}.json`),
-    buildRichEvent(activeEvent, cycleId, updatedAt),
-  );
-  writeJson(
-    path.join("quests", `${activeQuest.id}.json`),
-    buildRichQuest(activeQuest, activeSentinel.id, cycleId, updatedAt),
-  );
+  writeJson(path.join("events", `${activeEvent.id}.json`), richEvent);
+  writeJson(path.join("quests", `${activeQuest.id}.json`), richQuest);
 
   writeSimSentinelRail(cycleId, updatedAt, activeSentinel);
   writeCastleZone(cycleId, updatedAt);
@@ -607,19 +690,53 @@ function main() {
     sourceMode,
   });
 
+  const civicSignal = withProofMetadata(
+    civicSignalFromWorld({
+      cycleId,
+      updatedAt,
+      kvStatus,
+      gi,
+      rules,
+      activeEvent: richEvent,
+      activeQuest: richQuest,
+      activeSentinel: richSentinel,
+      sourceMode,
+    }),
+    "QUEST_SIGNAL_V1",
+    cycleId,
+  );
+  const worldPulse = hiveWorldPulse({
+    cycleId,
+    updatedAt,
+    currentCycle,
+    activeEvent: richEvent,
+    activeQuest: richQuest,
+    activeSentinel: richSentinel,
+    civicSignal,
+  });
+
+  writeJson("civic-signal.json", civicSignal);
+  writeJson("hive-world-pulse.json", worldPulse);
+
   const ledgerWorld = {
+    schema: "WORLD_STATE_V1",
+    node_id: "mobius-hive",
+    event_type: "WORLD_STATE_V1",
+    workflow_id: "world-update",
     cycle_id: cycleId,
     updated_at: currentCycle.updated_at,
     hive: {
-      active_event: activeEvent,
-      active_quest: activeQuest,
-      active_sentinel: activeSentinel,
+      active_event: richEvent,
+      active_quest: richQuest,
+      active_sentinel: richSentinel,
     },
+    civic_signal: civicSignal,
   };
+  const ledgerWorldWithProof = withProofMetadata(ledgerWorld, "WORLD_STATE_V1", cycleId);
   fs.mkdirSync(path.join(ROOT, "ledger"), { recursive: true });
   fs.writeFileSync(
     path.join(ROOT, "ledger", "hive-world-state.json"),
-    `${JSON.stringify(ledgerWorld, null, 2)}\n`,
+    `${JSON.stringify(ledgerWorldWithProof, null, 2)}\n`,
     "utf8",
   );
 
