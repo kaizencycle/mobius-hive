@@ -1,25 +1,72 @@
-version: "1.0"
+# mobius.yaml — Mobius HIVE node declaration contract v1.1
+# Phase 4 Civic Mesh: HIVE is the world simulation and civic signal source.
+
+version: "1.1"
+
 mesh:
   enabled: true
   node_id: "mobius-hive"
   node_name: "Mobius HIVE"
-  tier: "client"
-  role: "world_projection"
-repository:
-  full_name: "kaizencycle/mobius-hive"
-  default_branch: "main"
+  tier: "world"
+  role: "world_simulation_node"
+  node_type: "simulation"
+
+  repository:
+    full_name: "kaizencycle/mobius-hive"
+    default_branch: "main"
+
+  discovery:
+    enabled: true
+    registry_participation: true
+
+  civic_mesh:
+    phase: 4
+    role: "world_signal_source"
+    upstream_pulse: "kaizencycle/mobius-civic-ai-terminal"
+    upstream_memory: "kaizencycle/Mobius-Substrate"
+    surface: "kaizencycle/mobius-browser-shell"
+    downstream_proof: "kaizencycle/Civic-Protocol-Core"
+    canon: "HIVE turns world state into civic signal packets. It simulates meaning without bypassing human canon."
+
+  agent_affinity:
+    - ECHO
+    - HERMES
+    - ATLAS
+    - JADE
+    - ZEUS
+
 pulse:
   enabled: true
   feed_url: "https://raw.githubusercontent.com/kaizencycle/mobius-hive/main/ledger/feed.json"
+  world_url: "https://raw.githubusercontent.com/kaizencycle/mobius-hive/main/world/current-cycle.json"
+  world_pulse_url: "https://raw.githubusercontent.com/kaizencycle/mobius-hive/main/world/hive-world-pulse.json"
+  terminal_snapshot_url: "https://mobius-civic-ai-terminal.vercel.app/api/terminal/snapshot-lite"
   freshness_sla_seconds: 1800
+  integrity_weight: 0.75
   lanes:
     - world
     - lore
     - quests
     - sentinel_state
+    - civic_signal
+  authoritative_for:
+    - hive_world_state
+    - quest_state
+    - civic_simulation_signal
+  emits:
+    heartbeat: false
+    gi: false
+    mii: true
+    mic: false
+    vault: false
+    tripwire: false
+    anomalies: false
+    world_pulse: true
+    civic_signal: true
+
 ingest:
   enabled: true
-  mode: "projection"
+  mode: "world_signal_source"
   sources:
     terminal_snapshot:
       node_id: "mobius-terminal"
@@ -32,22 +79,89 @@ ingest:
       read_url: "https://raw.githubusercontent.com/kaizencycle/Mobius-Substrate/main/ledger/mobius-pulse.json"
     sovereign_memory:
       node_id: "oaa-api-library"
-      read_url: "https://oaa.example.invalid/api/oaa/kv/latest"
+      read_url: "https://oaa-api-library.onrender.com/api/oaa/kv/latest"
+  emits:
+    - HIVE_WORLD_PULSE_V1
+    - WORLD_STATE_V1
+    - QUEST_SIGNAL_V1
+  idempotency:
+    required: true
+    key_fields:
+      - node_id
+      - event_type
+      - cycle
+      - source_hash
+      - workflow_id
+
+flow:
+  model: "world_to_civic_signal"
+  route:
+    - "HIVE_WORLD_STATE"
+    - "HIVE_WORLD_PULSE"
+    - "BROWSER_SHELL_SURFACE"
+    - "TERMINAL_BIG_PULSE"
+    - "SUBSTRATE_MEMORY"
+    - "CIVIC_LEDGER_PROOF"
+  reads:
+    - "world/current-cycle.json"
+    - "world/events/*.json"
+    - "world/quests/*.json"
+    - "world/sentinels/*.json"
+  writes:
+    world_pulse: "world/hive-world-pulse.json"
+    civic_signal: "world/civic-signal.json"
+    ledger_world: "ledger/hive-world-state.json"
+  rule: "HIVE may simulate world pressure and civic meaning. Canon still requires human merge."
+
 jobs:
   enabled: true
+  status_values:
+    - active
+    - manual
+    - planned
+    - archived
   workflows:
     - id: "world-update"
       file: ".github/workflows/world-update.yml"
+      status: "active"
       trigger: "schedule"
       cron: "*/15 * * * *"
-      description: "Validate and refresh HIVE world state"
+      role: "world_signal_publisher"
+      output:
+        - "world/current-cycle.json"
+        - "world/hive-world-pulse.json"
+        - "world/civic-signal.json"
+        - "ledger/hive-world-state.json"
     - id: "quest-proposal"
       file: ".github/workflows/quest-proposal.yml"
+      status: "manual"
       trigger: "workflow_dispatch"
-      cron: "0 * * * *"
+      role: "agent_quest_proposal"
     - id: "world-schemas"
       file: ".github/workflows/world-schemas.yml"
+      status: "active"
       trigger: "pull_request"
+      role: "world_schema_guard"
+
+world:
+  current_cycle_file: "world/current-cycle.json"
+  event_dir: "world/events"
+  quest_dir: "world/quests"
+  sentinel_dir: "world/sentinels"
+  pulse_file: "world/hive-world-pulse.json"
+  civic_signal_file: "world/civic-signal.json"
+
+policy:
+  write_truth_locally: true
+  hive_is_world_simulation: true
+  browser_shell_is_surface: true
+  terminal_is_pulse: true
+  substrate_is_memory: true
+  ledger_is_proof: true
+  canonical_ledger_node: "civic-protocol-core"
+  hash_algorithm: "sha256"
+  human_merge_required_for_canon: true
+
 governance:
   agent_prs_allowed: true
   auto_merge_allowed: false
