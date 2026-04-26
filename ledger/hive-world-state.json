@@ -4,10 +4,10 @@
   "event_type": "WORLD_STATE_V1",
   "workflow_id": "world-update",
   "cycle_id": "C-293",
-  "updated_at": "2026-04-26T16:57:30.161Z",
+  "updated_at": "2026-04-26T17:50:44.408Z",
   "previous_ledger_shape": {
     "cycle_id": "C-293",
-    "updated_at": "2026-04-26T16:57:30.110Z",
+    "updated_at": "2026-04-26T17:50:44.351Z",
     "hive": {
       "active_event": {
         "id": "quiet-grid",
@@ -44,7 +44,7 @@
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-293",
-      "updated_at": "2026-04-26T16:57:30.110Z"
+      "updated_at": "2026-04-26T17:50:44.351Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -71,7 +71,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-293",
-      "updated_at": "2026-04-26T16:57:30.110Z",
+      "updated_at": "2026-04-26T17:50:44.351Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -88,7 +88,7 @@
         "log_quiet_grid"
       ],
       "cycle_id": "C-293",
-      "updated_at": "2026-04-26T16:57:30.110Z",
+      "updated_at": "2026-04-26T17:50:44.351Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -103,10 +103,10 @@
     "node_id": "mobius-hive",
     "event_type": "QUEST_SIGNAL_V1",
     "workflow_id": "world-update",
-    "generated_at": "2026-04-26T16:57:30.161Z",
+    "generated_at": "2026-04-26T17:50:44.408Z",
     "cycle": "C-293",
     "world_pressure": "elevated",
-    "gi": 0.665,
+    "gi": 0.677,
     "kv_status": "unknown",
     "source_mode": "kv_preferred",
     "rules_fired": [
@@ -127,7 +127,7 @@
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-293",
-      "updated_at": "2026-04-26T16:57:30.110Z"
+      "updated_at": "2026-04-26T17:50:44.351Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -154,7 +154,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-293",
-      "updated_at": "2026-04-26T16:57:30.110Z",
+      "updated_at": "2026-04-26T17:50:44.351Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -171,7 +171,7 @@
         "log_quiet_grid"
       ],
       "cycle_id": "C-293",
-      "updated_at": "2026-04-26T16:57:30.110Z",
+      "updated_at": "2026-04-26T17:50:44.351Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -182,9 +182,9 @@
     },
     "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-    "source_hash": "22ddd902502e2d09cab0e49ea3b9cb8017d560a6e19d3bacb05bc51e2b0cb36a",
-    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-293:22ddd902502e2d09:world-update"
+    "source_hash": "e63ecf1f0b6e2b7efd86ba9c772b036e0cb628562bd4cc034078e3d482f15367",
+    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-293:e63ecf1f0b6e2b7e:world-update"
   },
-  "source_hash": "beb798f9405727aa309009d14c517a069a1f98053ae2bdc7842687956d013461",
-  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-293:beb798f9405727aa:world-update"
+  "source_hash": "f5335a19504ff2c75153ae36a2d9d4d314e01cc4feb5a7b218fe9776664c8add",
+  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-293:f5335a19504ff2c7:world-update"
 }
