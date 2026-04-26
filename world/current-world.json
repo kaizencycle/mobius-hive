@@ -4,18 +4,18 @@
   "world_mood": "fogged",
   "integrity": {
     "gi": 0.685,
-    "kv_status": "degraded",
+    "kv_status": "unknown",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.683,
+    "progress": 0.688,
     "fountain_status": "locked"
   },
   "active_events": [
-    "signal-fog"
+    "quiet-grid"
   ],
   "active_quests": [
-    "restore-the-beacon"
+    "patrol-the-lanes"
   ],
   "active_sentinels": [
     "zeus",
