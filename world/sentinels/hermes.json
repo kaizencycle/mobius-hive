@@ -13,12 +13,12 @@
     "prepare_fountain"
   ],
   "cycle_id": "C-295",
-  "updated_at": "2026-04-28T13:15:23.531Z",
+  "updated_at": "2026-04-28T15:41:28.754Z",
   "display_name": "HERMES",
-  "voice": "",
+  "voice": "Carry the proof, not the rumor. Speed without drift.",
   "runtime_overlay": {
     "display_name": "HERMES",
-    "voice": "",
-    "role": "economy"
+    "voice": "Carry the proof, not the rumor. Speed without drift.",
+    "role": "courier"
   }
 }
