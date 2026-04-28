@@ -12,7 +12,8 @@
     "world:emit-civic-signal": "node scripts/world/emit-civic-signal.js",
     "world:validate-schemas": "node scripts/world/validate-schemas.mjs",
     "world:quest-proposal": "node scripts/world/generate-quest-proposal.js",
-    "world:write-quest-marker": "node scripts/world/write-quest-proposal-marker.js"
+    "world:write-quest-marker": "node scripts/world/write-quest-proposal-marker.js",
+    "world:build-blocks": "node scripts/world/build-blocks.js"
   },
   "devDependencies": {
     "ajv": "^8.17.1"
