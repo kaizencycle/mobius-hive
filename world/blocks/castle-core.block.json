@@ -1,0 +1,15 @@
+{
+  "id": "castle-core",
+  "type": "zone",
+  "zone": "castle",
+  "title": "Castle Core",
+  "description": "Primary coordination chamber for sentinel oversight and civic signals.",
+  "state": "simulated",
+  "integrity": {
+    "gi": 0.68
+  },
+  "actions": [
+    { "id": "inspect_beacon", "label": "Inspect Beacon" },
+    { "id": "stabilize_signal", "label": "Stabilize Signal" }
+  ]
+}
