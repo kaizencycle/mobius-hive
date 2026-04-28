@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "type", "zone", "state"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "zone": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "state": {
+      "type": "string",
+      "enum": ["draft", "simulated", "attested", "sealed", "quarantined", "timed_out", "legacy"]
+    },
+    "integrity": {
+      "type": "object",
+      "properties": {
+        "gi": { "type": "number" },
+        "mii": { "type": "number" }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}
