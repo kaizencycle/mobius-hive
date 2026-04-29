@@ -8,14 +8,14 @@
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.697,
-    "fountain_status": "stirring"
+    "progress": 0.707,
+    "fountain_status": "locked"
   },
   "active_events": [
-    "fountain-murmur"
+    "quiet-grid"
   ],
   "active_quests": [
-    "prepare-the-seal"
+    "patrol-the-lanes"
   ],
   "active_sentinels": [
     "zeus",
