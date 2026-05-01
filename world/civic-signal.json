@@ -3,7 +3,7 @@
   "node_id": "mobius-hive",
   "event_type": "QUEST_SIGNAL_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-01T20:37:32.379Z",
+  "generated_at": "2026-05-01T21:38:43.997Z",
   "cycle": "C-298",
   "world_pressure": "elevated",
   "gi": 0.699,
@@ -27,7 +27,7 @@
     "tone": "calm",
     "summary": "No mesh alarms fired on this tick.",
     "cycle_id": "C-298",
-    "updated_at": "2026-05-01T20:37:32.331Z"
+    "updated_at": "2026-05-01T21:38:43.951Z"
   },
   "active_quest": {
     "id": "patrol-the-lanes",
@@ -54,7 +54,7 @@
       "mic_effect": "none_until_eligible"
     },
     "cycle_id": "C-298",
-    "updated_at": "2026-05-01T20:37:32.331Z",
+    "updated_at": "2026-05-01T21:38:43.951Z",
     "sentinel_id": "atlas"
   },
   "active_sentinel": {
@@ -71,7 +71,7 @@
       "log_quiet_grid"
     ],
     "cycle_id": "C-298",
-    "updated_at": "2026-05-01T20:37:32.331Z",
+    "updated_at": "2026-05-01T21:38:43.951Z",
     "display_name": "ATLAS",
     "voice": "No drama is also data. Log the null result.",
     "runtime_overlay": {
@@ -82,6 +82,6 @@
   },
   "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
   "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-  "source_hash": "0eb7691be8cf4ed8cb0b6fdcd2354991ff9588bc66e57cc6888c5ebbb26fd158",
-  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-298:0eb7691be8cf4ed8:world-update"
+  "source_hash": "564a03d277ed4b35b6b10b1d10cc073d9051e3048fe6361b30a80c94582fca1c",
+  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-298:564a03d277ed4b35:world-update"
 }
