@@ -15,13 +15,13 @@
     "open_integrity_quest",
     "gate_unsafe_actions"
   ],
-  "cycle_id": "C-297",
-  "updated_at": "2026-05-01T00:09:15.034Z",
+  "cycle_id": "C-298",
+  "updated_at": "2026-05-01T04:19:34.497Z",
   "display_name": "ZEUS",
-  "voice": "Hold the line. We do not ship fog as truth.",
+  "voice": "",
   "runtime_overlay": {
     "display_name": "ZEUS",
-    "voice": "Hold the line. We do not ship fog as truth.",
-    "role": "stabilization"
+    "voice": "",
+    "role": "integrity"
   }
 }
