@@ -3,10 +3,10 @@
   "node_id": "mobius-hive",
   "event_type": "QUEST_SIGNAL_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-02T08:13:50.152Z",
+  "generated_at": "2026-05-02T09:35:57.648Z",
   "cycle": "C-299",
   "world_pressure": "elevated",
-  "gi": 0.672,
+  "gi": 0.644,
   "kv_status": "unknown",
   "source_mode": "kv_preferred",
   "rules_fired": [
@@ -27,7 +27,7 @@
     "tone": "calm",
     "summary": "No mesh alarms fired on this tick.",
     "cycle_id": "C-299",
-    "updated_at": "2026-05-02T08:13:50.104Z"
+    "updated_at": "2026-05-02T09:35:57.600Z"
   },
   "active_quest": {
     "id": "patrol-the-lanes",
@@ -54,7 +54,7 @@
       "mic_effect": "none_until_eligible"
     },
     "cycle_id": "C-299",
-    "updated_at": "2026-05-02T08:13:50.104Z",
+    "updated_at": "2026-05-02T09:35:57.600Z",
     "sentinel_id": "atlas"
   },
   "active_sentinel": {
@@ -71,7 +71,7 @@
       "log_quiet_grid"
     ],
     "cycle_id": "C-299",
-    "updated_at": "2026-05-02T08:13:50.104Z",
+    "updated_at": "2026-05-02T09:35:57.600Z",
     "display_name": "ATLAS",
     "voice": "No drama is also data. Log the null result.",
     "runtime_overlay": {
@@ -82,6 +82,6 @@
   },
   "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
   "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-  "source_hash": "fd1fd67049f198879243501f2d38aa48b8dbc63f2eb4262ebc9ee77454d0c829",
-  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-299:fd1fd67049f19887:world-update"
+  "source_hash": "790e40df136250e6eb9689c695e73c81eefb64b5090003c2f1800858affff61c",
+  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-299:790e40df136250e6:world-update"
 }
