@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-02T12:36:45.938Z",
+  "generated_at": "2026-05-02T14:00:19.868Z",
   "cycle": "C-299",
   "current_cycle": {
     "cycle_id": "C-299",
-    "updated_at": "2026-05-02T12:36:45.895Z",
+    "updated_at": "2026-05-02T14:00:19.825Z",
     "rules_fired": [
       "steady_state"
     ],
@@ -16,8 +16,8 @@
     "active_sentinel_id": "atlas",
     "signals": {
       "kv_status": "unknown",
-      "gi": 0.665,
-      "vault_progress": 0.641
+      "gi": 0.623,
+      "vault_progress": 0.659
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -31,12 +31,12 @@
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.665,
+      "gi": 0.623,
       "kv_status": "unknown",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.641,
+      "progress": 0.659,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -67,7 +67,7 @@
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-299",
-      "updated_at": "2026-05-02T12:36:45.895Z"
+      "updated_at": "2026-05-02T14:00:19.825Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -94,7 +94,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-299",
-      "updated_at": "2026-05-02T12:36:45.895Z",
+      "updated_at": "2026-05-02T14:00:19.825Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -111,7 +111,7 @@
         "log_quiet_grid"
       ],
       "cycle_id": "C-299",
-      "updated_at": "2026-05-02T12:36:45.895Z",
+      "updated_at": "2026-05-02T14:00:19.825Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -136,6 +136,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "ec77f866ad477bcc8a5b9728e5d9e6d6bfaa719264afb37b6020646d3922fe50",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-299:ec77f866ad477bcc:world-update"
+  "source_hash": "c73f218639fb5479c5b34515c4bd6285fc9f2eee16decd73e9afea4cc6539c7f",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-299:c73f218639fb5479:world-update"
 }
