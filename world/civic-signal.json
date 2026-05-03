@@ -3,86 +3,85 @@
   "node_id": "mobius-hive",
   "event_type": "QUEST_SIGNAL_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-03T06:17:45.311Z",
+  "generated_at": "2026-05-03T08:20:09.386Z",
   "cycle": "C-300",
   "world_pressure": "elevated",
-  "gi": 0.701,
+  "gi": 0.686,
   "kv_status": "unknown",
   "source_mode": "kv_preferred",
   "rules_fired": [
-    "vault_rising_and_gi"
+    "steady_state"
   ],
   "active_event": {
-    "id": "fountain-murmur",
-    "type": "integrity_event",
+    "id": "quiet-grid",
+    "type": "calm_event",
     "severity": "low",
-    "title": "Fountain Murmur",
-    "description": "The vault deepens and integrity rises; the city hears water again.",
-    "sentinel_owner": "hermes",
+    "title": "Quiet Grid",
+    "description": "No mesh alarms fired on this tick.",
+    "sentinel_owner": "atlas",
     "ui": {
-      "overlay": "shimmer",
-      "color": "warm",
-      "priority": 2
+      "overlay": "clear",
+      "color": "neutral",
+      "priority": 0
     },
-    "tone": "hope",
-    "summary": "The vault deepens and integrity rises; the city hears water again.",
+    "tone": "calm",
+    "summary": "No mesh alarms fired on this tick.",
     "cycle_id": "C-300",
-    "updated_at": "2026-05-03T06:17:45.273Z"
+    "updated_at": "2026-05-03T08:20:09.335Z"
   },
   "active_quest": {
-    "id": "prepare-the-seal",
-    "type": "governance_quest",
-    "title": "Prepare the Seal",
-    "description": "Align proofs and ledger anchors before the next cycle boundary.",
-    "assigned_by": "hermes",
+    "id": "patrol-the-lanes",
+    "type": "vigil_quest",
+    "title": "Patrol the Lanes",
+    "description": "Keep watch: terminal heartbeat, pulse freshness, OAA seals.",
+    "assigned_by": "atlas",
     "status": "active",
     "progress": 0,
     "steps": [
       {
-        "id": "gather",
-        "label": "Gather proofs",
+        "id": "heartbeat",
+        "label": "Log heartbeat",
         "completed": false
       },
       {
-        "id": "align",
-        "label": "Align anchors",
+        "id": "freshness",
+        "label": "Check pulse freshness",
         "completed": false
       }
     ],
     "reward_preview": {
-      "vault_effect": "seal_readiness",
+      "vault_effect": "none",
       "mic_effect": "none_until_eligible"
     },
     "cycle_id": "C-300",
-    "updated_at": "2026-05-03T06:17:45.273Z",
-    "sentinel_id": "hermes"
+    "updated_at": "2026-05-03T08:20:09.335Z",
+    "sentinel_id": "atlas"
   },
   "active_sentinel": {
-    "id": "hermes",
-    "title": "Sentinel of Flow",
-    "role": "economy",
-    "mood": "watching",
+    "id": "atlas",
+    "title": "Sentinel of Verification",
+    "role": "verification",
+    "mood": "calm",
     "location": "castle",
     "dialogue": {
-      "default": "Movement gathers near the Fountain.",
-      "vault_rising": "Flow strengthens; keep it steady."
+      "default": "No drama is also data. Log the null result."
     },
     "abilities": [
-      "signal_economy",
-      "prepare_fountain"
+      "verify_null",
+      "log_quiet_grid"
     ],
     "cycle_id": "C-300",
-    "updated_at": "2026-05-03T06:17:45.273Z",
-    "display_name": "HERMES",
-    "voice": "Carry the proof, not the rumor. Speed without drift.",
+    "updated_at": "2026-05-03T08:20:09.335Z",
+    "display_name": "ATLAS",
+    "voice": "No drama is also data. Log the null result.",
     "runtime_overlay": {
-      "display_name": "HERMES",
-      "voice": "Carry the proof, not the rumor. Speed without drift.",
-      "role": "courier"
+      "display_name": "ATLAS",
+      "voice": "No drama is also data. Log the null result.",
+      "role": "verification"
     }
   },
   "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
   "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-  "source_hash": "e788fd71166d54e78b542fd3f100f8bbd1ffa475e9492e1e196673d1ce4a0859",
-  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-300:e788fd71166d54e7:world-update"
+  "source_hash": "7584e72b691eaa4e6529971d39bd6bb1e63871af5ab384862b6e69d9d046763b",
+  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-300:7584e72b691eaa4e:world-update"
 }
