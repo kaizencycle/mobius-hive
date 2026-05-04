@@ -3,111 +3,99 @@
   "node_id": "mobius-hive",
   "event_type": "WORLD_STATE_V1",
   "workflow_id": "world-update",
-  "cycle_id": "C-300",
-  "updated_at": "2026-05-04T04:10:48.422Z",
+  "cycle_id": "C-301",
+  "updated_at": "2026-05-04T07:26:05.609Z",
   "previous_ledger_shape": {
-    "cycle_id": "C-300",
-    "updated_at": "2026-05-04T04:10:48.370Z",
+    "cycle_id": "C-301",
+    "updated_at": "2026-05-04T07:26:05.562Z",
     "hive": {
       "active_event": {
-        "id": "signal-fog",
-        "title": "Signal Fog",
-        "tone": "warning",
-        "summary": "Operator memory lanes are noisy; continuity is at risk."
+        "id": "fountain-murmur",
+        "title": "Fountain Murmur",
+        "tone": "hope",
+        "summary": "The vault deepens and integrity rises; the city hears water again."
       },
       "active_quest": {
-        "id": "restore-the-beacon",
-        "title": "Restore the Beacon",
-        "summary": "Re-stabilize KV paths and confirm OAA fallbacks are healthy."
+        "id": "prepare-the-seal",
+        "title": "Prepare the Seal",
+        "summary": "Align proofs and ledger anchors before the next cycle boundary."
       },
       "active_sentinel": {
-        "id": "zeus",
-        "display_name": "ZEUS",
-        "role": "stabilization",
-        "voice": "Hold the line. We do not ship fog as truth."
+        "id": "hermes",
+        "display_name": "HERMES",
+        "role": "courier",
+        "voice": "Carry the proof, not the rumor. Speed without drift."
       }
     }
   },
   "hive": {
     "active_event": {
-      "id": "signal-fog",
+      "id": "fountain-murmur",
       "type": "integrity_event",
-      "severity": "medium",
-      "title": "Signal Fog",
-      "description": "The lattice is visible, but unstable. Memory remains, live sight fades.",
-      "trigger": {
-        "kv_status": "degraded",
-        "gi_below": 0.8
-      },
-      "sentinel_owner": "zeus",
+      "severity": "low",
+      "title": "Fountain Murmur",
+      "description": "The vault deepens and integrity rises; the city hears water again.",
+      "sentinel_owner": "hermes",
       "ui": {
-        "overlay": "fog",
-        "color": "dim",
-        "priority": 1
+        "overlay": "shimmer",
+        "color": "warm",
+        "priority": 2
       },
-      "tone": "warning",
-      "summary": "Operator memory lanes are noisy; continuity is at risk.",
-      "cycle_id": "C-300",
-      "updated_at": "2026-05-04T04:10:48.370Z"
+      "tone": "hope",
+      "summary": "The vault deepens and integrity rises; the city hears water again.",
+      "cycle_id": "C-301",
+      "updated_at": "2026-05-04T07:26:05.562Z"
     },
     "active_quest": {
-      "id": "restore-the-beacon",
-      "type": "stability_quest",
-      "title": "Restore the Beacon",
-      "description": "Re-establish live signal continuity across the Castle.",
-      "assigned_by": "zeus",
+      "id": "prepare-the-seal",
+      "type": "governance_quest",
+      "title": "Prepare the Seal",
+      "description": "Align proofs and ledger anchors before the next cycle boundary.",
+      "assigned_by": "hermes",
       "status": "active",
       "progress": 0,
       "steps": [
         {
-          "id": "inspect",
-          "label": "Inspect Beacon",
+          "id": "gather",
+          "label": "Gather proofs",
           "completed": false
         },
         {
-          "id": "fallback",
-          "label": "Verify Fallback Path",
-          "completed": false
-        },
-        {
-          "id": "ack",
-          "label": "Acknowledge Sentinel",
+          "id": "align",
+          "label": "Align anchors",
           "completed": false
         }
       ],
       "reward_preview": {
-        "vault_effect": "stability_credit",
+        "vault_effect": "seal_readiness",
         "mic_effect": "none_until_eligible"
       },
-      "cycle_id": "C-300",
-      "updated_at": "2026-05-04T04:10:48.370Z",
-      "sentinel_id": "zeus"
+      "cycle_id": "C-301",
+      "updated_at": "2026-05-04T07:26:05.562Z",
+      "sentinel_id": "hermes"
     },
     "active_sentinel": {
-      "id": "zeus",
-      "title": "Sentinel of Integrity",
-      "role": "integrity",
-      "mood": "alert",
+      "id": "hermes",
+      "title": "Sentinel of Flow",
+      "role": "economy",
+      "mood": "watching",
       "location": "castle",
       "dialogue": {
-        "default": "The signal is unstable.",
-        "inspect_pending": "The Beacon has not been examined.",
-        "fallback_pending": "You see the fracture. Now stabilize it.",
-        "complete": "The signal stabilizes. The fog recedes."
+        "default": "Movement gathers near the Fountain.",
+        "vault_rising": "Flow strengthens; keep it steady."
       },
       "abilities": [
-        "warn",
-        "open_integrity_quest",
-        "gate_unsafe_actions"
+        "signal_economy",
+        "prepare_fountain"
       ],
-      "cycle_id": "C-300",
-      "updated_at": "2026-05-04T04:10:48.370Z",
-      "display_name": "ZEUS",
-      "voice": "Hold the line. We do not ship fog as truth.",
+      "cycle_id": "C-301",
+      "updated_at": "2026-05-04T07:26:05.562Z",
+      "display_name": "HERMES",
+      "voice": "Carry the proof, not the rumor. Speed without drift.",
       "runtime_overlay": {
-        "display_name": "ZEUS",
-        "voice": "Hold the line. We do not ship fog as truth.",
-        "role": "stabilization"
+        "display_name": "HERMES",
+        "voice": "Carry the proof, not the rumor. Speed without drift.",
+        "role": "courier"
       }
     }
   },
@@ -116,101 +104,89 @@
     "node_id": "mobius-hive",
     "event_type": "QUEST_SIGNAL_V1",
     "workflow_id": "world-update",
-    "generated_at": "2026-05-04T04:10:48.422Z",
-    "cycle": "C-300",
+    "generated_at": "2026-05-04T07:26:05.609Z",
+    "cycle": "C-301",
     "world_pressure": "elevated",
-    "gi": 0.701,
-    "kv_status": "degraded",
+    "gi": 0.706,
+    "kv_status": "unknown",
     "source_mode": "kv_preferred",
     "rules_fired": [
-      "kv_degraded"
+      "vault_rising_and_gi"
     ],
     "active_event": {
-      "id": "signal-fog",
+      "id": "fountain-murmur",
       "type": "integrity_event",
-      "severity": "medium",
-      "title": "Signal Fog",
-      "description": "The lattice is visible, but unstable. Memory remains, live sight fades.",
-      "trigger": {
-        "kv_status": "degraded",
-        "gi_below": 0.8
-      },
-      "sentinel_owner": "zeus",
+      "severity": "low",
+      "title": "Fountain Murmur",
+      "description": "The vault deepens and integrity rises; the city hears water again.",
+      "sentinel_owner": "hermes",
       "ui": {
-        "overlay": "fog",
-        "color": "dim",
-        "priority": 1
+        "overlay": "shimmer",
+        "color": "warm",
+        "priority": 2
       },
-      "tone": "warning",
-      "summary": "Operator memory lanes are noisy; continuity is at risk.",
-      "cycle_id": "C-300",
-      "updated_at": "2026-05-04T04:10:48.370Z"
+      "tone": "hope",
+      "summary": "The vault deepens and integrity rises; the city hears water again.",
+      "cycle_id": "C-301",
+      "updated_at": "2026-05-04T07:26:05.562Z"
     },
     "active_quest": {
-      "id": "restore-the-beacon",
-      "type": "stability_quest",
-      "title": "Restore the Beacon",
-      "description": "Re-establish live signal continuity across the Castle.",
-      "assigned_by": "zeus",
+      "id": "prepare-the-seal",
+      "type": "governance_quest",
+      "title": "Prepare the Seal",
+      "description": "Align proofs and ledger anchors before the next cycle boundary.",
+      "assigned_by": "hermes",
       "status": "active",
       "progress": 0,
       "steps": [
         {
-          "id": "inspect",
-          "label": "Inspect Beacon",
+          "id": "gather",
+          "label": "Gather proofs",
           "completed": false
         },
         {
-          "id": "fallback",
-          "label": "Verify Fallback Path",
-          "completed": false
-        },
-        {
-          "id": "ack",
-          "label": "Acknowledge Sentinel",
+          "id": "align",
+          "label": "Align anchors",
           "completed": false
         }
       ],
       "reward_preview": {
-        "vault_effect": "stability_credit",
+        "vault_effect": "seal_readiness",
         "mic_effect": "none_until_eligible"
       },
-      "cycle_id": "C-300",
-      "updated_at": "2026-05-04T04:10:48.370Z",
-      "sentinel_id": "zeus"
+      "cycle_id": "C-301",
+      "updated_at": "2026-05-04T07:26:05.562Z",
+      "sentinel_id": "hermes"
     },
     "active_sentinel": {
-      "id": "zeus",
-      "title": "Sentinel of Integrity",
-      "role": "integrity",
-      "mood": "alert",
+      "id": "hermes",
+      "title": "Sentinel of Flow",
+      "role": "economy",
+      "mood": "watching",
       "location": "castle",
       "dialogue": {
-        "default": "The signal is unstable.",
-        "inspect_pending": "The Beacon has not been examined.",
-        "fallback_pending": "You see the fracture. Now stabilize it.",
-        "complete": "The signal stabilizes. The fog recedes."
+        "default": "Movement gathers near the Fountain.",
+        "vault_rising": "Flow strengthens; keep it steady."
       },
       "abilities": [
-        "warn",
-        "open_integrity_quest",
-        "gate_unsafe_actions"
+        "signal_economy",
+        "prepare_fountain"
       ],
-      "cycle_id": "C-300",
-      "updated_at": "2026-05-04T04:10:48.370Z",
-      "display_name": "ZEUS",
-      "voice": "Hold the line. We do not ship fog as truth.",
+      "cycle_id": "C-301",
+      "updated_at": "2026-05-04T07:26:05.562Z",
+      "display_name": "HERMES",
+      "voice": "Carry the proof, not the rumor. Speed without drift.",
       "runtime_overlay": {
-        "display_name": "ZEUS",
-        "voice": "Hold the line. We do not ship fog as truth.",
-        "role": "stabilization"
+        "display_name": "HERMES",
+        "voice": "Carry the proof, not the rumor. Speed without drift.",
+        "role": "courier"
       }
     },
     "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-    "source_hash": "96cb43d4164cd3e6674a23edfcef0a7d1526ae6c6cafca88d762ead86341694e",
-    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-300:96cb43d4164cd3e6:world-update"
+    "source_hash": "e9e90682ff42dcec82b04657596df83f7cd7b2205b37b64640742445cc5d9abf",
+    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-301:e9e90682ff42dcec:world-update"
   },
-  "source_hash": "b339d6414304f0999447bf1e885911e049cacb4ba6649b0eae367f063718de15",
-  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-300:b339d6414304f099:world-update"
+  "source_hash": "9de4f245f476a0ca6ce3e06fc2e87c38cdeb76e4adddceedd7ed5e392a290c2f",
+  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-301:9de4f245f476a0ca:world-update"
 }
