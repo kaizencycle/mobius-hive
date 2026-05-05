@@ -3,19 +3,19 @@
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
-    "gi": 0.682,
-    "kv_status": "unknown",
+    "gi": 0.719,
+    "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.718,
+    "progress": 0.71,
     "fountain_status": "locked"
   },
   "active_events": [
-    "quiet-grid"
+    "signal-fog"
   ],
   "active_quests": [
-    "patrol-the-lanes"
+    "restore-the-beacon"
   ],
   "active_sentinels": [
     "zeus",
