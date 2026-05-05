@@ -3,21 +3,21 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-05T16:21:30.544Z",
+  "generated_at": "2026-05-05T17:53:33.285Z",
   "cycle": "C-302",
   "current_cycle": {
     "cycle_id": "C-302",
-    "updated_at": "2026-05-05T16:21:30.496Z",
+    "updated_at": "2026-05-05T17:53:33.239Z",
     "rules_fired": [
-      "vault_rising_and_gi"
+      "steady_state"
     ],
-    "active_event_id": "fountain-murmur",
-    "active_quest_id": "prepare-the-seal",
-    "active_sentinel_id": "hermes",
+    "active_event_id": "quiet-grid",
+    "active_quest_id": "patrol-the-lanes",
+    "active_sentinel_id": "atlas",
     "signals": {
       "kv_status": "unknown",
-      "gi": 0.718,
-      "vault_progress": 0.725
+      "gi": 0.705,
+      "vault_progress": 0.715
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -31,19 +31,19 @@
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.718,
+      "gi": 0.705,
       "kv_status": "unknown",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.725,
-      "fountain_status": "stirring"
+      "progress": 0.715,
+      "fountain_status": "locked"
     },
     "active_events": [
-      "fountain-murmur"
+      "quiet-grid"
     ],
     "active_quests": [
-      "prepare-the-seal"
+      "patrol-the-lanes"
     ],
     "active_sentinels": [
       "zeus",
@@ -53,72 +53,71 @@
   },
   "world": {
     "active_event": {
-      "id": "fountain-murmur",
-      "type": "integrity_event",
+      "id": "quiet-grid",
+      "type": "calm_event",
       "severity": "low",
-      "title": "Fountain Murmur",
-      "description": "The vault deepens and integrity rises; the city hears water again.",
-      "sentinel_owner": "hermes",
+      "title": "Quiet Grid",
+      "description": "No mesh alarms fired on this tick.",
+      "sentinel_owner": "atlas",
       "ui": {
-        "overlay": "shimmer",
-        "color": "warm",
-        "priority": 2
+        "overlay": "clear",
+        "color": "neutral",
+        "priority": 0
       },
-      "tone": "hope",
-      "summary": "The vault deepens and integrity rises; the city hears water again.",
+      "tone": "calm",
+      "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-302",
-      "updated_at": "2026-05-05T16:21:30.496Z"
+      "updated_at": "2026-05-05T17:53:33.239Z"
     },
     "active_quest": {
-      "id": "prepare-the-seal",
-      "type": "governance_quest",
-      "title": "Prepare the Seal",
-      "description": "Align proofs and ledger anchors before the next cycle boundary.",
-      "assigned_by": "hermes",
+      "id": "patrol-the-lanes",
+      "type": "vigil_quest",
+      "title": "Patrol the Lanes",
+      "description": "Keep watch: terminal heartbeat, pulse freshness, OAA seals.",
+      "assigned_by": "atlas",
       "status": "active",
       "progress": 0,
       "steps": [
         {
-          "id": "gather",
-          "label": "Gather proofs",
+          "id": "heartbeat",
+          "label": "Log heartbeat",
           "completed": false
         },
         {
-          "id": "align",
-          "label": "Align anchors",
+          "id": "freshness",
+          "label": "Check pulse freshness",
           "completed": false
         }
       ],
       "reward_preview": {
-        "vault_effect": "seal_readiness",
+        "vault_effect": "none",
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-302",
-      "updated_at": "2026-05-05T16:21:30.496Z",
-      "sentinel_id": "hermes"
+      "updated_at": "2026-05-05T17:53:33.239Z",
+      "sentinel_id": "atlas"
     },
     "active_sentinel": {
-      "id": "hermes",
-      "title": "Sentinel of Flow",
-      "role": "economy",
-      "mood": "watching",
+      "id": "atlas",
+      "title": "Sentinel of Verification",
+      "role": "verification",
+      "mood": "calm",
       "location": "castle",
       "dialogue": {
-        "default": "Movement gathers near the Fountain.",
-        "vault_rising": "Flow strengthens; keep it steady."
+        "default": "No drama is also data. Log the null result."
       },
       "abilities": [
-        "signal_economy",
-        "prepare_fountain"
+        "verify_null",
+        "log_quiet_grid"
       ],
       "cycle_id": "C-302",
-      "updated_at": "2026-05-05T16:21:30.496Z",
-      "display_name": "HERMES",
-      "voice": "Carry the proof, not the rumor. Speed without drift.",
+      "updated_at": "2026-05-05T17:53:33.239Z",
+      "display_name": "ATLAS",
+      "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
-        "display_name": "HERMES",
-        "voice": "Carry the proof, not the rumor. Speed without drift.",
-        "role": "courier"
+        "display_name": "ATLAS",
+        "voice": "No drama is also data. Log the null result.",
+        "role": "verification"
       }
     }
   },
@@ -126,7 +125,7 @@
     "world_pressure": "elevated",
     "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "rules_fired": [
-      "vault_rising_and_gi"
+      "steady_state"
     ]
   },
   "route": [
@@ -137,6 +136,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "24c1ab0e45f550bbc9106fab89b0c4b9be7c6adc1bdb505175468c56d0b544ef",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-302:24c1ab0e45f550bb:world-update"
+  "source_hash": "4c85c3d6efa58431a1c5097eac45d8da4a8e66e7885e92cd89e519b916410930",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-302:4c85c3d6efa58431:world-update"
 }
