@@ -1,16 +1,16 @@
 {
   "node_id": "mobius-hive",
   "schema_version": 1,
-  "updated_at": "2026-05-06T10:04:10.106Z",
+  "updated_at": "2026-05-06T12:10:10.002Z",
   "cycle_id": "C-303",
   "lanes": {
     "world": {
-      "status": "rising",
-      "summary": "Fountain Murmur: The vault deepens and integrity rises; the city hears water again."
+      "status": "alarm",
+      "summary": "Signal Fog: Operator memory lanes are noisy; continuity is at risk."
     },
     "quests": {
       "status": "active",
-      "summary": "Prepare the Seal"
+      "summary": "Restore the Beacon"
     },
     "lore": {
       "status": "seed",
@@ -18,7 +18,7 @@
     },
     "sentinel_state": {
       "status": "watch",
-      "summary": "HERMES — courier"
+      "summary": "ZEUS — stabilization"
     }
   }
 }
