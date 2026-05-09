@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-09T01:24:21.755Z",
-  "cycle": "C-305",
+  "generated_at": "2026-05-09T04:51:30.073Z",
+  "cycle": "C-306",
   "current_cycle": {
-    "cycle_id": "C-305",
-    "updated_at": "2026-05-09T01:24:21.707Z",
+    "cycle_id": "C-306",
+    "updated_at": "2026-05-09T04:51:30.023Z",
     "rules_fired": [
       "steady_state"
     ],
@@ -16,8 +16,8 @@
     "active_sentinel_id": "atlas",
     "signals": {
       "kv_status": "unknown",
-      "gi": 0.756,
-      "vault_progress": 0.732
+      "gi": 0.755,
+      "vault_progress": 0.755
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -27,16 +27,16 @@
     }
   },
   "current_world": {
-    "cycle": "C-305",
+    "cycle": "C-306",
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.756,
+      "gi": 0.755,
       "kv_status": "unknown",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.732,
+      "progress": 0.755,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -66,8 +66,8 @@
       },
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
-      "cycle_id": "C-305",
-      "updated_at": "2026-05-09T01:24:21.707Z"
+      "cycle_id": "C-306",
+      "updated_at": "2026-05-09T04:51:30.023Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -93,8 +93,8 @@
         "vault_effect": "none",
         "mic_effect": "none_until_eligible"
       },
-      "cycle_id": "C-305",
-      "updated_at": "2026-05-09T01:24:21.707Z",
+      "cycle_id": "C-306",
+      "updated_at": "2026-05-09T04:51:30.023Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -110,8 +110,8 @@
         "verify_null",
         "log_quiet_grid"
       ],
-      "cycle_id": "C-305",
-      "updated_at": "2026-05-09T01:24:21.707Z",
+      "cycle_id": "C-306",
+      "updated_at": "2026-05-09T04:51:30.023Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -136,6 +136,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "ff925d6895c81ec02fe9b13f2819dfc620b7a79519afc0ad979d9c8df272c432",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-305:ff925d6895c81ec0:world-update"
+  "source_hash": "f3ac8c29c2807d863b6665d2ab66d619a183f76f68e4930b6092fb3fd6314833",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-306:f3ac8c29c2807d86:world-update"
 }
