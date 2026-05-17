@@ -1,14 +1,14 @@
 {
   "cycle": "C-314",
   "zone": "castle",
-  "world_mood": "fogged",
+  "world_mood": "resonant",
   "integrity": {
-    "gi": 0.761,
+    "gi": 0.818,
     "kv_status": "unknown",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.761,
+    "progress": 0.808,
     "fountain_status": "stirring"
   },
   "active_events": [
