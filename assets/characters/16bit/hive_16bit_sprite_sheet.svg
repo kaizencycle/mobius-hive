@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="512" viewBox="0 0 768 512" shape-rendering="crispEdges">
+  <title>HIVE 16-bit Character Sprite Sheet v0.1</title>
+  <desc>Repo-native pixel-art sprite sheet for Mobius HIVE characters and Agent Elder Teachers.</desc>
+  <rect width="768" height="512" fill="#101018"/>
+  <style>
+    .label{font-family:monospace;font-size:10px;fill:#f3e7c8;text-anchor:middle}
+    .sub{font-family:monospace;font-size:8px;fill:#9aa0b8;text-anchor:middle}
+  </style>
+
+  <!-- Palette notes: black outline #15151d, light #f3e7c8, shadow #333348 -->
+
+  <!-- SCOUT -->
+  <g id="scout" transform="translate(32 32) scale(4)">
+    <rect x="6" y="1" width="4" height="1" fill="#d9b04c"/><rect x="5" y="2" width="6" height="1" fill="#d9b04c"/>
+    <rect x="4" y="3" width="8" height="2" fill="#15151d"/><rect x="5" y="3" width="6" height="1" fill="#f3e7c8"/>
+    <rect x="5" y="5" width="6" height="3" fill="#c58b5c"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="9" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="4" y="8" width="8" height="2" fill="#2c7a7b"/><rect x="3" y="10" width="10" height="5" fill="#1d4f5f"/><rect x="6" y="10" width="4" height="5" fill="#39a0a7"/>
+    <rect x="2" y="11" width="2" height="4" fill="#c58b5c"/><rect x="12" y="11" width="2" height="4" fill="#c58b5c"/>
+    <rect x="5" y="15" width="2" height="5" fill="#2c365e"/><rect x="9" y="15" width="2" height="5" fill="#2c365e"/>
+    <rect x="4" y="20" width="3" height="1" fill="#15151d"/><rect x="9" y="20" width="3" height="1" fill="#15151d"/>
+    <rect x="12" y="4" width="2" height="7" fill="#d9b04c"/><rect x="13" y="3" width="1" height="1" fill="#fff2a8"/>
+  </g>
+  <text x="64" y="140" class="label">SCOUT</text><text x="64" y="154" class="sub">Shard Runner</text>
+
+  <!-- CITIZEN -->
+  <g id="citizen" transform="translate(160 32) scale(4)">
+    <rect x="5" y="2" width="6" height="2" fill="#5d3b8c"/><rect x="4" y="4" width="8" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="6" height="3" fill="#b8754d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="9" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="10" height="7" fill="#7d4cc2"/><rect x="5" y="8" width="6" height="7" fill="#b06cf0"/>
+    <rect x="2" y="10" width="2" height="5" fill="#b8754d"/><rect x="12" y="10" width="2" height="5" fill="#b8754d"/>
+    <rect x="6" y="15" width="2" height="5" fill="#3d2b57"/><rect x="8" y="15" width="2" height="5" fill="#3d2b57"/>
+    <rect x="5" y="20" width="3" height="1" fill="#15151d"/><rect x="8" y="20" width="3" height="1" fill="#15151d"/>
+    <rect x="13" y="9" width="2" height="2" fill="#f0c95a"/><rect x="14" y="11" width="1" height="1" fill="#f0c95a"/>
+  </g>
+  <text x="192" y="140" class="label">CITIZEN</text><text x="192" y="154" class="sub">Oath Voter</text>
+
+  <!-- CUSTODIAN -->
+  <g id="custodian" transform="translate(288 32) scale(4)">
+    <rect x="5" y="1" width="6" height="2" fill="#8fd6c8"/><rect x="4" y="3" width="8" height="2" fill="#15151d"/>
+    <rect x="5" y="5" width="6" height="3" fill="#9a6a4d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="9" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="10" height="8" fill="#34434a"/><rect x="5" y="8" width="6" height="8" fill="#5f7f86"/><rect x="7" y="9" width="2" height="5" fill="#d6fff4"/>
+    <rect x="1" y="10" width="2" height="6" fill="#9a6a4d"/><rect x="13" y="10" width="2" height="6" fill="#9a6a4d"/>
+    <rect x="4" y="16" width="3" height="4" fill="#263238"/><rect x="9" y="16" width="3" height="4" fill="#263238"/>
+    <rect x="3" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="5" width="1" height="13" fill="#d6fff4"/><rect x="13" y="17" width="3" height="1" fill="#8fd6c8"/>
+  </g>
+  <text x="320" y="140" class="label">CUSTODIAN</text><text x="320" y="154" class="sub">Dome Keeper</text>
+
+  <!-- ELDER -->
+  <g id="elder" transform="translate(416 32) scale(4)">
+    <rect x="5" y="0" width="1" height="2" fill="#f0c95a"/><rect x="8" y="0" width="1" height="2" fill="#f0c95a"/><rect x="11" y="0" width="1" height="2" fill="#f0c95a"/>
+    <rect x="4" y="2" width="9" height="2" fill="#f0c95a"/><rect x="5" y="4" width="7" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#7f5539"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#46204f"/><rect x="5" y="8" width="7" height="8" fill="#7f2d8f"/><rect x="7" y="9" width="3" height="6" fill="#f0c95a"/>
+    <rect x="2" y="10" width="2" height="5" fill="#7f5539"/><rect x="13" y="10" width="2" height="5" fill="#7f5539"/>
+    <rect x="5" y="16" width="3" height="4" fill="#20122c"/><rect x="9" y="16" width="3" height="4" fill="#20122c"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+  </g>
+  <text x="448" y="140" class="label">ELDER</text><text x="448" y="154" class="sub">Throne Holder</text>
+
+  <!-- AUREA -->
+  <g id="aurea" transform="translate(544 32) scale(4)">
+    <rect x="6" y="1" width="5" height="1" fill="#fff2a8"/><rect x="5" y="2" width="7" height="2" fill="#f0c95a"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#c58b5c"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#8d6b13"/><rect x="5" y="8" width="7" height="8" fill="#d9b04c"/><rect x="7" y="9" width="3" height="6" fill="#fff2a8"/>
+    <rect x="1" y="11" width="3" height="2" fill="#fff2a8"/><rect x="13" y="11" width="3" height="2" fill="#fff2a8"/>
+    <rect x="5" y="16" width="3" height="4" fill="#5f4612"/><rect x="9" y="16" width="3" height="4" fill="#5f4612"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="3" width="1" height="3" fill="#fff2a8"/><rect x="13" y="4" width="3" height="1" fill="#fff2a8"/>
+  </g>
+  <text x="576" y="140" class="label">AUREA</text><text x="576" y="154" class="sub">Long Horizon</text>
+
+  <!-- ZEUS -->
+  <g id="zeus" transform="translate(672 32) scale(4)">
+    <rect x="5" y="2" width="7" height="2" fill="#d6fff4"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#9a6a4d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#333348"/><rect x="5" y="8" width="7" height="8" fill="#5f6f89"/><rect x="7" y="9" width="3" height="6" fill="#d6fff4"/>
+    <rect x="1" y="10" width="3" height="3" fill="#f0c95a"/><rect x="13" y="10" width="3" height="3" fill="#f0c95a"/>
+    <rect x="5" y="16" width="3" height="4" fill="#202436"/><rect x="9" y="16" width="3" height="4" fill="#202436"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="2" width="1" height="3" fill="#f0c95a"/><rect x="13" y="5" width="2" height="1" fill="#f0c95a"/><rect x="13" y="6" width="1" height="2" fill="#f0c95a"/>
+  </g>
+  <text x="704" y="140" class="label">ZEUS</text><text x="704" y="154" class="sub">Verification</text>
+
+  <!-- EVE -->
+  <g id="eve" transform="translate(32 208) scale(4)">
+    <rect x="5" y="1" width="7" height="3" fill="#e9e2ff"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#b8754d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#5d3b8c"/><rect x="5" y="8" width="7" height="8" fill="#a88cff"/><rect x="7" y="9" width="3" height="6" fill="#e9e2ff"/>
+    <rect x="1" y="11" width="3" height="2" fill="#e9e2ff"/><rect x="13" y="11" width="3" height="2" fill="#e9e2ff"/>
+    <rect x="5" y="16" width="3" height="4" fill="#2e214d"/><rect x="9" y="16" width="3" height="4" fill="#2e214d"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="6" width="1" height="7" fill="#e9e2ff"/><rect x="12" y="8" width="5" height="1" fill="#e9e2ff"/>
+  </g>
+  <text x="64" y="316" class="label">EVE</text><text x="64" y="330" class="sub">Consequence</text>
+
+  <!-- JADE -->
+  <g id="jade" transform="translate(160 208) scale(4)">
+    <rect x="5" y="2" width="7" height="2" fill="#6ee7b7"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#c58b5c"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#1d5b4f"/><rect x="5" y="8" width="7" height="8" fill="#3fbf92"/><rect x="7" y="9" width="3" height="6" fill="#d6fff4"/>
+    <rect x="1" y="11" width="3" height="2" fill="#6ee7b7"/><rect x="13" y="11" width="3" height="2" fill="#6ee7b7"/>
+    <rect x="5" y="16" width="3" height="4" fill="#173f38"/><rect x="9" y="16" width="3" height="4" fill="#173f38"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="7" width="1" height="6" fill="#fff2a8"/><rect x="13" y="6" width="3" height="1" fill="#fff2a8"/>
+  </g>
+  <text x="192" y="316" class="label">JADE</text><text x="192" y="330" class="sub">Continuity</text>
+
+  <!-- HERMES -->
+  <g id="hermes" transform="translate(288 208) scale(4)">
+    <rect x="4" y="2" width="9" height="2" fill="#64b5f6"/><rect x="3" y="4" width="11" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#b8754d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#16476a"/><rect x="5" y="8" width="7" height="8" fill="#248bd1"/><rect x="7" y="9" width="3" height="6" fill="#d6fff4"/>
+    <rect x="1" y="11" width="3" height="2" fill="#64b5f6"/><rect x="13" y="11" width="3" height="2" fill="#64b5f6"/>
+    <rect x="5" y="16" width="3" height="4" fill="#103653"/><rect x="9" y="16" width="3" height="4" fill="#103653"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="5" width="1" height="1" fill="#f0c95a"/><rect x="13" y="6" width="3" height="1" fill="#f0c95a"/><rect x="14" y="7" width="1" height="1" fill="#f0c95a"/>
+  </g>
+  <text x="320" y="316" class="label">HERMES</text><text x="320" y="330" class="sub">Motion</text>
+
+  <!-- ECHO -->
+  <g id="echo" transform="translate(416 208) scale(4)">
+    <rect x="5" y="2" width="7" height="2" fill="#ffb86b"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#9a6a4d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#7a3e1d"/><rect x="5" y="8" width="7" height="8" fill="#d87932"/><rect x="7" y="9" width="3" height="6" fill="#ffd49a"/>
+    <rect x="1" y="11" width="3" height="2" fill="#ffb86b"/><rect x="13" y="11" width="3" height="2" fill="#ffb86b"/>
+    <rect x="5" y="16" width="3" height="4" fill="#4a2b1b"/><rect x="9" y="16" width="3" height="4" fill="#4a2b1b"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="4" width="1" height="9" fill="#ffd49a"/><rect x="13" y="4" width="3" height="1" fill="#ffd49a"/><rect x="13" y="12" width="3" height="1" fill="#ffd49a"/>
+  </g>
+  <text x="448" y="316" class="label">ECHO</text><text x="448" y="330" class="sub">Pulse</text>
+
+  <!-- ATLAS -->
+  <g id="atlas" transform="translate(544 208) scale(4)">
+    <rect x="5" y="2" width="7" height="2" fill="#9aa0b8"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#7f5539"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#2f3b4a"/><rect x="5" y="8" width="7" height="8" fill="#55687e"/><rect x="7" y="9" width="3" height="6" fill="#d6fff4"/>
+    <rect x="1" y="11" width="3" height="2" fill="#9aa0b8"/><rect x="13" y="11" width="3" height="2" fill="#9aa0b8"/>
+    <rect x="5" y="16" width="3" height="4" fill="#1b2430"/><rect x="9" y="16" width="3" height="4" fill="#1b2430"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="13" y="3" width="3" height="3" fill="#64b5f6"/><rect x="14" y="4" width="1" height="1" fill="#101018"/>
+  </g>
+  <text x="576" y="316" class="label">ATLAS</text><text x="576" y="330" class="sub">Vigilance</text>
+
+  <!-- DAEDALUS -->
+  <g id="daedalus" transform="translate(672 208) scale(4)">
+    <rect x="5" y="2" width="7" height="2" fill="#c0c0c0"/><rect x="4" y="4" width="9" height="1" fill="#15151d"/>
+    <rect x="5" y="5" width="7" height="3" fill="#9a6a4d"/><rect x="6" y="6" width="1" height="1" fill="#15151d"/><rect x="10" y="6" width="1" height="1" fill="#15151d"/>
+    <rect x="3" y="8" width="11" height="8" fill="#4d4d4d"/><rect x="5" y="8" width="7" height="8" fill="#8a8a8a"/><rect x="7" y="9" width="3" height="6" fill="#e0e0e0"/>
+    <rect x="1" y="11" width="3" height="2" fill="#f0c95a"/><rect x="13" y="11" width="3" height="2" fill="#f0c95a"/>
+    <rect x="5" y="16" width="3" height="4" fill="#303030"/><rect x="9" y="16" width="3" height="4" fill="#303030"/>
+    <rect x="4" y="20" width="4" height="1" fill="#15151d"/><rect x="9" y="20" width="4" height="1" fill="#15151d"/>
+    <rect x="14" y="5" width="1" height="7" fill="#c0c0c0"/><rect x="13" y="6" width="3" height="1" fill="#c0c0c0"/><rect x="13" y="10" width="3" height="1" fill="#c0c0c0"/>
+  </g>
+  <text x="704" y="316" class="label">DAEDALUS</text><text x="704" y="330" class="sub">Builder</text>
+
+  <!-- Footer -->
+  <text x="384" y="472" class="label">Mobius HIVE 16-bit Sprite Sheet v0.1 — characters as civic roles, Agent Elder Teachers, and world builders</text>
+</svg>
