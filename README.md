@@ -30,6 +30,10 @@ This repo participates in the Mobius mesh as a **world node**:
 
 Human-facing rendering belongs in `mobius-browser-shell`, which should treat `world/current-cycle.json`, **`world/current-world.json`** (C-288 world projection / Sims v1 summary), and friends as read-only inputs.
 
+### HIVE MMO world simulator (C-315 artifact)
+
+A self-contained **16-bit style** tile world lives under `artifacts/hive-mmo-simulator/`: it reads `world/*.json` over HTTP when served from this repo root (for example `npx serve .`) and exposes district **portals** that open the browser shell with `?chamber=…` links. Integration notes for `HiveLab.tsx` and iframe wiring: [`docs/integrations/mobius-browser-shell-hive-chamber.md`](docs/integrations/mobius-browser-shell-hive-chamber.md).
+
 ### C-287 flywheel lock — canonical world artifacts
 
 Committed JSON under `world/` is the **state projection** the browser shell and mesh consumers expect:

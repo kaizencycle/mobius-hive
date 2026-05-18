@@ -1,0 +1,11 @@
+[
+  {
+    "agent": "ZEUS",
+    "cycle": "C-295",
+    "day": 1,
+    "signal_type": "verification",
+    "zone": "castle",
+    "confidence": 0.91,
+    "summary": "Beacon integrity requires review"
+  }
+]
