@@ -48,8 +48,12 @@ One-line canon:
 ```text
 mobius-hive/
 ├── README.md
+├── artifacts/
+│   └── hive-mmo-simulator/   # static browser “MMO” view over world/*.json
 └── docs/
     ├── INDEX.md
+    ├── integrations/
+    │   └── mobius-browser-shell-hive-chamber.md
     ├── world/
     │   ├── founding_map.md
     │   ├── district_map.md
@@ -75,10 +79,11 @@ mobius-hive/
 Use this if you want the fastest route to the full concept.
 
 1. [`../README.md`](../README.md)
-2. [`world/founding_map.md`](world/founding_map.md)
-3. [`game/player_loops.md`](game/player_loops.md)
-4. [`economy/token_model.md`](economy/token_model.md)
-5. [`lore/founding_canon.md`](lore/founding_canon.md)
+2. [`integrations/mobius-browser-shell-hive-chamber.md`](integrations/mobius-browser-shell-hive-chamber.md) — HIVE ↔ browser shell
+3. [`world/founding_map.md`](world/founding_map.md)
+4. [`game/player_loops.md`](game/player_loops.md)
+5. [`economy/token_model.md`](economy/token_model.md)
+6. [`lore/founding_canon.md`](lore/founding_canon.md)
 
 ---
 
