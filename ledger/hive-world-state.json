@@ -4,10 +4,10 @@
   "event_type": "WORLD_STATE_V1",
   "workflow_id": "world-update",
   "cycle_id": "C-318",
-  "updated_at": "2026-05-21T04:45:50.550Z",
+  "updated_at": "2026-05-21T08:36:02.687Z",
   "previous_ledger_shape": {
     "cycle_id": "C-318",
-    "updated_at": "2026-05-21T04:45:50.501Z",
+    "updated_at": "2026-05-21T08:36:02.622Z",
     "hive": {
       "active_event": {
         "id": "fountain-murmur",
@@ -44,7 +44,7 @@
       "tone": "hope",
       "summary": "The vault deepens and integrity rises; the city hears water again.",
       "cycle_id": "C-318",
-      "updated_at": "2026-05-21T04:45:50.501Z"
+      "updated_at": "2026-05-21T08:36:02.622Z"
     },
     "active_quest": {
       "id": "prepare-the-seal",
@@ -71,7 +71,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-318",
-      "updated_at": "2026-05-21T04:45:50.501Z",
+      "updated_at": "2026-05-21T08:36:02.622Z",
       "sentinel_id": "hermes"
     },
     "active_sentinel": {
@@ -89,7 +89,7 @@
         "prepare_fountain"
       ],
       "cycle_id": "C-318",
-      "updated_at": "2026-05-21T04:45:50.501Z",
+      "updated_at": "2026-05-21T08:36:02.622Z",
       "display_name": "HERMES",
       "voice": "Carry the proof, not the rumor. Speed without drift.",
       "runtime_overlay": {
@@ -104,10 +104,10 @@
     "node_id": "mobius-hive",
     "event_type": "QUEST_SIGNAL_V1",
     "workflow_id": "world-update",
-    "generated_at": "2026-05-21T04:45:50.550Z",
+    "generated_at": "2026-05-21T08:36:02.687Z",
     "cycle": "C-318",
     "world_pressure": "rising",
-    "gi": 0.805,
+    "gi": 0.811,
     "kv_status": "unknown",
     "source_mode": "kv_preferred",
     "rules_fired": [
@@ -128,7 +128,7 @@
       "tone": "hope",
       "summary": "The vault deepens and integrity rises; the city hears water again.",
       "cycle_id": "C-318",
-      "updated_at": "2026-05-21T04:45:50.501Z"
+      "updated_at": "2026-05-21T08:36:02.622Z"
     },
     "active_quest": {
       "id": "prepare-the-seal",
@@ -155,7 +155,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-318",
-      "updated_at": "2026-05-21T04:45:50.501Z",
+      "updated_at": "2026-05-21T08:36:02.622Z",
       "sentinel_id": "hermes"
     },
     "active_sentinel": {
@@ -173,7 +173,7 @@
         "prepare_fountain"
       ],
       "cycle_id": "C-318",
-      "updated_at": "2026-05-21T04:45:50.501Z",
+      "updated_at": "2026-05-21T08:36:02.622Z",
       "display_name": "HERMES",
       "voice": "Carry the proof, not the rumor. Speed without drift.",
       "runtime_overlay": {
@@ -184,9 +184,9 @@
     },
     "recommendation": "Prepare proof anchors and monitor seal readiness.",
     "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-    "source_hash": "6081869d8e4dccf686e0c89eef9e741ae959e6c459d2fc8aa35c0c9a5cce111c",
-    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-318:6081869d8e4dccf6:world-update"
+    "source_hash": "276a26b999d2267b7f8b601d52e3e6d956380a932f7408750c9c21e04205f390",
+    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-318:276a26b999d2267b:world-update"
   },
-  "source_hash": "d56b7e7079e260c9ed0b65cd655210f01be9f8c4439767513d2104cf3aa4dd07",
-  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-318:d56b7e7079e260c9:world-update"
+  "source_hash": "1f51b0f65aa95fae9f9287a1a3023f017b5f97d2038d2a4d0b1fd2de2f5ad666",
+  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-318:1f51b0f65aa95fae:world-update"
 }
