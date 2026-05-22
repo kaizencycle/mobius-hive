@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-22T13:54:37.850Z",
+  "generated_at": "2026-05-22T16:28:54.661Z",
   "cycle": "C-319",
   "current_cycle": {
     "cycle_id": "C-319",
-    "updated_at": "2026-05-22T13:54:37.798Z",
+    "updated_at": "2026-05-22T16:28:54.611Z",
     "rules_fired": [
       "steady_state"
     ],
@@ -16,8 +16,8 @@
     "active_sentinel_id": "atlas",
     "signals": {
       "kv_status": "unknown",
-      "gi": 0.804,
-      "vault_progress": 0.798
+      "gi": 0.789,
+      "vault_progress": 0.79
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -29,14 +29,14 @@
   "current_world": {
     "cycle": "C-319",
     "zone": "castle",
-    "world_mood": "stable",
+    "world_mood": "fogged",
     "integrity": {
-      "gi": 0.804,
+      "gi": 0.789,
       "kv_status": "unknown",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.798,
+      "progress": 0.79,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -67,7 +67,7 @@
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-319",
-      "updated_at": "2026-05-22T13:54:37.798Z"
+      "updated_at": "2026-05-22T16:28:54.611Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -94,7 +94,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-319",
-      "updated_at": "2026-05-22T13:54:37.798Z",
+      "updated_at": "2026-05-22T16:28:54.611Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -111,7 +111,7 @@
         "log_quiet_grid"
       ],
       "cycle_id": "C-319",
-      "updated_at": "2026-05-22T13:54:37.798Z",
+      "updated_at": "2026-05-22T16:28:54.611Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -122,8 +122,8 @@
     }
   },
   "civic_signal": {
-    "world_pressure": "nominal",
-    "recommendation": "Continue patrol and log quiet-grid stability.",
+    "world_pressure": "elevated",
+    "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "rules_fired": [
       "steady_state"
     ]
@@ -136,6 +136,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "a1a9e554be0c5e8ab31e1295dc25d4d9d2c32a392ea144f28f05d871fab68fbb",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-319:a1a9e554be0c5e8a:world-update"
+  "source_hash": "70f5fd9e7a53d05047616b886c7113af4643a23ef8a547cb32d7d3b846698e30",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-319:70f5fd9e7a53d050:world-update"
 }
