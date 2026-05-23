@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-23T21:28:54.288Z",
+  "generated_at": "2026-05-23T22:29:36.375Z",
   "cycle": "C-320",
   "current_cycle": {
     "cycle_id": "C-320",
-    "updated_at": "2026-05-23T21:28:54.239Z",
+    "updated_at": "2026-05-23T22:29:36.334Z",
     "rules_fired": [
       "steady_state"
     ],
@@ -16,7 +16,7 @@
     "active_sentinel_id": "atlas",
     "signals": {
       "kv_status": "unknown",
-      "gi": 0.74,
+      "gi": 0.807,
       "vault_progress": 0.798
     },
     "ingest_health": {
@@ -29,9 +29,9 @@
   "current_world": {
     "cycle": "C-320",
     "zone": "castle",
-    "world_mood": "fogged",
+    "world_mood": "stable",
     "integrity": {
-      "gi": 0.74,
+      "gi": 0.807,
       "kv_status": "unknown",
       "source_mode": "kv_preferred"
     },
@@ -67,7 +67,7 @@
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-320",
-      "updated_at": "2026-05-23T21:28:54.239Z"
+      "updated_at": "2026-05-23T22:29:36.334Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -94,7 +94,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-320",
-      "updated_at": "2026-05-23T21:28:54.239Z",
+      "updated_at": "2026-05-23T22:29:36.334Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -111,7 +111,7 @@
         "log_quiet_grid"
       ],
       "cycle_id": "C-320",
-      "updated_at": "2026-05-23T21:28:54.239Z",
+      "updated_at": "2026-05-23T22:29:36.334Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -122,8 +122,8 @@
     }
   },
   "civic_signal": {
-    "world_pressure": "elevated",
-    "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
+    "world_pressure": "nominal",
+    "recommendation": "Continue patrol and log quiet-grid stability.",
     "rules_fired": [
       "steady_state"
     ]
@@ -136,6 +136,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "7ea227adbb419aa7a80041215e212cf37117316f7914171db798b9537fbe3b63",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-320:7ea227adbb419aa7:world-update"
+  "source_hash": "bc2ee9a63cacfa8ab0921bf829f4882029e1c1d3038da408076b03dd0b85cd66",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-320:bc2ee9a63cacfa8a:world-update"
 }
