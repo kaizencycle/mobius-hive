@@ -3,10 +3,10 @@
   "node_id": "mobius-hive",
   "event_type": "QUEST_SIGNAL_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-05-23T15:43:50.312Z",
+  "generated_at": "2026-05-23T16:42:55.712Z",
   "cycle": "C-320",
   "world_pressure": "elevated",
-  "gi": 0.795,
+  "gi": 0.798,
   "kv_status": "unknown",
   "source_mode": "kv_preferred",
   "rules_fired": [
@@ -27,7 +27,7 @@
     "tone": "hope",
     "summary": "The vault deepens and integrity rises; the city hears water again.",
     "cycle_id": "C-320",
-    "updated_at": "2026-05-23T15:43:50.264Z"
+    "updated_at": "2026-05-23T16:42:55.664Z"
   },
   "active_quest": {
     "id": "prepare-the-seal",
@@ -54,7 +54,7 @@
       "mic_effect": "none_until_eligible"
     },
     "cycle_id": "C-320",
-    "updated_at": "2026-05-23T15:43:50.264Z",
+    "updated_at": "2026-05-23T16:42:55.664Z",
     "sentinel_id": "hermes"
   },
   "active_sentinel": {
@@ -72,7 +72,7 @@
       "prepare_fountain"
     ],
     "cycle_id": "C-320",
-    "updated_at": "2026-05-23T15:43:50.264Z",
+    "updated_at": "2026-05-23T16:42:55.664Z",
     "display_name": "HERMES",
     "voice": "Carry the proof, not the rumor. Speed without drift.",
     "runtime_overlay": {
@@ -83,6 +83,6 @@
   },
   "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
   "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-  "source_hash": "32eaf31058f8fe91cc1e73f88f63025935d4790707afa6b0c70f946b8c59999d",
-  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-320:32eaf31058f8fe91:world-update"
+  "source_hash": "b3cdd5621a4456312d30f29ffed65064a2c81d5c2f37cc28a64909a558dae97a",
+  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-320:b3cdd5621a445631:world-update"
 }
