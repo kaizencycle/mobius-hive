@@ -16,12 +16,12 @@
     "gate_unsafe_actions"
   ],
   "cycle_id": "C-320",
-  "updated_at": "2026-05-23T23:35:02.496Z",
+  "updated_at": "2026-05-24T01:48:44.312Z",
   "display_name": "ZEUS",
-  "voice": "",
+  "voice": "Hold the line. We do not ship fog as truth.",
   "runtime_overlay": {
     "display_name": "ZEUS",
-    "voice": "",
-    "role": "integrity"
+    "voice": "Hold the line. We do not ship fog as truth.",
+    "role": "stabilization"
   }
 }
