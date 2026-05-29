@@ -1,21 +1,21 @@
 {
   "cycle": "C-325",
   "zone": "castle",
-  "world_mood": "resonant",
+  "world_mood": "fogged",
   "integrity": {
-    "gi": 0.831,
-    "kv_status": "unknown",
+    "gi": 0.817,
+    "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.835,
-    "fountain_status": "stirring"
+    "progress": 0.829,
+    "fountain_status": "locked"
   },
   "active_events": [
-    "fountain-murmur"
+    "signal-fog"
   ],
   "active_quests": [
-    "prepare-the-seal"
+    "restore-the-beacon"
   ],
   "active_sentinels": [
     "zeus",
