@@ -1,10 +1,10 @@
 {
   "cycle": "C-328",
   "zone": "castle",
-  "world_mood": "stable",
+  "world_mood": "fogged",
   "integrity": {
-    "gi": 0.821,
-    "kv_status": "unknown",
+    "gi": 0.825,
+    "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
   "vault": {
@@ -12,10 +12,10 @@
     "fountain_status": "locked"
   },
   "active_events": [
-    "quiet-grid"
+    "signal-fog"
   ],
   "active_quests": [
-    "patrol-the-lanes"
+    "restore-the-beacon"
   ],
   "active_sentinels": [
     "zeus",
