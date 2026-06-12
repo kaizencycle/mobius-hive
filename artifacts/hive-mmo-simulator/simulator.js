@@ -172,7 +172,11 @@ function parseParams() {
 function worldDataUrl(path) {
   const { dataBase } = parseParams();
   if (dataBase) {
-    return new URL(path.replace(/^\//, ""), dataBase.endsWith("/") ? dataBase : `${dataBase}/`).href;
+    const normalized = dataBase.endsWith("/") ? dataBase : `${dataBase}/`;
+    const absoluteBase = /^https?:\/\//i.test(normalized)
+      ? normalized
+      : new URL(normalized, window.location.origin).href;
+    return new URL(path.replace(/^\//, ""), absoluteBase).href;
   }
   return new URL(path, window.location.origin).href;
 }
