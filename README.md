@@ -32,7 +32,9 @@ Human-facing rendering belongs in `mobius-browser-shell`, which should treat `wo
 
 ### HIVE MMO world simulator (C-315 artifact)
 
-A self-contained **16-bit style** tile world lives under `artifacts/hive-mmo-simulator/`: it reads `world/*.json` over HTTP when served from this repo root (for example `npx serve .`) and exposes district **portals** that open the browser shell with `?chamber=…` links. Integration notes for `HiveLab.tsx` and iframe wiring: [`docs/integrations/mobius-browser-shell-hive-chamber.md`](docs/integrations/mobius-browser-shell-hive-chamber.md).
+A self-contained **16-bit style** tile world lives under `artifacts/hive-mmo-simulator/`: it reads `world/*.json` over HTTP when served from this repo root (for example `npx serve .`) and exposes district **portals** that open the browser shell with `?chamber=…` links.
+
+To embed the simulator inside the **browser shell's HIVE chamber** with live state, copy the artifact into the shell's `public/hive-simulator/` and iframe it from `HiveChamber.tsx` with `?data=/api/hive/world/&shell=<self>` so it rides the shell's existing edge proxy. Full copy-paste recipe (iframe component, sync script, portal router hook): [`docs/integrations/mobius-browser-shell-hive-chamber.md`](docs/integrations/mobius-browser-shell-hive-chamber.md).
 
 ### C-287 flywheel lock — canonical world artifacts
 
