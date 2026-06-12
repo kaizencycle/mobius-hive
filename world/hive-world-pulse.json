@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-06-12T21:20:09.502Z",
+  "generated_at": "2026-06-12T22:58:06.547Z",
   "cycle": "C-340",
   "current_cycle": {
     "cycle_id": "C-340",
-    "updated_at": "2026-06-12T21:20:09.455Z",
+    "updated_at": "2026-06-12T22:58:06.499Z",
     "rules_fired": [
       "vault_rising_and_gi"
     ],
@@ -16,8 +16,8 @@
     "active_sentinel_id": "hermes",
     "signals": {
       "kv_status": "unknown",
-      "gi": 0.791,
-      "vault_progress": 0.79
+      "gi": 0.796,
+      "vault_progress": 0.806
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -31,12 +31,12 @@
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.791,
+      "gi": 0.796,
       "kv_status": "unknown",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.79,
+      "progress": 0.806,
       "fountain_status": "stirring"
     },
     "active_events": [
@@ -67,7 +67,7 @@
       "tone": "hope",
       "summary": "The vault deepens and integrity rises; the city hears water again.",
       "cycle_id": "C-340",
-      "updated_at": "2026-06-12T21:20:09.455Z"
+      "updated_at": "2026-06-12T22:58:06.499Z"
     },
     "active_quest": {
       "id": "prepare-the-seal",
@@ -94,7 +94,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-340",
-      "updated_at": "2026-06-12T21:20:09.455Z",
+      "updated_at": "2026-06-12T22:58:06.499Z",
       "sentinel_id": "hermes"
     },
     "active_sentinel": {
@@ -112,7 +112,7 @@
         "prepare_fountain"
       ],
       "cycle_id": "C-340",
-      "updated_at": "2026-06-12T21:20:09.455Z",
+      "updated_at": "2026-06-12T22:58:06.499Z",
       "display_name": "HERMES",
       "voice": "Carry the proof, not the rumor. Speed without drift.",
       "runtime_overlay": {
@@ -137,6 +137,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "a2a46c0b7ad1c964f778fd3e5c224239be0369f25a4aa36a01a266fb279b7928",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-340:a2a46c0b7ad1c964:world-update"
+  "source_hash": "49d47a4a4226bc79fc67a992a9e70662e6faba45ec2d5f43b15f9185a9ea5e83",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-340:49d47a4a4226bc79:world-update"
 }
