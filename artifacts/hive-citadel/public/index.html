@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HIVE: The Fogged Citadel</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#0c0e1a}canvas{display:block;image-rendering:pixelated}
+#dev{position:fixed;top:4px;left:4px;color:#0f0;font:12px monospace;display:none;z-index:9}</style></head>
+<body>
+<canvas id="c"></canvas><div id="dev"></div>
+<script type="module">
+import { STR } from "./strings.js";
+import { SNAPSHOT, LIVE_URL } from "./world-snapshot.js";
+
+// ---------- input: command objects; physical key codes ----------
+const BIND = { KeyW:"up", KeyS:"down", KeyA:"left", KeyD:"right", Space:"action", KeyE:"action",
+               ArrowUp:"up", ArrowDown:"down", ArrowLeft:"left", ArrowRight:"right", Enter:"action" };
+const PAD  = { 0:"action", 12:"up", 13:"down", 14:"left", 15:"right" };
+const held = new Set();
+addEventListener("keydown", e => { const c = BIND[e.code]; if (c) { held.add(c); e.preventDefault(); } });
+addEventListener("keyup",   e => { const c = BIND[e.code]; if (c) held.delete(c); });
+const touchState = { stick:null, act:false };
+function handleTouches(e){
+  touchState.stick = null; touchState.act = false;
+  for (const t of e.touches){
+    if (t.clientX < innerWidth/2) touchState.stick = { x:t.clientX, y:t.clientY };
+    else touchState.act = true;
+  }
+  e.preventDefault();
+}
+addEventListener("touchstart", handleTouches, {passive:false});
+addEventListener("touchmove",  handleTouches, {passive:false});
+addEventListener("touchend",   handleTouches, {passive:false});
+function padCommands(out){
+  for (const gp of navigator.getGamepads?.() ?? []) if (gp){
+    gp.buttons.forEach((b,i)=>{ if (b.pressed && PAD[i]) out.add(PAD[i]); });
+    if (Math.abs(gp.axes[0])>0.4) out.add(gp.axes[0]<0?"left":"right");
+    if (Math.abs(gp.axes[1])>0.4) out.add(gp.axes[1]<0?"up":"down");
+  }
+  return out;
+}
+const stickOrigin = { x:0, y:0 };
+function commands(){
+  const out = new Set(held); padCommands(out);
+  if (touchState.stick){
+    if (!stickOrigin.live){ stickOrigin.x=touchState.stick.x; stickOrigin.y=touchState.stick.y; stickOrigin.live=true; }
+    const dx = touchState.stick.x - stickOrigin.x, dy = touchState.stick.y - stickOrigin.y;
+    if (dx < -12) out.add("left"); if (dx > 12) out.add("right");
+    if (dy < -12) out.add("up");   if (dy > 12) out.add("down");
+  } else stickOrigin.live = false;
+  if (touchState.act) out.add("action");
+  return out;
+}
+
+// ---------- canvas ----------
+const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
+const DPR_CAP = 1.5;
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, DPR_CAP);
+  canvas.width = innerWidth*dpr; canvas.height = innerHeight*dpr;
+  canvas.style.width = innerWidth+"px"; canvas.style.height = innerHeight+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.imageSmoothingEnabled = false;
+}
+addEventListener("resize", resize); addEventListener("orientationchange", resize); resize();
+
+// ---------- deterministic RNG ----------
+let seed = 339;
+function rng(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; }
+
+// ---------- world state (live fetch, snapshot fallback) ----------
+const W = { data: SNAPSHOT.world, source: STR.snapshotData };
+fetch(LIVE_URL).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.integrity){ W.data=j; W.source=STR.liveData; } }).catch(()=>{});
+
+// ---------- map ----------
+const TILE = 48, MAPW = 28, MAPH = 20;
+// 0 stone, 1 courtyard, 2 wall(stone dark)
+const map = [];
+for (let y=0;y<MAPH;y++){ const row=[];
+  for (let x=0;x<MAPW;x++){
+    if (x===0||y===0||x===MAPW-1||y===MAPH-1) row.push(2);
+    else if (x>9&&x<18&&y>6&&y<13) row.push(1);          // central courtyard
+    else if ((x===6&&y>3&&y<16)||(x===21&&y>3&&y<16)) row.push(2); // inner walls
+    else row.push(0);
+  } map.push(row);
+}
+map[9][6]=0; map[10][21]=0; // gates through inner walls
+const solid = (tx,ty)=> tx<0||ty<0||tx>=MAPW||ty>=MAPH||map[ty][tx]===2;
+
+// ---------- entities ----------
+const hero = { x: TILE*13.5, y: TILE*15, r: 14, spd: 3.1 };
+const beacon = { x: TILE*13.5, y: TILE*9.5, lit:false };
+const fountain = { x: TILE*4, y: TILE*4 };
+const NPC_DEFS = ["zeus","jade","hermes"].filter(id=>SNAPSHOT.sentinels[id]);
+const npcs = NPC_DEFS.map((id,i)=>({ id, ...SNAPSHOT.sentinels[id],
+  x: TILE*(8+i*6), y: TILE*(5+(i%2)*9), home:{x:TILE*(8+i*6), y:TILE*(5+(i%2)*9)}, t: rng()*200 }));
+const nodes = [ {x:TILE*3.5,y:TILE*16.5}, {x:TILE*24,y:TILE*3.5}, {x:TILE*24,y:TILE*16.5} ]
+  .map((p,i)=>({ ...p, id:i, charge:0, done:false }));
+let restored = 0, msg = STR.questHint, msgT = 360, won=false, winT=0;
+
+// ---------- assets (manifest-wired; procedural compensation embeds the formula palette) ----------
+const IMG = {};
+const FILES = { "tile-stone":"tile-stone.png","tile-court":"tile-court.png","spr-citizen":"spr-citizen.png",
+  "spr-zeus":"spr-zeus.png","spr-jade":"spr-jade.png","spr-hermes":"spr-hermes.png",
+  "spr-beacon":"spr-beacon.png","spr-fountain":"spr-fountain.png" };
+for (const [id,f] of Object.entries(FILES)){ const im=new Image(); im.src="./assets/"+f;
+  im.onload=()=>IMG[id]=im; im.onerror=()=>{}; }
+// Formula palette for procedural fallbacks (deep slate-blue stone, violet shadows, amber hero, teal glow)
+const PAL = { stone:"#3a4163", stoneHi:"#4c5480", court:"#37524e", courtHi:"#46685f", wall:"#252a45",
+  shadow:"#2c2350", amber:"#e8b54a", amberHi:"#f6d488", teal:"#3de8d4", indigo:"#1a1d36",
+  zeus:"#b8c4e8", jade:"#5dd6a2", hermes:"#e89a5d" };
+
+function drawTile(kind, x, y){
+  const img = kind===1 ? IMG["tile-court"] : IMG["tile-stone"];
+  if (img){
+    ctx.drawImage(img, x, y, TILE, TILE);
+    if (kind===2){ ctx.fillStyle="rgba(20,17,42,0.45)"; ctx.fillRect(x,y,TILE,TILE);
+      ctx.fillStyle=PAL.indigo; ctx.fillRect(x,y+TILE-6,TILE,6); }
+    return;
+  }
+  ctx.fillStyle = kind===1?PAL.court:(kind===2?PAL.wall:PAL.stone);
+  ctx.fillRect(x,y,TILE,TILE);
+  ctx.fillStyle = kind===1?PAL.courtHi:PAL.stoneHi;
+  for(let i=0;i<3;i++) ctx.fillRect(x+((i*17+x)%40), y+((i*23+y)%40), 4, 4); // dithered pixels
+  if(kind===2){ ctx.fillStyle=PAL.indigo; ctx.fillRect(x,y+TILE-6,TILE,6); }
+}
+function drawSprite(id, x, y, size, fallback){
+  const img = IMG[id];
+  if (img){ ctx.drawImage(img, x-size/2, y-size/2, size, size); return; }
+  fallback(x,y,size);
+}
+function fbCircle(color){ return (x,y,s)=>{ ctx.fillStyle=PAL.indigo; ctx.fillRect(x-s/2-2,y-s/2-2,s+4,s+4);
+  ctx.fillStyle=color; ctx.fillRect(x-s/2,y-s/2,s,s); ctx.fillStyle=PAL.amberHi; ctx.fillRect(x-s/6,y-s/3,s/8,s/8); }; }
+
+// ---------- simulation ----------
+function update(dt, cmds){
+  if (won){ winT++; return; }
+  let dx=0, dy=0;
+  if (cmds.has("left"))dx-=1; if (cmds.has("right"))dx+=1;
+  if (cmds.has("up"))dy-=1;   if (cmds.has("down"))dy+=1;
+  if (dx&&dy){ dx*=0.707; dy*=0.707; }
+  const nx=hero.x+dx*hero.spd, ny=hero.y+dy*hero.spd;
+  if (!solid(Math.floor(nx/TILE),Math.floor(hero.y/TILE))) hero.x=nx;
+  if (!solid(Math.floor(hero.x/TILE),Math.floor(ny/TILE))) hero.y=ny;
+  // npc wander
+  for (const n of npcs){ n.t++; const a=Math.sin(n.t/120)*1.2;
+    n.x = n.home.x + Math.cos(n.t/90)*TILE*1.4; n.y = n.home.y + Math.sin(n.t/130+a)*TILE*0.9; }
+  // channel nodes
+  let near=null;
+  for (const nd of nodes) if (!nd.done && dist(hero,nd)<TILE*1.1) near=nd;
+  if (near){
+    if (cmds.has("action")){ near.charge+=dt/2200;
+      if (near.charge>=1){ near.done=true; restored++; say(STR.nodeRestored+" ("+restored+"/3)");
+        if (restored===3){ beacon.lit=true; won=true; say(STR.beaconLit); } } }
+    else near.charge=Math.max(0,near.charge-dt/4000);
+  }
+  // talk
+  for (const n of npcs) if (dist(hero,n)<TILE*1.2 && cmds.has("action") && !near){ say(n.name+": “"+n.voice+"”"); }
+  if (dist(hero,fountain)<TILE*1.3 && cmds.has("action") && !near)
+    say(STR.fountainSealed + Math.round((W.data.vault?.progress||0)*100) + "%");
+  if (msgT>0) msgT--;
+}
+function dist(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
+function say(s){ msg=s; msgT=420; }
+
+// ---------- render ----------
+function render(){
+  const w=innerWidth, h=innerHeight;
+  ctx.fillStyle=PAL.indigo; ctx.fillRect(0,0,w,h);
+  const camX = Math.max(0, Math.min(MAPW*TILE-w, hero.x-w/2));
+  const camY = Math.max(0, Math.min(MAPH*TILE-h, hero.y-h/2));
+  ctx.save(); ctx.translate(-camX,-camY);
+  const x0=Math.floor(camX/TILE), x1=Math.min(MAPW,Math.ceil((camX+w)/TILE));
+  const y0=Math.floor(camY/TILE), y1=Math.min(MAPH,Math.ceil((camY+h)/TILE));
+  for (let y=y0;y<y1;y++) for (let x=x0;x<x1;x++) drawTile(map[y][x], x*TILE, y*TILE);
+  // fountain, beacon, nodes
+  drawSprite("spr-fountain", fountain.x, fountain.y, TILE*1.6, fbCircle("#6f7fb8"));
+  for (const nd of nodes){
+    ctx.fillStyle = nd.done?PAL.teal:"#1f6f66";
+    ctx.beginPath(); ctx.arc(nd.x,nd.y,12,0,7); ctx.fill();
+    if (!nd.done && nd.charge>0){ ctx.strokeStyle=PAL.teal; ctx.lineWidth=4;
+      ctx.beginPath(); ctx.arc(nd.x,nd.y,18,-Math.PI/2,-Math.PI/2+nd.charge*Math.PI*2); ctx.stroke(); }
+  }
+  drawSprite("spr-beacon", beacon.x, beacon.y-TILE*0.4, TILE*2.4, fbCircle("#8b93c4"));
+  if (beacon.lit){ ctx.fillStyle=PAL.teal; ctx.globalAlpha=0.5+0.3*Math.sin(winT/8);
+    ctx.beginPath(); ctx.arc(beacon.x,beacon.y-TILE,26,0,7); ctx.fill(); ctx.globalAlpha=1; }
+  for (const n of npcs) drawSprite("spr-"+n.id, n.x, n.y, TILE*1.15, fbCircle(PAL[n.id]||"#ccc"));
+  drawSprite("spr-citizen", hero.x, hero.y, TILE*1.1, fbCircle(PAL.amber));
+  ctx.restore();
+  // fog of integrity: density driven by live GI; lifts when beacon lit
+  const gi = W.data.integrity?.gi ?? 0.63;
+  let fog = Math.max(0, Math.min(0.75, (0.95-gi))); if (beacon.lit) fog*=Math.max(0,1-winT/240);
+  if (fog>0.01){
+    const g=ctx.createRadialGradient(w/2,h/2,TILE*2.6,w/2,h/2,Math.max(w,h)*0.7);
+    g.addColorStop(0,"rgba(20,22,42,0)"); g.addColorStop(1,"rgba(20,22,42,"+fog+")");
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+  }
+  // HUD
+  ctx.fillStyle="rgba(12,14,26,0.82)"; ctx.fillRect(8,8,300,64);
+  ctx.fillStyle=PAL.amberHi; ctx.font="bold 14px monospace";
+  ctx.fillText(STR.cycleLabel+" "+(W.data.cycle||"?")+"  ·  "+W.source, 16, 28);
+  ctx.fillStyle=gi<0.85?"#e8c44a":"#5dd6a2";
+  ctx.fillText(STR.giLabel+" "+gi.toFixed(2)+"  "+STR.vaultLabel+" "+Math.round((W.data.vault?.progress||0)*100)+"%  "+(beacon.lit?STR.moodClear:(W.data.world_mood||"")), 16, 48);
+  ctx.fillStyle=PAL.teal; ctx.fillText(STR.questName+": "+restored+"/3", 16, 66);
+  if (msgT>0){ ctx.fillStyle="rgba(12,14,26,0.85)"; const tw=ctx.measureText(msg).width+24;
+    ctx.fillRect(w/2-tw/2, h-72, tw, 34); ctx.fillStyle="#e8e6f5"; ctx.fillText(msg, w/2-tw/2+12, h-50); }
+}
+
+// ---------- loop ----------
+const STEP=1000/60; let acc=0, last=performance.now(), paused=false, frames=0, fpsAt=last;
+addEventListener("blur",()=>paused=true); addEventListener("focus",()=>{paused=false;last=performance.now();});
+const dev=new URLSearchParams(location.search).has("dev");
+if (dev) document.getElementById("dev").style.display="block";
+function frame(now){ requestAnimationFrame(frame); if(paused)return;
+  acc+=now-last; last=now; const cmds=commands();
+  while(acc>=STEP){ update(STEP,cmds); acc-=STEP; }
+  render();
+  if (dev&&(frames++, now-fpsAt>=500)){ document.getElementById("dev").textContent=Math.round(frames*1000/(now-fpsAt))+" fps"; frames=0; fpsAt=now; } }
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
