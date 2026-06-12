@@ -109,7 +109,12 @@ const PAL = { stone:"#3a4163", stoneHi:"#4c5480", court:"#37524e", courtHi:"#466
 
 function drawTile(kind, x, y){
   const img = kind===1 ? IMG["tile-court"] : IMG["tile-stone"];
-  if (img){ ctx.drawImage(img, x, y, TILE, TILE); return; }
+  if (img){
+    ctx.drawImage(img, x, y, TILE, TILE);
+    if (kind===2){ ctx.fillStyle="rgba(20,17,42,0.45)"; ctx.fillRect(x,y,TILE,TILE);
+      ctx.fillStyle=PAL.indigo; ctx.fillRect(x,y+TILE-6,TILE,6); }
+    return;
+  }
   ctx.fillStyle = kind===1?PAL.court:(kind===2?PAL.wall:PAL.stone);
   ctx.fillRect(x,y,TILE,TILE);
   ctx.fillStyle = kind===1?PAL.courtHi:PAL.stoneHi;
