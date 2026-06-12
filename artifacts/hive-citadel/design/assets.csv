@@ -1,0 +1,11 @@
+id,role,type,description,size_ratio,style_line_ref,source
+tile-stone,ground tile castle interior,tile,worn castle stone floor slabs,1:1,formula-v1,generate
+tile-court,ground tile courtyard,tile,mossy slate courtyard pavers,1:1,formula-v1,generate
+spr-citizen,player hero,sprite,small hooded citizen wanderer,1:1,formula-v1,generate
+spr-zeus,npc sentinel,sprite,stern armored sentinel with lightning sigil,1:1,formula-v1,generate
+spr-jade,npc sentinel,sprite,serene robed oracle sentinel with jade charm,1:1,formula-v1,generate
+spr-hermes,npc sentinel,sprite,swift messenger sentinel with satchel,1:1,formula-v1,generate
+spr-beacon,quest objective,sprite,tall stone beacon tower with unlit crystal,1:1,formula-v1,generate
+spr-fountain,world landmark,sprite,sealed ornate fountain with chains,1:1,formula-v1,generate
+card-thumb,deploy thumbnail,background,castle citadel in fog with glowing beacon,16:9,formula-v1,generate
+card-icon,deploy favicon,ui,hexagonal hive beacon emblem,1:1,formula-v1,generate

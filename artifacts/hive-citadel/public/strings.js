@@ -1,0 +1,20 @@
+export const STR = {
+  title: "HIVE: The Fogged Citadel",
+  pressToChannel: "Hold to channel the signal node",
+  nodeRestored: "Signal node restored",
+  beaconLit: "THE BEACON IS LIT — the fog recedes",
+  questName: "Restore the Beacon",
+  questHint: "Three signal nodes lie in the fog. Find them. Channel them.",
+  talkPrompt: "Talk",
+  channelPrompt: "Channel",
+  giLabel: "GI",
+  vaultLabel: "VAULT",
+  cycleLabel: "CYCLE",
+  moodFogged: "fogged",
+  moodClear: "clearing",
+  fountainSealed: "The Fountain is sealed. Vault progress: ",
+  liveData: "live substrate",
+  snapshotData: "snapshot C-339",
+  touchHintMove: "left side: move",
+  touchHintAct: "right side: act"
+};
