@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-06-13T21:21:00.382Z",
+  "generated_at": "2026-06-13T22:38:28.390Z",
   "cycle": "C-341",
   "current_cycle": {
     "cycle_id": "C-341",
-    "updated_at": "2026-06-13T21:21:00.336Z",
+    "updated_at": "2026-06-13T22:38:28.341Z",
     "rules_fired": [
       "steady_state"
     ],
@@ -17,7 +17,7 @@
     "signals": {
       "kv_status": "unknown",
       "gi": 0.778,
-      "vault_progress": 0.794
+      "vault_progress": 0.806
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -36,7 +36,7 @@
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.794,
+      "progress": 0.806,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -68,7 +68,7 @@
       "tone": "calm",
       "summary": "No mesh alarms fired on this tick.",
       "cycle_id": "C-341",
-      "updated_at": "2026-06-13T21:21:00.336Z"
+      "updated_at": "2026-06-13T22:38:28.341Z"
     },
     "active_quest": {
       "id": "patrol-the-lanes",
@@ -95,7 +95,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-341",
-      "updated_at": "2026-06-13T21:21:00.336Z",
+      "updated_at": "2026-06-13T22:38:28.341Z",
       "sentinel_id": "atlas"
     },
     "active_sentinel": {
@@ -112,7 +112,7 @@
         "log_quiet_grid"
       ],
       "cycle_id": "C-341",
-      "updated_at": "2026-06-13T21:21:00.336Z",
+      "updated_at": "2026-06-13T22:38:28.341Z",
       "display_name": "ATLAS",
       "voice": "No drama is also data. Log the null result.",
       "runtime_overlay": {
@@ -137,6 +137,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "b85ac8e00444da8a0df05e3e3bfc11d21e7c38c8d69e1e13c774ef23cab7ed3e",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-341:b85ac8e00444da8a:world-update"
+  "source_hash": "3dc079a9e0e9e3b9e5669d55f59d2c1ca07018459ea8d1627cddefb3e386549a",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-341:3dc079a9e0e9e3b9:world-update"
 }
