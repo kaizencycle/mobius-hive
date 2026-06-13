@@ -24,6 +24,7 @@ const checks = [
   ["sentinel.schema.json", "world/sentinels/jade.json"],
   ["sentinel.schema.json", "world/sentinels/hermes.json"],
   ["zone.schema.json", "world/zones/castle.json"],
+  ["citizen-history.schema.json", "world/citizen-history.json"],
 ];
 
 let failed = false;

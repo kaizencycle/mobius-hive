@@ -33,6 +33,10 @@
     "active_sentinels": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "citizen_history": {
+      "type": "array",
+      "items": { "type": "object" }
     }
   },
   "additionalProperties": true

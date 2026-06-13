@@ -35,6 +35,9 @@ jobs:
           HIVE_USE_FIXTURES: ${{ github.event_name == 'workflow_dispatch' && inputs.use_fixtures && '1' || '' }}
         run: node scripts/world/fetch-inputs.js
 
+      - name: Fetch citizen player events
+        run: node scripts/world/fetch-player-events.js
+
       - name: Build world state
         run: node scripts/world/build-world-state.js
 

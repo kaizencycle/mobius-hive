@@ -80,6 +80,12 @@ ingest:
     sovereign_memory:
       node_id: "oaa-api-library"
       read_url: "https://oaa-api-library.onrender.com/api/oaa/kv/latest"
+    # C-341: citizen_history lane. Populated once Civic-Protocol-Core ships
+    # GET /ledger/events?event_type=hive.player_event (Brief D). Until then,
+    # fetch-player-events.js treats a fetch failure as "no new events" (no-op).
+    player_events:
+      node_id: "civic-protocol-core"
+      read_url: "https://civic-protocol-core.onrender.com/ledger/events?event_type=hive.player_event"
   emits:
     - HIVE_WORLD_PULSE_V1
     - WORLD_STATE_V1

@@ -1,0 +1,19 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["event_id", "cycle_id", "civic_id", "world", "zone", "action", "target_id", "summary", "at"],
+    "properties": {
+      "event_id": { "type": "string" },
+      "cycle_id": { "type": "string" },
+      "civic_id": { "type": "string" },
+      "world": { "type": "string" },
+      "zone": { "type": "string" },
+      "action": { "type": "string" },
+      "target_id": { "type": "string" },
+      "summary": { "type": "string" },
+      "at": { "type": "string" }
+    },
+    "additionalProperties": true
+  }
+}
