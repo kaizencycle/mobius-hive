@@ -26,16 +26,22 @@ function readPosted() {
   }
 }
 
-function markPosted(targetId) {
+function markPosted(key) {
   try {
     const posted = readPosted();
-    posted.add(targetId);
+    posted.add(key);
     localStorage.setItem(POSTED_KEY, JSON.stringify([...posted]));
   } catch {}
 }
 
-export function hasPosted(targetId) {
-  return readPosted().has(targetId);
+// Cache key includes cycle_id so a target ID reused in a later cycle isn't
+// skipped as "already posted".
+function cacheKey(cycleId, targetId) {
+  return cycleId + ":" + targetId;
+}
+
+export function hasPosted(cycleId, targetId) {
+  return readPosted().has(cacheKey(cycleId, targetId));
 }
 
 async function postOnce(url, body) {
@@ -69,7 +75,7 @@ export async function postPlayerEvent(attestUrl, { world, zone, action, targetId
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       await postOnce(attestUrl, body);
-      markPosted(targetId);
+      markPosted(cacheKey(cycleId, targetId));
       return { ok: true };
     } catch (err) {
       if (attempt === 1) return { ok: false, error: err instanceof Error ? err.message : String(err) };

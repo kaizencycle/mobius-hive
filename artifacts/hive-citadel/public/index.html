@@ -24,6 +24,9 @@ addEventListener("keydown", e => { const c = BIND[e.code]; if (c) { held.add(c);
 addEventListener("keyup",   e => { const c = BIND[e.code]; if (c) held.delete(c); });
 const touchState = { stick:null, act:false };
 function handleTouches(e){
+  // Let taps that started on the Chronicle button fall through to its own
+  // click handler instead of being consumed as gameplay input.
+  if (e.target && e.target.closest && e.target.closest("#chronicleBtn")) return;
   touchState.stick = null; touchState.act = false;
   for (const t of e.touches){
     if (t.clientX < innerWidth/2) touchState.stick = { x:t.clientX, y:t.clientY };
@@ -116,8 +119,10 @@ let restored = 0, msg = STR.questHint, msgT = 360, won=false, winT=0;
 // you were away."
 function applyCitizenHistory(){
   const hist = W.data.citizen_history || [];
+  const cycle = W.data.cycle;
   for (const entry of hist){
     if (entry.zone !== "castle") continue;
+    if (cycle && entry.cycle_id !== cycle) continue;
     const m = /^node-(\d+)$/.exec(entry.target_id || "");
     if (!m) continue;
     const nd = nodes[Number(m[1])];
@@ -197,10 +202,11 @@ function say(s){ msg=s; msgT=420; }
 // one retry inside postPlayerEvent; never blocks gameplay.
 function reportNodeRestored(node){
   const targetId = "node-"+node.id;
-  if (hasPosted(targetId)) return;
+  const cycleId = W.data.cycle || "C-341";
+  if (hasPosted(cycleId, targetId)) return;
   postPlayerEvent(ATTEST_URL, {
     world: "hive-citadel", zone: "castle", action: "channel_node",
-    targetId, cycleId: W.data.cycle || "C-341", civicId,
+    targetId, cycleId, civicId,
   }).then(r=>{ if(!r.ok){ chronicleNote = STR.chronicleWritePending; chronicleNoteT = 600; } });
 }
 
