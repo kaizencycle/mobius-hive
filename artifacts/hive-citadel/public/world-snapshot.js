@@ -57,3 +57,8 @@ export const SNAPSHOT = {
  }
 };
 export const LIVE_URL = "https://raw.githubusercontent.com/kaizencycle/mobius-hive/main/world/current-world.json";
+// C-341 write-back (Brief D, Civic-Protocol-Core). Until Brief D ships these
+// may 404 — postPlayerEvent() in client.js treats that as a non-fatal,
+// non-blocking failure.
+export const ATTEST_URL = "https://civic-protocol-core.onrender.com/ledger/attest";
+export const EVENTS_URL = "https://civic-protocol-core.onrender.com/ledger/events?event_type=hive.player_event";
