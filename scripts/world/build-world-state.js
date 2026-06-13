@@ -278,6 +278,84 @@ function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+/** C-341 citizen_history lane — additive; does not touch the operator quest/event lane above. */
+const PLAYER_EVENT_SUMMARIES = {
+  channel_node: (e) => `A citizen restored a signal node (${e.target_id}) in ${e.zone}.`,
+  restore_beacon: (e) => `A citizen lit the beacon in ${e.zone}.`,
+};
+
+function summarizePlayerEvent(entry) {
+  const fn = PLAYER_EVENT_SUMMARIES[entry.action];
+  if (fn) return fn(entry);
+  return `A citizen performed "${entry.action}" (${entry.target_id}) in ${entry.zone}.`;
+}
+
+function loadPlayerEvents() {
+  return readJson(path.join(ROOT, "ledger", "inputs", "player-events.json"), { ok: false, events: [] });
+}
+
+/** Merges newly-fetched hive.player_event records into world/citizen-history.json (capped, deduped). */
+function buildCitizenHistory(cycleId, updatedAt) {
+  const existing = readJson(path.join(WORLD, "citizen-history.json"), []);
+  const existingIds = new Set(existing.map((e) => e.event_id));
+  const incoming = loadPlayerEvents();
+  const newEntries = [];
+
+  for (const raw of incoming.events ?? []) {
+    if (raw?.event_type && raw.event_type !== "hive.player_event") continue;
+    const payload = raw.payload ?? raw;
+    const eventId = raw.id ?? raw.event_id;
+    if (!eventId || existingIds.has(eventId)) continue;
+
+    const entry = {
+      event_id: eventId,
+      cycle_id: payload.cycle_id ?? cycleId,
+      civic_id: payload.civic_id ?? "mobius-anon-unknown",
+      world: payload.world ?? "hive-citadel",
+      zone: payload.zone ?? "castle",
+      action: payload.action ?? "unknown",
+      target_id: payload.target_id ?? "",
+      summary: "",
+      at: payload.client_ts ?? raw.created_at ?? updatedAt,
+    };
+    entry.summary = summarizePlayerEvent(entry);
+
+    newEntries.push(entry);
+    existingIds.add(eventId);
+  }
+
+  const merged = [...existing, ...newEntries].slice(-50);
+  writeJson("citizen-history.json", merged);
+  return { merged, newEntries };
+}
+
+/**
+ * Appends one terse factual line per new event to world/journal/<cycle_id>.json's
+ * narrative array. Entries are grouped by their own cycle_id (not the current
+ * build's cycleId) so backfilled/older events land in the cycle they belong to.
+ */
+function appendJournalNarrative(updatedAt, newEntries) {
+  if (newEntries.length === 0) return;
+  const byCycle = new Map();
+  for (const entry of newEntries) {
+    const id = entry.cycle_id;
+    if (!byCycle.has(id)) byCycle.set(id, []);
+    byCycle.get(id).push(entry);
+  }
+  for (const [cycleId, entries] of byCycle) {
+    const journal = readJson(path.join(WORLD, "journal", `${cycleId}.json`), {
+      cycle_id: cycleId,
+      narrative: [],
+    });
+    if (!Array.isArray(journal.narrative)) journal.narrative = [];
+    for (const entry of entries) {
+      journal.narrative.push(entry.summary);
+    }
+    journal.updated_at = updatedAt;
+    writeJson(path.join("journal", `${cycleId}.json`), journal);
+  }
+}
+
 function buildRichEvent(activeEvent, cycleId, updatedAt) {
   const spec = SIM_EVENT_SPECS[activeEvent.id];
   if (!spec) {
@@ -394,6 +472,7 @@ function writeCurrentWorldSummary({
   activeEvent,
   activeQuest,
   sourceMode,
+  citizenHistory,
 }) {
   const worldMood = pickWorldMood(kvStatus, gi, rules);
   const fountainStatus = pickFountainStatus(rules);
@@ -413,6 +492,10 @@ function writeCurrentWorldSummary({
     active_events: [activeEvent.id],
     active_quests: [activeQuest.id],
     active_sentinels: ["zeus", "jade", "hermes"],
+    // C-341: recent player-caused history (citizen_history lane). Renderers
+    // use this to show "what happened while you were away" and to skip
+    // re-offering already-solved targets (no-respawn).
+    citizen_history: citizenHistory.slice(-10),
   };
   writeJson("current-world.json", body);
 }
@@ -595,6 +678,10 @@ function main() {
 
   writeSimSentinelRail(cycleId, updatedAt, activeSentinel);
   writeCastleZone(cycleId, updatedAt);
+
+  const { merged: citizenHistory, newEntries: newPlayerEvents } = buildCitizenHistory(cycleId, updatedAt);
+  appendJournalNarrative(updatedAt, newPlayerEvents);
+
   writeCurrentWorldSummary({
     cycleId,
     updatedAt,
@@ -605,6 +692,7 @@ function main() {
     activeEvent,
     activeQuest,
     sourceMode,
+    citizenHistory,
   });
 
   const ledgerWorld = {
