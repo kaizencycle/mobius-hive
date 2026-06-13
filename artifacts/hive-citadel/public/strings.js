@@ -16,5 +16,9 @@ export const STR = {
   liveData: "live substrate",
   snapshotData: "snapshot C-339",
   touchHintMove: "left side: move",
-  touchHintAct: "right side: act"
+  touchHintAct: "right side: act",
+  chronicleTitle: "Chronicle — while you were away",
+  chronicleEmpty: "No recorded history yet.",
+  chronicleHint: "C: Chronicle",
+  chronicleWritePending: "chronicle write pending — your action wasn't recorded"
 };
