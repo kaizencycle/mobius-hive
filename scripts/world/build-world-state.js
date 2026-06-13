@@ -329,19 +329,31 @@ function buildCitizenHistory(cycleId, updatedAt) {
   return { merged, newEntries };
 }
 
-/** Appends one terse factual line per new event to world/journal/<cycle_id>.json's narrative array. */
-function appendJournalNarrative(cycleId, updatedAt, newEntries) {
+/**
+ * Appends one terse factual line per new event to world/journal/<cycle_id>.json's
+ * narrative array. Entries are grouped by their own cycle_id (not the current
+ * build's cycleId) so backfilled/older events land in the cycle they belong to.
+ */
+function appendJournalNarrative(updatedAt, newEntries) {
   if (newEntries.length === 0) return;
-  const journal = readJson(path.join(WORLD, "journal", `${cycleId}.json`), {
-    cycle_id: cycleId,
-    narrative: [],
-  });
-  if (!Array.isArray(journal.narrative)) journal.narrative = [];
+  const byCycle = new Map();
   for (const entry of newEntries) {
-    journal.narrative.push(entry.summary);
+    const id = entry.cycle_id;
+    if (!byCycle.has(id)) byCycle.set(id, []);
+    byCycle.get(id).push(entry);
   }
-  journal.updated_at = updatedAt;
-  writeJson(path.join("journal", `${cycleId}.json`), journal);
+  for (const [cycleId, entries] of byCycle) {
+    const journal = readJson(path.join(WORLD, "journal", `${cycleId}.json`), {
+      cycle_id: cycleId,
+      narrative: [],
+    });
+    if (!Array.isArray(journal.narrative)) journal.narrative = [];
+    for (const entry of entries) {
+      journal.narrative.push(entry.summary);
+    }
+    journal.updated_at = updatedAt;
+    writeJson(path.join("journal", `${cycleId}.json`), journal);
+  }
 }
 
 function buildRichEvent(activeEvent, cycleId, updatedAt) {
@@ -668,7 +680,7 @@ function main() {
   writeCastleZone(cycleId, updatedAt);
 
   const { merged: citizenHistory, newEntries: newPlayerEvents } = buildCitizenHistory(cycleId, updatedAt);
-  appendJournalNarrative(cycleId, updatedAt, newPlayerEvents);
+  appendJournalNarrative(updatedAt, newPlayerEvents);
 
   writeCurrentWorldSummary({
     cycleId,

@@ -36,6 +36,7 @@ jobs:
         run: node scripts/world/fetch-inputs.js
 
       - name: Fetch citizen player events
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_fixtures) }}
         run: node scripts/world/fetch-player-events.js
 
       - name: Build world state
