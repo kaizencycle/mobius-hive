@@ -1,5 +1,5 @@
 {
-  "cycle": "C-341",
+  "cycle": "C-342",
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
@@ -8,7 +8,7 @@
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.769,
+    "progress": 0.785,
     "fountain_status": "locked"
   },
   "active_events": [

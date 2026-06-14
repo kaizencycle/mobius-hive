@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-06-14T04:40:38.472Z",
-  "cycle": "C-341",
+  "generated_at": "2026-06-14T08:35:09.927Z",
+  "cycle": "C-342",
   "current_cycle": {
-    "cycle_id": "C-341",
-    "updated_at": "2026-06-14T04:40:38.422Z",
+    "cycle_id": "C-342",
+    "updated_at": "2026-06-14T08:35:09.874Z",
     "rules_fired": [
       "kv_degraded"
     ],
@@ -17,7 +17,7 @@
     "signals": {
       "kv_status": "degraded",
       "gi": 0.751,
-      "vault_progress": 0.769
+      "vault_progress": 0.785
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -27,7 +27,7 @@
     }
   },
   "current_world": {
-    "cycle": "C-341",
+    "cycle": "C-342",
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
@@ -36,7 +36,7 @@
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.769,
+      "progress": 0.785,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -71,8 +71,8 @@
       },
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
-      "cycle_id": "C-341",
-      "updated_at": "2026-06-14T04:40:38.422Z"
+      "cycle_id": "C-342",
+      "updated_at": "2026-06-14T08:35:09.874Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -103,8 +103,8 @@
         "vault_effect": "stability_credit",
         "mic_effect": "none_until_eligible"
       },
-      "cycle_id": "C-341",
-      "updated_at": "2026-06-14T04:40:38.422Z",
+      "cycle_id": "C-342",
+      "updated_at": "2026-06-14T08:35:09.874Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -124,8 +124,8 @@
         "open_integrity_quest",
         "gate_unsafe_actions"
       ],
-      "cycle_id": "C-341",
-      "updated_at": "2026-06-14T04:40:38.422Z",
+      "cycle_id": "C-342",
+      "updated_at": "2026-06-14T08:35:09.874Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -150,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "90f1e3354532eeea1d3517743700b455d0f901df035814db7c14491842b23ab7",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-341:90f1e3354532eeea:world-update"
+  "source_hash": "331e2ff6f85e66fe3e966339b9bf429d8b4c530f5f7b43197f1a9eb322b7d1a7",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-342:331e2ff6f85e66fe:world-update"
 }
