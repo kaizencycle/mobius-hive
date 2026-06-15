@@ -4,11 +4,14 @@
 // `properties` flattened into a {name: value} map for convenience.
 
 export async function loadMap(tmjUrl, baseUrl) {
-  const map = await (await fetch(tmjUrl)).json();
+  const mapUrl = new URL(tmjUrl, baseUrl);
+  const map = await (await fetch(mapUrl)).json();
   const ts = map.tilesets[0];
   const image = new Image();
   const imgReady = new Promise(res => { image.onload = res; image.onerror = res; });
-  image.src = new URL(ts.image, baseUrl).href;
+  // resolve the tileset image relative to the .tmj itself, matching how
+  // Tiled resolves tileset paths, so the map stays portable.
+  image.src = new URL(ts.image, mapUrl).href;
   await imgReady;
 
   const tileLayers = map.layers.filter(l => l.type === "tilelayer");

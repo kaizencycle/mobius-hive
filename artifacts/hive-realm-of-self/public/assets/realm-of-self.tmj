@@ -15,7 +15,7 @@
  "tilesets": [
   {
    "firstgid": 1,
-   "image": "assets/tileset.png",
+   "image": "tileset.png",
    "imagewidth": 128,
    "imageheight": 128,
    "name": "hive-tileset",
@@ -1273,38 +1273,6 @@
        "name": "target_zone",
        "type": "string",
        "value": "castle"
-      }
-     ]
-    },
-    {
-     "id": 2,
-     "name": "exit-realm-of-reason",
-     "type": "exit",
-     "x": 0,
-     "y": 160,
-     "width": 16,
-     "height": 32,
-     "properties": [
-      {
-       "name": "target_zone",
-       "type": "string",
-       "value": "realm-of-reason"
-      }
-     ]
-    },
-    {
-     "id": 3,
-     "name": "exit-realm-of-harmony",
-     "type": "exit",
-     "x": 464,
-     "y": 160,
-     "width": 16,
-     "height": 32,
-     "properties": [
-      {
-       "name": "target_zone",
-       "type": "string",
-       "value": "realm-of-harmony"
       }
      ]
     },

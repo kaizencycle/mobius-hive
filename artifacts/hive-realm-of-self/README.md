@@ -16,11 +16,12 @@ from HIVE Citadel (C-340/341) with a real Tiled (.tmj) map.
   floor (x2), courtyard, grass, water, wood, dirt path, wall, wall-side,
   roof, door, tree, fountain, crate. Formula palette (C-340).
 - `assets/realm-of-self.tmj` — 30x20 town map: central plaza + fountain,
-  four buildings (Archive/Bazaar/Hall/Workshop — one per cardinal exit),
-  pond, tree border, dirt paths. Object layer defines: spawn point, 3
-  signal-node positions, 4 exit zones tagged with `target_zone` (castle,
-  realm-of-reason, realm-of-harmony, realm-of-meaning — per C-342's
-  realm-of-self.json neighbors).
+  four buildings (Archive/Bazaar/Hall/Workshop), pond, tree border, dirt
+  paths. Object layer defines: spawn point, 3 signal-node positions, and
+  2 exit zones tagged with `target_zone` (castle, realm-of-meaning — the
+  only realms `realm-of-self` connects to per C-342's `world/realms.json`).
+  The other two buildings are flavor only (no gate) until the realm graph
+  grows.
 - NPCs: ECHO (hub agent) + ATHENA/DAO/SOFIA visiting from neighboring
   realms, each with one line of canon-flavored dialogue.
 - citizen_history-aware: signal nodes check
@@ -56,4 +57,4 @@ this step requires zero JavaScript changes.
 ## Next zones
 Repeat: author a `<zone-id>.tmj` per `world/zones/*.json` (C-342), reusing
 `tilemap.js`. Wire each zone's exits to the next zone's spawn once that
-zone exists — this is what makes the 4 exits here "functional."
+zone exists — this is what makes the 2 exits here "functional."

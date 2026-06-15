@@ -64,7 +64,7 @@ addEventListener("resize", resize); addEventListener("orientationchange", resize
 
 // ---------- world state (live fetch, snapshot fallback — unchanged) ----------
 const W = { data: SNAPSHOT.world, source: STR.snapshotData };
-fetch(LIVE_URL).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.integrity){ W.data=j; W.source=STR.liveData; } }).catch(()=>{});
+fetch(LIVE_URL).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.integrity){ W.data=j; W.source=STR.liveData; applyCitizenHistory(); } }).catch(()=>{});
 
 // ---------- map ----------
 const TILEMAP = await loadMap("./assets/realm-of-self.tmj", import.meta.url);
@@ -75,8 +75,7 @@ const ZOOM = 2; // upscale 16px tiles -> 32px on screen
 const spawn = TILEMAP.rect("spawn");
 const hero = { x: spawn.x+8, y: spawn.y+8, r: 5, spd: 1.6 };
 const nodes = TILEMAP.allOf("signal_node").map(o => ({
-  x:o.x+8, y:o.y+8, id:o.props.target_id, charge:0,
-  done: SNAPSHOT.world.citizen_history?.some(h=>h.zone==="realm-of-self" && h.target_id===o.props.target_id) || false
+  x:o.x+8, y:o.y+8, id:o.props.target_id, charge:0, done:false
 }));
 const exits = TILEMAP.allOf("exit");
 const AGENT_IDS = ["echo","athena","dao","sofia"];
@@ -85,8 +84,8 @@ const npcs = AGENT_IDS.map((id,i)=>({ id, ...REALM_AGENTS[id],
   home: null, t: i*97 }));
 npcs.forEach(n => n.home = {x:n.x, y:n.y});
 
-let restored = nodes.filter(n=>n.done).length;
-let msg = STR.questHint, msgT = 360, won = restored>=nodes.length, winT=0;
+let restored = 0;
+let msg = STR.questHint, msgT = 360, won = false, winT=0;
 
 // ---------- formula-palette fallback sprites (same as C-340; used until art swap) ----------
 const PAL = { amber:"#e8b54a", amberHi:"#f6d488", teal:"#3de8d4", indigo:"#1a1d36",
@@ -97,6 +96,23 @@ function fbCircle(color){ return (x,y,s,ctx)=>{ ctx.fillStyle=PAL.indigo; ctx.fi
 // ---------- simulation ----------
 function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
 function say(s){ msg=s; msgT=420; }
+
+// Apply citizen_history (C-341) for the current cycle, scoped to this realm.
+// Called at init (against the embedded snapshot) and again once the live
+// world state has loaded, so a reload doesn't re-spawn already-channeled nodes.
+function applyCitizenHistory(){
+  const hist = W.data.citizen_history || [];
+  const cycle = W.data.cycle;
+  for (const entry of hist){
+    if (entry.zone !== "realm-of-self") continue;
+    if (cycle && entry.cycle_id !== cycle) continue;
+    const nd = nodes.find(n => n.id === entry.target_id);
+    if (nd && !nd.done){ nd.done = true; nd.charge = 1; restored++; }
+  }
+  if (restored >= nodes.length && !won){ won = true; say(STR.beaconLit); }
+}
+applyCitizenHistory();
+
 
 function update(dt, cmds){
   if (won){ winT++; return; }
