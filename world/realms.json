@@ -42,7 +42,7 @@
       "zone_ref": "ocean-of-inquiry",
       "agents": ["oracle"],
       "description": "Open water dotted with archive-islands, where questions are cast out and answers drift back on the tide.",
-      "connects_to": ["realm-of-reason", "realm-of-harmony"]
+      "connects_to": ["forge-of-civilization", "realm-of-reason", "realm-of-harmony"]
     },
     {
       "id": "realm-of-harmony",
@@ -66,7 +66,7 @@
       "zone_ref": "realm-of-unity",
       "agents": ["heartis"],
       "description": "A gathering green where HEARTIS keeps watch over the bonds between citizens and sentinels alike.",
-      "connects_to": ["realm-of-harmony", "realm-of-meaning", "frontier-of-tomorrow"]
+      "connects_to": ["forge-of-civilization", "realm-of-harmony", "realm-of-meaning", "frontier-of-tomorrow"]
     },
     {
       "id": "frontier-of-tomorrow",
@@ -82,7 +82,7 @@
       "zone_ref": "path-of-evolution",
       "agents": ["nova"],
       "description": "A winding trail of waypoints marking how far the HIVE has come, walked over by NOVA.",
-      "connects_to": ["frontier-of-tomorrow", "spark-of-potential"]
+      "connects_to": ["forge-of-civilization", "frontier-of-tomorrow", "spark-of-potential"]
     },
     {
       "id": "spark-of-potential",
