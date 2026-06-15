@@ -1,0 +1,14 @@
+{
+  "id": "realm-of-reason",
+  "title": "Realm of Reason",
+  "description": "A study of logic and strategy, where ATHENA tests the soundness of the HIVE's plans before they are acted upon.",
+  "features": [
+    "strategy_table",
+    "logic_gates"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "realm-of-reason",
+  "agents": ["athena"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

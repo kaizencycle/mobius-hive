@@ -24,7 +24,17 @@ const checks = [
   ["sentinel.schema.json", "world/sentinels/jade.json"],
   ["sentinel.schema.json", "world/sentinels/hermes.json"],
   ["zone.schema.json", "world/zones/castle.json"],
+  ["zone.schema.json", "world/zones/realm-of-self.json"],
+  ["zone.schema.json", "world/zones/realm-of-reason.json"],
+  ["zone.schema.json", "world/zones/ocean-of-inquiry.json"],
+  ["zone.schema.json", "world/zones/realm-of-harmony.json"],
+  ["zone.schema.json", "world/zones/realm-of-meaning.json"],
+  ["zone.schema.json", "world/zones/realm-of-unity.json"],
+  ["zone.schema.json", "world/zones/frontier-of-tomorrow.json"],
+  ["zone.schema.json", "world/zones/path-of-evolution.json"],
+  ["zone.schema.json", "world/zones/spark-of-potential.json"],
   ["citizen-history.schema.json", "world/citizen-history.json"],
+  ["realms.schema.json", "world/realms.json"],
 ];
 
 let failed = false;

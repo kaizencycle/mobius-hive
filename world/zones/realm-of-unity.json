@@ -1,0 +1,14 @@
+{
+  "id": "realm-of-unity",
+  "title": "Realm of Unity",
+  "description": "A gathering green where HEARTIS keeps watch over the bonds between citizens and sentinels alike.",
+  "features": [
+    "gathering_green",
+    "bond_circle"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "realm-of-unity",
+  "agents": ["heartis"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "required": ["schema_version", "hub", "realms"],
+  "properties": {
+    "schema_version": { "type": "integer" },
+    "hub": { "type": "string" },
+    "realms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "zone_ref", "agents", "connects_to"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "zone_ref": { "type": "string" },
+          "agents": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": { "type": "string" },
+          "connects_to": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

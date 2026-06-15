@@ -53,6 +53,9 @@ const SIM_ZONE_CASTLE = {
   description: "Central chamber of oversight and coordination.",
   features: ["sentinel_rail", "event_overlay", "quest_panel"],
   default_overlay: "clear",
+  // C-342: castle is the hub of the ten-realm HIVE world map (world/realms.json).
+  realm_id: "forge-of-civilization",
+  agents: ["aurelius"],
 };
 
 const SIM_EVENT_SPECS = {
