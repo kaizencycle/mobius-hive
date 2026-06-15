@@ -1,0 +1,207 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HIVE: Realm of Self</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#0c0e1a}canvas{display:block;image-rendering:pixelated}
+#dev{position:fixed;top:4px;left:4px;color:#0f0;font:12px monospace;display:none;z-index:9}</style></head>
+<body>
+<canvas id="c"></canvas><div id="dev"></div>
+<script type="module">
+import { STR, STR_TOWN } from "./strings.js";
+import { SNAPSHOT, LIVE_URL, REALM_AGENTS } from "./world-snapshot.js";
+import { loadMap } from "./tilemap.js";
+
+// ---------- input (unchanged from C-340/341: physical key codes, touch zones, gamepad) ----------
+const BIND = { KeyW:"up", KeyS:"down", KeyA:"left", KeyD:"right", Space:"action", KeyE:"action",
+               ArrowUp:"up", ArrowDown:"down", ArrowLeft:"left", ArrowRight:"right", Enter:"action" };
+const PAD  = { 0:"action", 12:"up", 13:"down", 14:"left", 15:"right" };
+const held = new Set();
+addEventListener("keydown", e => { const c = BIND[e.code]; if (c) { held.add(c); e.preventDefault(); } });
+addEventListener("keyup",   e => { const c = BIND[e.code]; if (c) held.delete(c); });
+const touchState = { stick:null, act:false };
+function handleTouches(e){
+  touchState.stick = null; touchState.act = false;
+  for (const t of e.touches){
+    if (t.clientX < innerWidth/2) touchState.stick = { x:t.clientX, y:t.clientY };
+    else touchState.act = true;
+  }
+  e.preventDefault();
+}
+addEventListener("touchstart", handleTouches, {passive:false});
+addEventListener("touchmove",  handleTouches, {passive:false});
+addEventListener("touchend",   handleTouches, {passive:false});
+function padCommands(out){
+  for (const gp of navigator.getGamepads?.() ?? []) if (gp){
+    gp.buttons.forEach((b,i)=>{ if (b.pressed && PAD[i]) out.add(PAD[i]); });
+    if (Math.abs(gp.axes[0])>0.4) out.add(gp.axes[0]<0?"left":"right");
+    if (Math.abs(gp.axes[1])>0.4) out.add(gp.axes[1]<0?"up":"down");
+  }
+  return out;
+}
+const stickOrigin = { x:0, y:0 };
+function commands(){
+  const out = new Set(held); padCommands(out);
+  if (touchState.stick){
+    if (!stickOrigin.live){ stickOrigin.x=touchState.stick.x; stickOrigin.y=touchState.stick.y; stickOrigin.live=true; }
+    const dx = touchState.stick.x - stickOrigin.x, dy = touchState.stick.y - stickOrigin.y;
+    if (dx < -12) out.add("left"); if (dx > 12) out.add("right");
+    if (dy < -12) out.add("up");   if (dy > 12) out.add("down");
+  } else stickOrigin.live = false;
+  if (touchState.act) out.add("action");
+  return out;
+}
+
+// ---------- canvas ----------
+const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
+const DPR_CAP = 1.5;
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, DPR_CAP);
+  canvas.width = innerWidth*dpr; canvas.height = innerHeight*dpr;
+  canvas.style.width = innerWidth+"px"; canvas.style.height = innerHeight+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.imageSmoothingEnabled = false;
+}
+addEventListener("resize", resize); addEventListener("orientationchange", resize); resize();
+
+// ---------- world state (live fetch, snapshot fallback — unchanged) ----------
+const W = { data: SNAPSHOT.world, source: STR.snapshotData };
+fetch(LIVE_URL).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.integrity){ W.data=j; W.source=STR.liveData; applyCitizenHistory(); } }).catch(()=>{});
+
+// ---------- map ----------
+const TILEMAP = await loadMap("./assets/realm-of-self.tmj", import.meta.url);
+const TS = TILEMAP.tileWidth;
+const ZOOM = 2; // upscale 16px tiles -> 32px on screen
+
+// ---------- entities ----------
+const spawn = TILEMAP.rect("spawn");
+const hero = { x: spawn.x+8, y: spawn.y+8, r: 5, spd: 1.6 };
+const nodes = TILEMAP.allOf("signal_node").map(o => ({
+  x:o.x+8, y:o.y+8, id:o.props.target_id, charge:0, done:false
+}));
+const exits = TILEMAP.allOf("exit");
+const AGENT_IDS = ["echo","athena","dao","sofia"];
+const npcs = AGENT_IDS.map((id,i)=>({ id, ...REALM_AGENTS[id],
+  x: spawn.x + Math.cos(i*1.7)*60, y: spawn.y + Math.sin(i*1.7)*60,
+  home: null, t: i*97 }));
+npcs.forEach(n => n.home = {x:n.x, y:n.y});
+
+let restored = 0;
+let msg = STR.questHint, msgT = 360, won = false, winT=0;
+
+// ---------- formula-palette fallback sprites (same as C-340; used until art swap) ----------
+const PAL = { amber:"#e8b54a", amberHi:"#f6d488", teal:"#3de8d4", indigo:"#1a1d36",
+  echo:"#cdb8e8", athena:"#9fb8e8", dao:"#9fe8c4", sofia:"#e8b89f" };
+function fbCircle(color){ return (x,y,s,ctx)=>{ ctx.fillStyle=PAL.indigo; ctx.fillRect(x-s/2-2,y-s/2-2,s+4,s+4);
+  ctx.fillStyle=color; ctx.fillRect(x-s/2,y-s/2,s,s); ctx.fillStyle=PAL.amberHi; ctx.fillRect(x-s/6,y-s/3,s/8,s/8); }; }
+
+// ---------- simulation ----------
+function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+function say(s){ msg=s; msgT=420; }
+
+// Apply citizen_history (C-341) for the current cycle, scoped to this realm.
+// Called at init (against the embedded snapshot) and again once the live
+// world state has loaded, so a reload doesn't re-spawn already-channeled nodes.
+function applyCitizenHistory(){
+  const hist = W.data.citizen_history || [];
+  const cycle = W.data.cycle;
+  for (const entry of hist){
+    if (entry.zone !== "realm-of-self") continue;
+    if (cycle && entry.cycle_id !== cycle) continue;
+    const nd = nodes.find(n => n.id === entry.target_id);
+    if (nd && !nd.done){ nd.done = true; nd.charge = 1; restored++; }
+  }
+  if (restored >= nodes.length && !won){ won = true; say(STR.beaconLit); }
+}
+applyCitizenHistory();
+
+
+function update(dt, cmds){
+  if (won){ winT++; return; }
+  let dx=0, dy=0;
+  if (cmds.has("left"))dx-=1; if (cmds.has("right"))dx+=1;
+  if (cmds.has("up"))dy-=1;   if (cmds.has("down"))dy+=1;
+  if (dx&&dy){ dx*=0.707; dy*=0.707; }
+  const nx=hero.x+dx*hero.spd, ny=hero.y+dy*hero.spd;
+  if (!TILEMAP.isSolid(nx, hero.y)) hero.x=nx;
+  if (!TILEMAP.isSolid(hero.x, ny)) hero.y=ny;
+
+  for (const n of npcs){ n.t++;
+    n.x = n.home.x + Math.cos(n.t/110)*24; n.y = n.home.y + Math.sin(n.t/130)*24; }
+
+  let near=null;
+  for (const nd of nodes) if (!nd.done && dist(hero,nd)<14) near=nd;
+  if (near){
+    if (cmds.has("action")){ near.charge+=dt/2200;
+      if (near.charge>=1){ near.done=true; restored++; say(STR.nodeRestored+" ("+restored+"/"+nodes.length+")");
+        if (restored===nodes.length){ won=true; say(STR.beaconLit); }
+        window.__hivePendingEvent = { zone:"realm-of-self", action:"channel_node", target_id:near.id };
+      } }
+    else near.charge=Math.max(0,near.charge-dt/4000);
+  }
+  for (const n of npcs) if (dist(hero,n)<16 && cmds.has("action") && !near){ say(n.name+": “"+n.voice+"”"); }
+
+  // exits
+  for (const ex of exits){
+    if (hero.x>=ex.x-4 && hero.x<=ex.x+ex.width+4 && hero.y>=ex.y-4 && hero.y<=ex.y+ex.height+4){
+      const tz = ex.props.target_zone;
+      if (tz === "castle") say(STR_TOWN.travelingTo+"Forge of Civilization…"+STR_TOWN.notImplemented);
+      else say(STR_TOWN.travelingTo+tz+STR_TOWN.notImplemented);
+      hero.x = spawn.x+8; hero.y = spawn.y+8; // bounce back — zones not yet built
+    }
+  }
+  if (msgT>0) msgT--;
+}
+
+// ---------- render ----------
+function render(){
+  const w=innerWidth, h=innerHeight;
+  ctx.fillStyle="#1a1d36"; ctx.fillRect(0,0,w,h);
+  const camX = Math.max(0, Math.min(TILEMAP.widthPx*ZOOM - w, hero.x*ZOOM - w/2));
+  const camY = Math.max(0, Math.min(TILEMAP.heightPx*ZOOM - h, hero.y*ZOOM - h/2));
+  ctx.save();
+  ctx.scale(ZOOM, ZOOM);
+  ctx.translate(-camX/ZOOM, -camY/ZOOM);
+  TILEMAP.render(ctx, camX/ZOOM, camY/ZOOM, w/ZOOM, h/ZOOM);
+
+  for (const nd of nodes){
+    ctx.fillStyle = nd.done?PAL.teal:"#1f6f66";
+    ctx.beginPath(); ctx.arc(nd.x,nd.y,4,0,7); ctx.fill();
+    if (!nd.done && nd.charge>0){ ctx.strokeStyle=PAL.teal; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(nd.x,nd.y,6,-Math.PI/2,-Math.PI/2+nd.charge*Math.PI*2); ctx.stroke(); }
+  }
+  for (const n of npcs) fbCircle(PAL[n.id]||"#ccc")(n.x, n.y, 12, ctx);
+  fbCircle(PAL.amber)(hero.x, hero.y, 11, ctx);
+  ctx.restore();
+
+  // fog of integrity
+  const gi = W.data.integrity?.gi ?? 0.63;
+  let fog = Math.max(0, Math.min(0.7, (0.95-gi))); if (won) fog*=Math.max(0,1-winT/240);
+  if (fog>0.01){
+    const g=ctx.createRadialGradient(w/2,h/2,TS*ZOOM*3,w/2,h/2,Math.max(w,h)*0.7);
+    g.addColorStop(0,"rgba(20,22,42,0)"); g.addColorStop(1,"rgba(20,22,42,"+fog+")");
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+  }
+  // HUD
+  ctx.fillStyle="rgba(12,14,26,0.82)"; ctx.fillRect(8,8,320,68);
+  ctx.fillStyle=PAL.amberHi; ctx.font="bold 14px monospace";
+  ctx.fillText("Realm of Self · "+STR.cycleLabel+" "+(W.data.cycle||"?")+"  ·  "+W.source, 16, 28);
+  ctx.fillStyle=gi<0.85?"#e8c44a":"#5dd6a2";
+  ctx.fillText(STR.giLabel+" "+gi.toFixed(2)+"  "+(won?STR.moodClear:(W.data.world_mood||"")), 16, 48);
+  ctx.fillStyle=PAL.teal; ctx.fillText("Signal nodes: "+restored+"/"+nodes.length+"  — "+STR_TOWN.exitHint, 16, 66);
+  if (msgT>0){ ctx.fillStyle="rgba(12,14,26,0.85)"; const tw=ctx.measureText(msg).width+24;
+    ctx.fillRect(w/2-tw/2, h-72, Math.min(tw,w-16), 34); ctx.fillStyle="#e8e6f5"; ctx.fillText(msg, w/2-Math.min(tw,w-16)/2+12, h-50); }
+}
+
+// ---------- loop (unchanged) ----------
+const STEP=1000/60; let acc=0, last=performance.now(), paused=false, frames=0, fpsAt=last;
+addEventListener("blur",()=>paused=true); addEventListener("focus",()=>{paused=false;last=performance.now();});
+const dev=new URLSearchParams(location.search).has("dev");
+if (dev) document.getElementById("dev").style.display="block";
+function frame(now){ requestAnimationFrame(frame); if(paused)return;
+  acc+=now-last; last=now; const cmds=commands();
+  while(acc>=STEP){ update(STEP,cmds); acc-=STEP; }
+  render();
+  if (dev&&(frames++, now-fpsAt>=500)){ document.getElementById("dev").textContent=Math.round(frames*1000/(now-fpsAt))+" fps"; frames=0; fpsAt=now; } }
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
