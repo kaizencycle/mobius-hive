@@ -1,0 +1,14 @@
+{
+  "id": "ocean-of-inquiry",
+  "title": "Ocean of Inquiry",
+  "description": "Open water dotted with archive-islands, where questions are cast out and answers drift back on the tide.",
+  "features": [
+    "archive_islands",
+    "question_tide"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "ocean-of-inquiry",
+  "agents": ["oracle"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "realm-of-harmony",
+  "title": "Realm of Harmony",
+  "description": "A balanced courtyard where DAO and ZENITH keep the HIVE's incentives and rhythms in tune with one another.",
+  "features": [
+    "balance_courtyard",
+    "incentive_gardens"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "realm-of-harmony",
+  "agents": ["dao", "zenith"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

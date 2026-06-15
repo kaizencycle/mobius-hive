@@ -1,0 +1,14 @@
+{
+  "id": "frontier-of-tomorrow",
+  "title": "Frontier of Tomorrow",
+  "description": "A bright proving ground where VISION, TECHNOS, SYNAPSE, and ORION sketch what the HIVE could become next.",
+  "features": [
+    "proving_ground",
+    "blueprint_wall"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "frontier-of-tomorrow",
+  "agents": ["vision", "technos", "synapse", "orion"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

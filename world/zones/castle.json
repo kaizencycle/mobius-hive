@@ -8,6 +8,8 @@
     "quest_panel"
   ],
   "default_overlay": "clear",
+  "realm_id": "forge-of-civilization",
+  "agents": ["aurelius"],
   "cycle_id": "C-342",
   "updated_at": "2026-06-15T00:17:08.944Z"
 }

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "hub": "forge-of-civilization",
+  "realms": [
+    {
+      "id": "forge-of-civilization",
+      "title": "Forge of Civilization",
+      "zone_ref": "castle",
+      "agents": ["aurelius"],
+      "description": "The central chamber of oversight and coordination. Every other realm in the HIVE world connects back here.",
+      "connects_to": [
+        "realm-of-self",
+        "realm-of-reason",
+        "ocean-of-inquiry",
+        "realm-of-harmony",
+        "realm-of-meaning",
+        "realm-of-unity",
+        "frontier-of-tomorrow",
+        "path-of-evolution",
+        "spark-of-potential"
+      ]
+    },
+    {
+      "id": "realm-of-self",
+      "title": "Realm of Self",
+      "zone_ref": "realm-of-self",
+      "agents": ["echo"],
+      "description": "A quiet hall of mirrors where citizens reflect on their own history and choices before stepping into the wider HIVE.",
+      "connects_to": ["forge-of-civilization", "realm-of-meaning"]
+    },
+    {
+      "id": "realm-of-reason",
+      "title": "Realm of Reason",
+      "zone_ref": "realm-of-reason",
+      "agents": ["athena"],
+      "description": "A study of logic and strategy, where ATHENA tests the soundness of the HIVE's plans before they are acted upon.",
+      "connects_to": ["forge-of-civilization", "ocean-of-inquiry"]
+    },
+    {
+      "id": "ocean-of-inquiry",
+      "title": "Ocean of Inquiry",
+      "zone_ref": "ocean-of-inquiry",
+      "agents": ["oracle"],
+      "description": "Open water dotted with archive-islands, where questions are cast out and answers drift back on the tide.",
+      "connects_to": ["realm-of-reason", "realm-of-harmony"]
+    },
+    {
+      "id": "realm-of-harmony",
+      "title": "Realm of Harmony",
+      "zone_ref": "realm-of-harmony",
+      "agents": ["dao", "zenith"],
+      "description": "A balanced courtyard where DAO and ZENITH keep the HIVE's incentives and rhythms in tune with one another.",
+      "connects_to": ["ocean-of-inquiry", "forge-of-civilization", "realm-of-unity"]
+    },
+    {
+      "id": "realm-of-meaning",
+      "title": "Realm of Meaning",
+      "zone_ref": "realm-of-meaning",
+      "agents": ["sofia"],
+      "description": "A library of living stories. SOFIA tends the threads that give the HIVE's events their meaning.",
+      "connects_to": ["realm-of-self", "forge-of-civilization", "realm-of-unity"]
+    },
+    {
+      "id": "realm-of-unity",
+      "title": "Realm of Unity",
+      "zone_ref": "realm-of-unity",
+      "agents": ["heartis"],
+      "description": "A gathering green where HEARTIS keeps watch over the bonds between citizens and sentinels alike.",
+      "connects_to": ["realm-of-harmony", "realm-of-meaning", "frontier-of-tomorrow"]
+    },
+    {
+      "id": "frontier-of-tomorrow",
+      "title": "Frontier of Tomorrow",
+      "zone_ref": "frontier-of-tomorrow",
+      "agents": ["vision", "technos", "synapse", "orion"],
+      "description": "A bright proving ground where VISION, TECHNOS, SYNAPSE, and ORION sketch what the HIVE could become next.",
+      "connects_to": ["realm-of-unity", "forge-of-civilization", "path-of-evolution"]
+    },
+    {
+      "id": "path-of-evolution",
+      "title": "Path of Evolution",
+      "zone_ref": "path-of-evolution",
+      "agents": ["nova"],
+      "description": "A winding trail of waypoints marking how far the HIVE has come, walked over by NOVA.",
+      "connects_to": ["frontier-of-tomorrow", "spark-of-potential"]
+    },
+    {
+      "id": "spark-of-potential",
+      "title": "Spark of Potential",
+      "zone_ref": "spark-of-potential",
+      "agents": ["prometheus"],
+      "description": "A workshop of unfinished things, lit by PROMETHEUS, where new quests and ideas first catch fire.",
+      "connects_to": ["path-of-evolution", "forge-of-civilization"]
+    }
+  ]
+}

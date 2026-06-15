@@ -1,0 +1,14 @@
+{
+  "id": "realm-of-meaning",
+  "title": "Realm of Meaning",
+  "description": "A library of living stories. SOFIA tends the threads that give the HIVE's events their meaning.",
+  "features": [
+    "living_library",
+    "narrative_threads"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "realm-of-meaning",
+  "agents": ["sofia"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

@@ -10,6 +10,11 @@
       "items": { "type": "string" }
     },
     "default_overlay": { "type": "string" },
+    "realm_id": { "type": "string" },
+    "agents": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "cycle_id": { "type": "string" },
     "updated_at": { "type": "string" }
   },

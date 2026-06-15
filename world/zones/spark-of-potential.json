@@ -1,0 +1,14 @@
+{
+  "id": "spark-of-potential",
+  "title": "Spark of Potential",
+  "description": "A workshop of unfinished things, lit by PROMETHEUS, where new quests and ideas first catch fire.",
+  "features": [
+    "workshop_benches",
+    "idea_forge"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "spark-of-potential",
+  "agents": ["prometheus"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "path-of-evolution",
+  "title": "Path of Evolution",
+  "description": "A winding trail of waypoints marking how far the HIVE has come, walked over by NOVA.",
+  "features": [
+    "waypoint_trail",
+    "milestone_markers"
+  ],
+  "default_overlay": "clear",
+  "realm_id": "path-of-evolution",
+  "agents": ["nova"],
+  "cycle_id": "C-342",
+  "updated_at": "2026-06-15T00:00:00.000Z"
+}
