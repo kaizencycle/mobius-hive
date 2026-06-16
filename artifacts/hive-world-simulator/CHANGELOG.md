@@ -1,5 +1,10 @@
 # HIVE 16-bit World Simulator — Changelog
 
+## C-344 — Per-realm fog + Chronicle
+
+- **Per-realm Signal Fog.** Fog is now spatial, not a flat global vignette: rendered to an offscreen buffer and carved with `destination-out` so **sealed realms become fully-clear windows**, the player keeps a torch, and global density tracks live GI + how many realms remain. Reads optional live per-realm GI (`world.realm_integrity[id]` / `realm_gi`) so an unsealed zone clears proportionally when the substrate provides it.
+- **Chronicle panel.** The objectives panel gains a **CHRONICLE** section that seeds from the live `citizen_history` (rendered defensively for string/object entries) and appends this session's deeds (each seal, the final restore). Survives replay (ledger history kept, session deeds reset). Pairs with the C-341 write-back hook so the same deeds the game posts to the parent can return as history next cycle.
+
 ## C-344 — Objectives + 50-point optimization pass
 
 Added an objectives/task system, fixed the Oracle blocking the last Ocean shard,

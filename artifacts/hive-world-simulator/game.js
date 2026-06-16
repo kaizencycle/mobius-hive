@@ -241,8 +241,21 @@ let live = false;
 let liveCycle = WORLD_SNAPSHOT.cycle;
 let dialog = null, dialogLine = 0;
 let nearHint = "";
+let chronicle = [];   // Chronicle: live citizen_history (from world JSON) + this session's deeds
 const 
   el = (id) => document.getElementById(id);
+
+function pushChronicle(entry) {
+  chronicle.unshift(entry);
+  if (chronicle.length > 40) chronicle.length = 40;
+  if (objectivesOpen) buildObjectives();
+}
+function formatHistory(e) {
+  if (e == null) return "…";
+  if (typeof e === "string") return e;
+  return e.title || e.label || e.summary || e.text ||
+    `${e.type || e.action || "event"}${e.realm ? " · " + e.realm : ""}${e.cycle ? " · " + e.cycle : ""}`;
+}
 
 // integrity/vault baselines — overridden by live current-world.json when found,
 // then gameplay (sealing realms) raises them toward 1.0
@@ -433,6 +446,7 @@ function sealRealm(r) {
   sfx("seal");
   toast(STR.beacon_lit.replace("{realm}", realmTitle(r.i)));
   syncHud();
+  pushChronicle({ kind: "session", text: `Sealed ${realmTitle(r.i)}`, cycle: liveCycle, color: r.color });
   emitEvent("seal", { realm: r.def.id, realmTitle: realmTitle(r.i), realmColor: r.color });
   if (sealedCount >= realms.length) { fountain.ready = true; toast(STR.fountain_unlocked); emitEvent("fountain_ready"); }
 }
@@ -447,6 +461,7 @@ function winGame() {
   el("wincta").textContent = STR.win_again;
   el("win").classList.add("show");
   syncHud();
+  pushChronicle({ kind: "session", text: `Restored the Beacon — ${liveCycle} sealed`, cycle: liveCycle, color: "#e8c547" });
   emitEvent("win");
 }
 
@@ -497,6 +512,14 @@ function buildObjectives() {
     html += `<div class="realm"><span style="color:${r.color}">${icon} ${realmTitle(r.i)}</span>` +
       `<span class="st ${cls}">${st}</span></div>`;
   }
+  html += `<div class="hdr">${STR.obj_chronicle}</div>`;
+  if (!chronicle.length) html += `<div class="chron muted">${STR.chronicle_empty}</div>`;
+  else for (const c of chronicle.slice(0, 10)) {
+    const col = c.kind === "session" ? (c.color || "#8cffa8") : "#9a9ac0";
+    const mark = c.kind === "session" ? "\u2726" : "\u00b7";
+    html += `<div class="chron"><span style="color:${col}">${mark}</span> ${c.text}` +
+      `${c.cycle ? ` <span class="muted">${c.cycle}</span>` : ""}</div>`;
+  }
   el("objbody").innerHTML = html;
   el("objtitle").textContent = STR.obj_title;
   el("objclose").textContent = STR.obj_close;
@@ -539,6 +562,8 @@ function syncHud() {
 
 // ---------------------------------------------------------------- render
 const canvas = el("c"), ctx = canvas.getContext("2d");
+const fogCanvas = document.createElement("canvas"), fctx = fogCanvas.getContext("2d");
+let DPR = 1;
 let camX = 0, camY = 0;
 let viewW = 0, viewH = 0;
 
@@ -572,10 +597,12 @@ function buildMapCanvas() {
 }
 function resize() {
   const dpr = Math.min(devicePixelRatio || 1, 2);
+  DPR = dpr;
   canvas.width = Math.floor(innerWidth * dpr);
   canvas.height = Math.floor(innerHeight * dpr);
   canvas.style.width = innerWidth + "px";
   canvas.style.height = innerHeight + "px";
+  fogCanvas.width = canvas.width; fogCanvas.height = canvas.height;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = false;
   viewW = innerWidth; viewH = innerHeight;
@@ -692,19 +719,49 @@ function drawPlayer(frame) {
   if (im) ctx.drawImage(im, f * 16, 0, 16, 16, dx, dy, 32 * ZOOM, 32 * ZOOM);
 }
 
+// Per-realm Signal Fog. Global density is driven by live GI + how many realms
+// remain; sealed realms are carved fully clear, and an unsealed realm with a
+// live per-realm GI (world.realm_integrity[id]) clears proportionally. A torch
+// always clears around the player. Rendered to an offscreen buffer so the
+// destination-out cutouts don't erase the world beneath.
 function drawFog(frame) {
-  const sealedFrac = sealedCount / realms.length;
-  const base = won ? 0.0 : 0.42 * (1 - sealedFrac * 0.8);
+  if (won) return;
+  const gi = giNow();
+  const unsealedFrac = realms.filter((r) => !r.sealed).length / realms.length;
+  let base = 0.18 + (0.9 - gi) * 0.6 + unsealedFrac * 0.18 + 0.04 * Math.sin(frame * 0.02);
+  base = Math.max(0, Math.min(0.68, base));
   if (base <= 0.01) return;
-  const drift = 0.06 * Math.sin(frame * 0.02);
-  const px = (player.wx - camX) * ZOOM, py = (player.wy - camY) * ZOOM;
-  const r = 150 * ZOOM;
-  const g = ctx.createRadialGradient(px, py, r * 0.35, px, py, r);
-  g.addColorStop(0, "rgba(8,8,26,0)");
-  g.addColorStop(1, `rgba(8,8,26,${(base + drift).toFixed(3)})`);
-  ctx.fillStyle = g; ctx.fillRect(0, 0, viewW, viewH);
-  ctx.fillStyle = `rgba(10,10,30,${(base * 0.5).toFixed(3)})`;
-  ctx.fillRect(0, 0, viewW, viewH);
+  const W = fogCanvas.width, H = fogCanvas.height;
+  if (!W) return;
+  const f = fctx;
+  f.setTransform(1, 0, 0, 1, 0, 0);
+  f.globalCompositeOperation = "source-over";
+  f.clearRect(0, 0, W, H);
+  f.fillStyle = `rgba(9,8,26,${base.toFixed(3)})`;
+  f.fillRect(0, 0, W, H);
+
+  f.globalCompositeOperation = "destination-out";
+  const SX = (wx) => (wx - camX) * ZOOM * DPR, SY = (wy) => (wy - camY) * ZOOM * DPR;
+  const punch = (cx, cy, rad, strength) => {
+    const g = f.createRadialGradient(cx, cy, rad * 0.2, cx, cy, rad);
+    g.addColorStop(0, `rgba(0,0,0,${strength})`);
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    f.fillStyle = g; f.beginPath(); f.arc(cx, cy, rad, 0, 7); f.fill();
+  };
+  const rad = (REGION_R + 1) * TILE * ZOOM * DPR;
+  for (const r of realms) {
+    const ccx = SX(r.cx * TILE + TILE / 2), ccy = SY(r.cy * TILE + TILE / 2);
+    if (ccx < -rad || ccx > W + rad || ccy < -rad || ccy > H + rad) continue;
+    if (r.sealed) punch(ccx, ccy, rad, 1);
+    else if (r.localGi != null) punch(ccx, ccy, rad, Math.max(0, Math.min(0.9, r.localGi)));
+  }
+  punch(SX(player.wx), SY(player.wy), 150 * ZOOM * DPR, 1);
+
+  f.globalCompositeOperation = "source-over";
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(fogCanvas, 0, 0);
+  ctx.restore();
 }
 
 // ----------------------------------------------------------------- update
@@ -763,7 +820,9 @@ function resetGame() {
   el("win").classList.remove("show");
   for (const r of realms) { r.sealed = false; r.talked = false; r.revealed = false; for (const s of r.shards) s.taken = false; }
   sealedCount = 0; won = false; fountain.ready = false; fountain.active = false;
+  chronicle = chronicle.filter((c) => c.kind === "history");   // keep ledger history, drop this run's deeds
   player.wx = wcx(HX); player.wy = (HY + 6) * TILE + 16; player.dir = "up";
+  if (objectivesOpen) buildObjectives();
   syncHud();
 }
 
@@ -813,6 +872,14 @@ async function tryLive() {
         liveCycle = w.cycle; live = true;
         if (w.integrity && typeof w.integrity.gi === "number") giBase = Math.max(0, Math.min(1, w.integrity.gi));
         if (w.vault && typeof w.vault.progress === "number") vaultBase = Math.max(0, Math.min(1, w.vault.progress));
+        // optional per-realm GI for zone-level fog (future-proof; absent today)
+        const ri = w.realm_integrity || w.realm_gi || null;
+        if (ri) for (const r of realms) { const g = ri[r.def.id]; if (typeof g === "number") r.localGi = Math.max(0, Math.min(1, g)); }
+        // seed Chronicle from live citizen_history
+        if (Array.isArray(w.citizen_history) && w.citizen_history.length) {
+          for (const e of w.citizen_history.slice(-20)) chronicle.push({ kind: "history", text: formatHistory(e), cycle: e?.cycle || w.cycle });
+        }
+        if (objectivesOpen) buildObjectives();
         syncHud();
         return;
       }

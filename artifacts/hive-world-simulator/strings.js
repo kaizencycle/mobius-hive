@@ -52,4 +52,6 @@ export const STR = {
   st_ready: "light beacon",
   st_sealed: "SEALED",
   objective_hint: "Objective: sweep {n} shards in {realm}",
+  obj_chronicle: "CHRONICLE",
+  chronicle_empty: "No deeds recorded yet this cycle.",
 };
