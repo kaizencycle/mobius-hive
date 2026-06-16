@@ -3,7 +3,7 @@ export const STR = {
   title: "MOBIUS HIVE",
   subtitle: "16-BIT WORLD SIMULATOR",
   start: "PRESS E / TAP / START",
-  start_hint: "Arrows / WASD move · E or A talk & act · Esc closes",
+  start_hint: "Arrows / WASD move · E or A talk & act · Q objectives · Esc closes",
   loading: "WAKING THE HIVE…",
 
   hud_cycle: "CYCLE",
@@ -38,4 +38,18 @@ export const STR = {
 
   legend_you: "YOU",
   legend_portal: "PORTAL",
+
+  obj_title: "OBJECTIVES",
+  obj_btn: "\u25e7 OBJECTIVES",
+  obj_quest: "QUEST: RESTORE THE BEACON",
+  obj_step_seal: "Sweep & seal the realms",
+  obj_step_fountain: "Restore the Forge Fountain",
+  obj_step_fountain_locked: "Restore the Forge Fountain (locked)",
+  obj_realms: "REALMS",
+  obj_close: "[Q] / TAP \u25e7 TO CLOSE",
+  st_new: "not visited",
+  st_go: "shards {got}/{total}",
+  st_ready: "light beacon",
+  st_sealed: "SEALED",
+  objective_hint: "Objective: sweep {n} shards in {realm}",
 };
