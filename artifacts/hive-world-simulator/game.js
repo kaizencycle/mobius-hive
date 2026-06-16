@@ -121,7 +121,7 @@ function buildWorld() {
       if (!inBounds(x, y) || map[y][x] === VOID) continue;
       if (dx * dx + dy * dy > REGION_R * REGION_R) continue;
       realmAt[y][x] = i;
-      if (ocean) setTile(x, y, (dx * dx + dy * dy <= 4) ? GROUND : WATER);
+      if (ocean) setTile(x, y, (dx * dx + dy * dy <= 8) ? GROUND : WATER);
     }
     // ring of trees around the region
     for (let k = 0; k < 7; k++) {
@@ -148,34 +148,21 @@ function buildWorld() {
   fountain = { wx: HX * TILE + TILE, wy: (HY - 1) * TILE + TILE, ready: false, active: false };
   for (const [bx, by] of [[HX, HY - 1], [HX - 1, HY - 1], [HX, HY], [HX - 1, HY]]) blockedObj.add(tkey(bx, by));
 
-  // realm runtime objects: agent, beacon, shards
+  // realm runtime objects: agent + beacon (shards placed after all blocks set)
   realms = centers.map(({ def, i, cx, cy }) => {
     const color = def.color;
     const beaconT = { x: cx, y: cy - 2 };
-    if (map[beaconT.y] && WALKABLE.has(map[beaconT.y][beaconT.x] ?? VOID) === false) beaconT.y = cy - 1;
+    if (!(map[beaconT.y] && WALKABLE.has(map[beaconT.y][beaconT.x] ?? VOID))) beaconT.y = cy - 1;
     blockedObj.add(tkey(beaconT.x, beaconT.y));
     const agentT = { x: cx, y: cy + 1 };
     blockedObj.add(tkey(agentT.x, agentT.y));
-
-    // shards on walkable, unblocked tiles in ring 2..4
-    const shards = [];
-    let guard = 0;
-    while (shards.length < SHARDS_PER_REALM && guard++ < 400) {
-      const a = rand() * Math.PI * 2;
-      const r = 2 + rand() * 2.4;
-      const sx = Math.round(cx + Math.cos(a) * r);
-      const sy = Math.round(cy + Math.sin(a) * r);
-      if (!inBounds(sx, sy) || !WALKABLE.has(map[sy][sx]) || blockedObj.has(tkey(sx, sy))) continue;
-      if (shards.some((s) => Math.abs(s.tx - sx) + Math.abs(s.ty - sy) < 2)) continue;
-      shards.push({ tx: sx, ty: sy, wx: wcx(sx), wy: wcx(sy), taken: false });
-    }
 
     const ag = WORLD_SNAPSHOT.agents[def.agent] || { name: def.agent.toUpperCase(), role: "", lines: [def.blurb] };
     npcs.push({ id: def.agent, kind: "agent", name: ag.name, role: ag.role, lines: ag.lines,
       wx: wcx(agentT.x), wy: wcx(agentT.y), color, realm: i });
 
     return { def, i, cx, cy, color, beacon: { ...beaconT, wx: wcx(beaconT.x), wy: wcx(beaconT.y) },
-      shards, talked: false, sealed: false, total: SHARDS_PER_REALM };
+      shards: [], talked: false, sealed: false, revealed: false, total: SHARDS_PER_REALM };
   });
 
   // hub sentinels + greeter, placed around the courtyard
@@ -192,6 +179,57 @@ function buildWorld() {
       lines, wx: wcx(tx), wy: wcx(ty), color: hubDef.color, hub: true });
     blockedObj.add(tkey(tx, ty));
   }
+
+  // reachable flood-fill from the player spawn over walkable, unblocked tiles
+  reachableSet = computeReachable(Math.floor(player.wx / TILE), Math.floor(player.wy / TILE));
+  // shards: only on reachable tiles in each realm's ring (never trapped behind an NPC)
+  for (const r of realms) placeShards(r, reachableSet, rand);
+}
+let reachableSet = new Set();
+
+// flood fill: tiles the player can actually stand on / walk to
+function computeReachable(sx, sy) {
+  const seen = new Set();
+  const start = tkey(sx, sy);
+  if (!walkTile(sx, sy)) return seen;            // spawn must be walkable
+  const q = [[sx, sy]]; seen.add(start);
+  while (q.length) {
+    const [x, y] = q.pop();
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = x + dx, ny = y + dy, k = tkey(nx, ny);
+      if (seen.has(k) || !walkTile(nx, ny)) continue;
+      seen.add(k); q.push([nx, ny]);
+    }
+  }
+  return seen;
+}
+function walkTile(x, y) {
+  return inBounds(x, y) && WALKABLE.has(map[y][x]) && !blockedObj.has(tkey(x, y));
+}
+
+function placeShards(r, reachable, rand) {
+  const { cx, cy } = r;
+  // candidate ring tiles, reachable and not blocked, sorted near->far for tidy spread
+  const cand = [];
+  for (let dy = -REGION_R; dy <= REGION_R; dy++) for (let dx = -REGION_R; dx <= REGION_R; dx++) {
+    const d2 = dx * dx + dy * dy;
+    if (d2 < 2 || d2 > REGION_R * REGION_R) continue;
+    const x = cx + dx, y = cy + dy;
+    if (!reachable.has(tkey(x, y))) continue;
+    cand.push({ x, y, d2 });
+  }
+  // shuffle deterministically, then greedily pick spaced-out tiles
+  for (let i = cand.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [cand[i], cand[j]] = [cand[j], cand[i]]; }
+  const chosen = [];
+  for (const c of cand) {
+    if (chosen.length >= SHARDS_PER_REALM) break;
+    if (chosen.some((s) => Math.abs(s.x - c.x) + Math.abs(s.y - c.y) < 2)) continue;
+    chosen.push(c);
+  }
+  // fallback: if spacing was too strict (tiny island), relax it
+  for (const c of cand) { if (chosen.length >= SHARDS_PER_REALM) break; if (!chosen.includes(c)) chosen.push(c); }
+  r.shards = chosen.slice(0, SHARDS_PER_REALM).map((c) => ({ tx: c.x, ty: c.y, wx: wcx(c.x), wy: wcx(c.y), taken: false }));
+  r.total = r.shards.length;
 }
 
 // ----------------------------------------------------------------- state
@@ -203,8 +241,21 @@ let live = false;
 let liveCycle = WORLD_SNAPSHOT.cycle;
 let dialog = null, dialogLine = 0;
 let nearHint = "";
+let chronicle = [];   // Chronicle: live citizen_history (from world JSON) + this session's deeds
 const 
   el = (id) => document.getElementById(id);
+
+function pushChronicle(entry) {
+  chronicle.unshift(entry);
+  if (chronicle.length > 40) chronicle.length = 40;
+  if (objectivesOpen) buildObjectives();
+}
+function formatHistory(e) {
+  if (e == null) return "…";
+  if (typeof e === "string") return e;
+  return e.title || e.label || e.summary || e.text ||
+    `${e.type || e.action || "event"}${e.realm ? " · " + e.realm : ""}${e.cycle ? " · " + e.cycle : ""}`;
+}
 
 // integrity/vault baselines — overridden by live current-world.json when found,
 // then gameplay (sealing realms) raises them toward 1.0
@@ -214,9 +265,27 @@ function giNow() { return Math.min(1, giBase + (sealedCount / realms.length) * (
 function vaultNow() { return Math.min(1, vaultBase + (sealedCount / realms.length) * (1 - vaultBase)); }
 function micNow() { return Math.round(1000 + vaultNow() * 337); }
 
+// --------------------------------------------------- embed integration
+// The game is designed to live inside the Mobius browser shell's HIVE chamber
+// as a cross-origin iframe. The shell passes ?data=<worldBase> (live overlay,
+// handled in tryLive) and ?muted=1 (no autoplay sound). Progress is emitted to
+// the parent frame via postMessage AND mirrored on window.__hivePendingEvent so
+// the shell can write citizen_history to the ledger (C-341 write-back hook).
+const MUTED = new URLSearchParams(location.search).get("muted") === "1";
+function emitEvent(type, extra) {
+  const payload = Object.assign({
+    source: "mobius-hive-sim", type, cycle: liveCycle, live,
+    gi: giNow(), vault: vaultNow(), mic: micNow(),
+    sealed: sealedCount, total: realms.length, won, ts: Date.now(),
+  }, extra || {});
+  try { window.__hivePendingEvent = payload; } catch (e) { /* sandboxed */ }
+  try { if (window.parent && window.parent !== window) window.parent.postMessage(payload, "*"); } catch (e) { /* cross-origin */ }
+}
+
 // ------------------------------------------------------------------- audio
 let actx = null;
 function sfx(type) {
+  if (MUTED) return;
   try {
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
     if (actx.state === "suspended") actx.resume();
@@ -248,7 +317,9 @@ const touch = new Set();
 let prevAction = false, pendingAction = false;
 
 addEventListener("keydown", (e) => {
-  const c = BIND[e.code]; if (!c) { if (e.code === "Escape") closeAll(); return; }
+  if (e.code === "KeyQ" || e.code === "Tab") { toggleObjectives(); e.preventDefault(); return; }
+  if (e.code === "Escape") { closeAll(); toggleObjectives(false); return; }
+  const c = BIND[e.code]; if (!c) return;
   if (c === "action" && !held.has("action")) pendingAction = true;   // latch edge for fast taps
   held.add(c); e.preventDefault();
 });
@@ -288,6 +359,8 @@ function bindTouch() {
   for (const id of ["intro", "win", "dialog"]) {
     el(id).addEventListener("pointerdown", (e) => { e.preventDefault(); pendingAction = true; });
   }
+  const ob = el("objbtn");
+  if (ob) ob.addEventListener("click", (e) => { e.preventDefault(); toggleObjectives(); });
   if ("ontouchstart" in window || navigator.maxTouchPoints > 0) el("touch").classList.add("show");
 }
 
@@ -336,7 +409,9 @@ function doInteract() {
     if (npc.kind === "agent" && npc.realm != null) {
       const r = realms[npc.realm];
       if (!r.sealed) {
-        if (!r.talked) { r.talked = true; revealShards(r); }
+        const first = !r.talked;
+        if (first) { r.talked = true; revealShards(r); syncHud(); }
+        if (first && r.total) toast(STR.objective_hint.replace("{n}", r.total).replace("{realm}", realmTitle(r.i)));
         lines = [...npc.lines, r.shards.every((s) => s.taken) ? STR.task_done
           : STR.task_sweep.replace("{n}", r.total)];
       } else lines = [`${realmTitle(r.i)} stands sealed. The fog has lifted here.`];
@@ -371,7 +446,9 @@ function sealRealm(r) {
   sfx("seal");
   toast(STR.beacon_lit.replace("{realm}", realmTitle(r.i)));
   syncHud();
-  if (sealedCount >= realms.length) { fountain.ready = true; toast(STR.fountain_unlocked); }
+  pushChronicle({ kind: "session", text: `Sealed ${realmTitle(r.i)}`, cycle: liveCycle, color: r.color });
+  emitEvent("seal", { realm: r.def.id, realmTitle: realmTitle(r.i), realmColor: r.color });
+  if (sealedCount >= realms.length) { fountain.ready = true; toast(STR.fountain_unlocked); emitEvent("fountain_ready"); }
 }
 
 function winGame() {
@@ -384,6 +461,8 @@ function winGame() {
   el("wincta").textContent = STR.win_again;
   el("win").classList.add("show");
   syncHud();
+  pushChronicle({ kind: "session", text: `Restored the Beacon — ${liveCycle} sealed`, cycle: liveCycle, color: "#e8c547" });
+  emitEvent("win");
 }
 
 // --------------------------------------------------------------- dialog/ui
@@ -404,7 +483,71 @@ let toastT = 0;
 function toast(msg) { el("toast").textContent = msg; el("toast").classList.add("show"); toastT = 180; }
 function closeAll() { dialog = null; renderDialog(); }
 
+// ----------------------------------------------------------- objectives
+let objectivesOpen = false;
+function toggleObjectives(force) {
+  objectivesOpen = force != null ? force : !objectivesOpen;
+  el("objectives").classList.toggle("show", objectivesOpen);
+  if (objectivesOpen) buildObjectives();
+}
+function buildObjectives() {
+  const sealedFrac = `${sealedCount}/${realms.length}`;
+  const fountainStep = sealedCount >= realms.length
+    ? `<div class="step ${won ? "done" : ""}">${won ? "\u2713" : "\u25c8"} ${STR.obj_step_fountain}</div>`
+    : `<div class="step">\u25cb ${STR.obj_step_fountain_locked}</div>`;
+  let html = `<div class="q">${STR.obj_quest}</div>`;
+  html += `<div class="step ${sealedCount >= realms.length ? "done" : ""}">` +
+    `${sealedCount >= realms.length ? "\u2713" : "\u25c8"} ${STR.obj_step_seal} \u2014 ${sealedFrac}</div>`;
+  html += fountainStep;
+  html += `<div class="hdr">${STR.obj_realms}</div>`;
+  for (const r of realms) {
+    let icon = "\u25cb", cls = "", st = STR.st_new;
+    if (r.sealed) { icon = "\u2713"; cls = "ok"; st = STR.st_sealed; }
+    else if (r.talked) {
+      const got = r.shards.filter((s) => s.taken).length;
+      cls = "go";
+      st = got >= r.total ? STR.st_ready : STR.st_go.replace("{got}", got).replace("{total}", r.total);
+      icon = "\u25cf";
+    }
+    html += `<div class="realm"><span style="color:${r.color}">${icon} ${realmTitle(r.i)}</span>` +
+      `<span class="st ${cls}">${st}</span></div>`;
+  }
+  html += `<div class="hdr">${STR.obj_chronicle}</div>`;
+  if (!chronicle.length) html += `<div class="chron muted">${STR.chronicle_empty}</div>`;
+  else for (const c of chronicle.slice(0, 10)) {
+    const col = c.kind === "session" ? (c.color || "#8cffa8") : "#9a9ac0";
+    const mark = c.kind === "session" ? "\u2726" : "\u00b7";
+    html += `<div class="chron"><span style="color:${col}">${mark}</span> ${c.text}` +
+      `${c.cycle ? ` <span class="muted">${c.cycle}</span>` : ""}</div>`;
+  }
+  el("objbody").innerHTML = html;
+  el("objtitle").textContent = STR.obj_title;
+  el("objclose").textContent = STR.obj_close;
+}
+function drawMinimap() {
+  const cv = el("map"); if (!cv) return;
+  const m = cv.getContext("2d");
+  const W = cv.width, H = cv.height, pad = 8;
+  const sx = (W - pad * 2) / (MAP_W * TILE), sy = (H - pad * 2) / (MAP_H * TILE);
+  m.clearRect(0, 0, W, H);
+  m.fillStyle = "#0b0a1f"; m.fillRect(0, 0, W, H);
+  // hub
+  m.fillStyle = hubDef.color; m.fillRect(pad + HX * TILE * sx - 2, pad + HY * TILE * sy - 2, 4, 4);
+  for (const r of realms) {
+    const x = pad + r.cx * TILE * sx, y = pad + r.cy * TILE * sy;
+    m.fillStyle = r.sealed ? r.color : "rgba(120,120,160,.7)";
+    m.beginPath(); m.arc(x, y, r.sealed ? 4 : 3, 0, 7); m.fill();
+    if (r.sealed) { m.strokeStyle = r.color; m.lineWidth = 1; m.beginPath(); m.arc(x, y, 6, 0, 7); m.stroke(); }
+  }
+  // player
+  m.fillStyle = "#3dffea";
+  m.fillRect(pad + player.wx * sx - 2, pad + player.wy * sy - 2, 4, 4);
+}
+
 function syncHud() {
+  const btn = el("objbtn");
+  if (btn) btn.innerHTML = `${STR.obj_btn} <b>${sealedCount}/${realms.length}</b>`;
+  if (objectivesOpen) buildObjectives();
   const gi = Math.round(giNow() * 100);
   const tag = live ? `<span class="aqua pill">${STR.hud_live}</span>` : `<span class="muted pill">${STR.hud_demo}</span>`;
   el("hud").innerHTML = `
@@ -419,14 +562,47 @@ function syncHud() {
 
 // ---------------------------------------------------------------- render
 const canvas = el("c"), ctx = canvas.getContext("2d");
+const fogCanvas = document.createElement("canvas"), fctx = fogCanvas.getContext("2d");
+let DPR = 1;
 let camX = 0, camY = 0;
 let viewW = 0, viewH = 0;
+
+// pre-baked static map layer: the whole tilemap (with realm tints baked) drawn
+// once into an offscreen canvas, then blitted as a single visible slice per
+// frame — eliminates the per-tile loop and per-frame composite passes.
+let mapCanvas = null;
+const _groundCache = new Map();
+function tintedGround(color) {
+  if (_groundCache.has(color)) return _groundCache.get(color);
+  const cv = document.createElement("canvas"); cv.width = TILE; cv.height = TILE;
+  const x = cv.getContext("2d");
+  if (IMG.ground) x.drawImage(IMG.ground, 0, 0);
+  x.globalCompositeOperation = "overlay"; x.globalAlpha = 0.3; x.fillStyle = color;
+  x.fillRect(0, 0, TILE, TILE);
+  _groundCache.set(color, cv); return cv;
+}
+function buildMapCanvas() {
+  mapCanvas = document.createElement("canvas");
+  mapCanvas.width = MAP_W * TILE; mapCanvas.height = MAP_H * TILE;
+  const m = mapCanvas.getContext("2d"); m.imageSmoothingEnabled = false;
+  for (let y = 0; y < MAP_H; y++) for (let x = 0; x < MAP_W; x++) {
+    const c = map[y][x];
+    if (c === VOID) continue;
+    let img = IMG.ground;
+    if (c === PATH) img = IMG.path; else if (c === WATER) img = IMG.water;
+    else if (c === WALL) img = IMG.wall; else if (c === FLOOR) img = IMG.floor;
+    else if (c === GROUND) { const ri = realmAt[y][x]; if (ri >= 0) img = tintedGround(realms[ri].color); }
+    if (img) m.drawImage(img, x * TILE, y * TILE);
+  }
+}
 function resize() {
   const dpr = Math.min(devicePixelRatio || 1, 2);
+  DPR = dpr;
   canvas.width = Math.floor(innerWidth * dpr);
   canvas.height = Math.floor(innerHeight * dpr);
   canvas.style.width = innerWidth + "px";
   canvas.style.height = innerHeight + "px";
+  fogCanvas.width = canvas.width; fogCanvas.height = canvas.height;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = false;
   viewW = innerWidth; viewH = innerHeight;
@@ -441,43 +617,29 @@ function blit(img, wx, wy, w, h) {
 
 function render(frame) {
   ctx.imageSmoothingEnabled = false;
-  // camera
+  // camera (integer-snapped for crisp nearest-neighbour blits)
   const vwW = viewW / ZOOM, vwH = viewH / ZOOM;
-  camX = Math.max(2 * TILE, Math.min(MAP_W * TILE - 2 * TILE - vwW, player.wx - vwW / 2));
-  camY = Math.max(2 * TILE, Math.min(MAP_H * TILE - 2 * TILE - vwH, player.wy - vwH / 2));
+  camX = Math.floor(Math.max(2 * TILE, Math.min(MAP_W * TILE - 2 * TILE - vwW, player.wx - vwW / 2)));
+  camY = Math.floor(Math.max(2 * TILE, Math.min(MAP_H * TILE - 2 * TILE - vwH, player.wy - vwH / 2)));
 
   ctx.fillStyle = "#05040f";
   ctx.fillRect(0, 0, viewW, viewH);
 
-  const x0 = Math.max(0, Math.floor(camX / TILE)), x1 = Math.min(MAP_W - 1, Math.ceil((camX + vwW) / TILE));
-  const y0 = Math.max(0, Math.floor(camY / TILE)), y1 = Math.min(MAP_H - 1, Math.ceil((camY + vwH) / TILE));
-
-  // ground / tiles
-  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
-    const c = map[y][x];
-    if (c === VOID) continue;
-    let img = IMG.ground;
-    if (c === PATH) img = IMG.path; else if (c === WATER) img = IMG.water;
-    else if (c === WALL) img = IMG.wall; else if (c === FLOOR) img = IMG.floor;
-    blit(img, x * TILE, y * TILE, TILE, TILE);
-    // realm tint on ground
-    if (c === GROUND) {
-      const ri = realmAt[y][x];
-      if (ri >= 0) {
-        ctx.globalAlpha = 0.22; ctx.globalCompositeOperation = "overlay";
-        ctx.fillStyle = realms[ri].color;
-        ctx.fillRect(Math.round((x * TILE - camX) * ZOOM), Math.round((y * TILE - camY) * ZOOM), TILE * ZOOM + 1, TILE * ZOOM + 1);
-        ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
-      }
-    }
+  // static map layer: one drawImage of the visible slice
+  if (mapCanvas) {
+    const sw = Math.min(MAP_W * TILE - camX, Math.ceil(vwW) + 1);
+    const sh = Math.min(MAP_H * TILE - camY, Math.ceil(vwH) + 1);
+    ctx.drawImage(mapCanvas, camX, camY, sw, sh, 0, 0, sw * ZOOM, sh * ZOOM);
   }
 
-  // collect drawables (y-sorted)
+  // collect drawables (y-sorted, culled to the view)
+  const vwW2 = viewW / ZOOM, vwH2 = viewH / ZOOM;
+  const cull = (wx, wy) => wx > camX - 64 && wx < camX + vwW2 + 64 && wy > camY - 80 && wy < camY + vwH2 + 80;
   const draw = [];
-  for (const t of trees) draw.push({ y: t.wy, fn: () => blit(IMG.tree, t.wx - 20, t.wy - 48, 40, 60) });
+  for (const t of trees) if (cull(t.wx, t.wy)) draw.push({ y: t.wy, fn: () => blit(IMG.tree, t.wx - 20, t.wy - 48, 40, 60) });
   for (const r of realms) {
     const cell = r.sealed ? 1 : 0;
-    draw.push({ y: r.beacon.wy, fn: () => {
+    if (cull(r.beacon.wx, r.beacon.wy)) draw.push({ y: r.beacon.wy, fn: () => {
       const im = IMG.beacon;
       if (im) ctx.drawImage(im, cell * 32, 0, 32, 48,
         Math.round((r.beacon.wx - 18 - camX) * ZOOM), Math.round((r.beacon.wy - 50 - camY) * ZOOM),
@@ -485,13 +647,13 @@ function render(frame) {
       if (r.sealed) glow(r.beacon.wx, r.beacon.wy - 28, 26, r.color, frame);
     } });
     for (const s of r.shards) {
-      if (s.taken || !r.revealed) continue;
+      if (s.taken || !r.revealed || !cull(s.wx, s.wy)) continue;
       const bob = Math.sin(frame * 0.06 + s.wx) * 3;
       draw.push({ y: s.wy, fn: () => { glow(s.wx, s.wy + bob, 12, "#3dffea", frame); blit(IMG.shard, s.wx - 12, s.wy - 12 + bob, 24, 24); } });
     }
   }
   // fountain
-  draw.push({ y: fountain.wy, fn: () => {
+  if (cull(fountain.wx, fountain.wy)) draw.push({ y: fountain.wy, fn: () => {
     const im = IMG.fountain, cell = fountain.active ? 1 : 0;
     if (im) ctx.drawImage(im, cell * 48, 0, 48, 48,
       Math.round((fountain.wx - 32 - camX) * ZOOM), Math.round((fountain.wy - 44 - camY) * ZOOM),
@@ -500,7 +662,7 @@ function render(frame) {
     else if (fountain.ready) glow(fountain.wx, fountain.wy - 16, 30, "#3dffea", frame);
   } });
   // npcs
-  for (const npc of npcs) draw.push({ y: npc.wy, fn: () => drawNpc(npc, frame) });
+  for (const npc of npcs) if (cull(npc.wx, npc.wy)) draw.push({ y: npc.wy, fn: () => drawNpc(npc, frame) });
   // player
   draw.push({ y: player.wy, fn: () => drawPlayer(frame) });
 
@@ -509,6 +671,9 @@ function render(frame) {
 
   // signal fog
   drawFog(frame);
+
+  // live minimap while objectives panel is open
+  if (objectivesOpen && frame % 3 === 0) drawMinimap();
 
   // nearby hint
   if (nearHint && !dialog) {
@@ -554,19 +719,49 @@ function drawPlayer(frame) {
   if (im) ctx.drawImage(im, f * 16, 0, 16, 16, dx, dy, 32 * ZOOM, 32 * ZOOM);
 }
 
+// Per-realm Signal Fog. Global density is driven by live GI + how many realms
+// remain; sealed realms are carved fully clear, and an unsealed realm with a
+// live per-realm GI (world.realm_integrity[id]) clears proportionally. A torch
+// always clears around the player. Rendered to an offscreen buffer so the
+// destination-out cutouts don't erase the world beneath.
 function drawFog(frame) {
-  const sealedFrac = sealedCount / realms.length;
-  const base = won ? 0.0 : 0.42 * (1 - sealedFrac * 0.8);
+  if (won) return;
+  const gi = giNow();
+  const unsealedFrac = realms.filter((r) => !r.sealed).length / realms.length;
+  let base = 0.18 + (0.9 - gi) * 0.6 + unsealedFrac * 0.18 + 0.04 * Math.sin(frame * 0.02);
+  base = Math.max(0, Math.min(0.68, base));
   if (base <= 0.01) return;
-  const drift = 0.06 * Math.sin(frame * 0.02);
-  const px = (player.wx - camX) * ZOOM, py = (player.wy - camY) * ZOOM;
-  const r = 150 * ZOOM;
-  const g = ctx.createRadialGradient(px, py, r * 0.35, px, py, r);
-  g.addColorStop(0, "rgba(8,8,26,0)");
-  g.addColorStop(1, `rgba(8,8,26,${(base + drift).toFixed(3)})`);
-  ctx.fillStyle = g; ctx.fillRect(0, 0, viewW, viewH);
-  ctx.fillStyle = `rgba(10,10,30,${(base * 0.5).toFixed(3)})`;
-  ctx.fillRect(0, 0, viewW, viewH);
+  const W = fogCanvas.width, H = fogCanvas.height;
+  if (!W) return;
+  const f = fctx;
+  f.setTransform(1, 0, 0, 1, 0, 0);
+  f.globalCompositeOperation = "source-over";
+  f.clearRect(0, 0, W, H);
+  f.fillStyle = `rgba(9,8,26,${base.toFixed(3)})`;
+  f.fillRect(0, 0, W, H);
+
+  f.globalCompositeOperation = "destination-out";
+  const SX = (wx) => (wx - camX) * ZOOM * DPR, SY = (wy) => (wy - camY) * ZOOM * DPR;
+  const punch = (cx, cy, rad, strength) => {
+    const g = f.createRadialGradient(cx, cy, rad * 0.2, cx, cy, rad);
+    g.addColorStop(0, `rgba(0,0,0,${strength})`);
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    f.fillStyle = g; f.beginPath(); f.arc(cx, cy, rad, 0, 7); f.fill();
+  };
+  const rad = (REGION_R + 1) * TILE * ZOOM * DPR;
+  for (const r of realms) {
+    const ccx = SX(r.cx * TILE + TILE / 2), ccy = SY(r.cy * TILE + TILE / 2);
+    if (ccx < -rad || ccx > W + rad || ccy < -rad || ccy > H + rad) continue;
+    if (r.sealed) punch(ccx, ccy, rad, 1);
+    else if (r.localGi != null) punch(ccx, ccy, rad, Math.max(0, Math.min(0.9, r.localGi)));
+  }
+  punch(SX(player.wx), SY(player.wy), 150 * ZOOM * DPR, 1);
+
+  f.globalCompositeOperation = "source-over";
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(fogCanvas, 0, 0);
+  ctx.restore();
 }
 
 // ----------------------------------------------------------------- update
@@ -592,6 +787,7 @@ function update(cmds) {
         s.taken = true; sfx("pick");
         const got = r.shards.filter((q) => q.taken).length;
         toast(`${STR.shards_label} ${got}/${r.total} · ${realmTitle(r.i)}`);
+        if (objectivesOpen) buildObjectives();
       }
     }
   }
@@ -618,12 +814,15 @@ function startGame() {
   started = true;
   el("intro").classList.remove("show");
   if (!actx) sfx("talk");
+  emitEvent("start");
 }
 function resetGame() {
   el("win").classList.remove("show");
   for (const r of realms) { r.sealed = false; r.talked = false; r.revealed = false; for (const s of r.shards) s.taken = false; }
   sealedCount = 0; won = false; fountain.ready = false; fountain.active = false;
+  chronicle = chronicle.filter((c) => c.kind === "history");   // keep ledger history, drop this run's deeds
   player.wx = wcx(HX); player.wy = (HY + 6) * TILE + 16; player.dir = "up";
+  if (objectivesOpen) buildObjectives();
   syncHud();
 }
 
@@ -673,6 +872,14 @@ async function tryLive() {
         liveCycle = w.cycle; live = true;
         if (w.integrity && typeof w.integrity.gi === "number") giBase = Math.max(0, Math.min(1, w.integrity.gi));
         if (w.vault && typeof w.vault.progress === "number") vaultBase = Math.max(0, Math.min(1, w.vault.progress));
+        // optional per-realm GI for zone-level fog (future-proof; absent today)
+        const ri = w.realm_integrity || w.realm_gi || null;
+        if (ri) for (const r of realms) { const g = ri[r.def.id]; if (typeof g === "number") r.localGi = Math.max(0, Math.min(1, g)); }
+        // seed Chronicle from live citizen_history
+        if (Array.isArray(w.citizen_history) && w.citizen_history.length) {
+          for (const e of w.citizen_history.slice(-20)) chronicle.push({ kind: "history", text: formatHistory(e), cycle: e?.cycle || w.cycle });
+        }
+        if (objectivesOpen) buildObjectives();
         syncHud();
         return;
       }
@@ -683,6 +890,7 @@ async function tryLive() {
 // ------------------------------------------------------------------- boot
 function boot() {
   buildWorld();
+  buildMapCanvas();
   bindTouch();
   resize();
   // intro copy
@@ -693,10 +901,17 @@ function boot() {
   el("introcta").textContent = STR.start;
   el("introhint").textContent = STR.start_hint;
   syncHud();
-  tryLive();
   if (dev) window.__hive = { realms, npcs, player, fountain, sealRealm, winGame,
-    state: () => ({ sealedCount, won, gi: giNow(), mic: micNow() }) };
+    isReachable: (tx, ty) => reachableSet.has(tx + "," + ty),
+    state: () => ({ sealedCount, won, gi: giNow(), mic: micNow(), live }) };
   requestAnimationFrame(tick);
+  // Emit `ready` only after the live overlay settles so the parent records the
+  // same live cycle/GI/vault the HUD shows (a safety timeout fires it regardless
+  // if the network stalls). (Codex P2)
+  let readyEmitted = false;
+  const emitReadyOnce = () => { if (!readyEmitted) { readyEmitted = true; emitEvent("ready"); } };
+  tryLive().then(emitReadyOnce, emitReadyOnce);
+  setTimeout(emitReadyOnce, 4000);
 }
 
 loadAssets().then(boot);

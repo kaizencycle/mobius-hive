@@ -49,6 +49,32 @@ Higgsfield image-generation credits were unavailable at build time; the manifest
 rows can be swapped for AI-generated sprites of the same kinds with no code
 changes.
 
+## Embedding in the browser shell (HIVE chamber)
+
+The game is built to be iframed by `mobius-browser-shell` as a cross-origin
+renderer over the same world state the shell reads. Query params:
+
+| Param | Effect |
+|-------|--------|
+| `?data=<worldBase>` | Live-overlay base URL. The game fetches `<worldBase>/current-world.json` (and `<worldBase>/world/current-world.json`) and flips the HUD to `LIVE`. Use a CORS-enabled base such as a raw GitHub URL; the in-shell proxy path (`/api/hive/world`) is same-origin only and won't work cross-origin. |
+| `?muted=1` | Disables all audio (clean autoplay-policy-safe embed). |
+| `?dev=1` | Dev overlay (FPS, sealed count) + test hooks. |
+
+**Progress events → parent frame.** On boot, start, each realm seal, fountain
+unlock, and win, the game emits a `postMessage` to the parent (and mirrors it on
+`window.__hivePendingEvent`) so the shell can write `citizen_history` to the
+ledger (the C-341 write-back hook):
+
+```js
+window.addEventListener("message", (e) => {
+  if (e.data?.source !== "mobius-hive-sim") return;
+  // { source, type: "ready"|"start"|"seal"|"fountain_ready"|"win",
+  //   cycle, live, gi, vault, mic, sealed, total, won, ts,
+  //   realm?, realmTitle?, realmColor? }
+  if (e.data.type === "seal") postToLedger(e.data);
+});
+```
+
 ## Deploy
 
 Packaged at the archive root as `index.html` + `logic.js` (single-player engine
