@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Mobius HIVE — 16-bit World Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{ --gold:#e8c547; --aqua:#3dffea; --ink:#0b0a1f; --panel:rgba(12,11,31,.86); }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; overflow:hidden; background:#05040f;
+    font-family:'Press Start 2P',monospace; color:#e8e8ff; -webkit-user-select:none; user-select:none; }
+  #c{ display:block; image-rendering:pixelated; touch-action:none; }
+  #stage{ position:fixed; inset:0; }
+
+  /* top status bar */
+  #hud{ position:fixed; top:0; left:0; right:0; display:flex; flex-wrap:wrap; gap:8px 14px;
+    align-items:center; padding:8px 12px; background:linear-gradient(180deg,rgba(11,10,31,.95),rgba(11,10,31,.0));
+    font-size:9px; line-height:1.4; z-index:5; pointer-events:none; }
+  #hud .pill{ white-space:nowrap; }
+  .gold{ color:var(--gold);} .aqua{ color:var(--aqua);} .green{ color:#8cffa8;}
+  .red{ color:#ff7a7a;} .muted{ color:#7a7a9a;}
+
+  /* dialog */
+  #dialog{ position:fixed; left:50%; bottom:96px; transform:translateX(-50%);
+    width:min(680px,92vw); background:var(--panel); border:2px solid var(--aqua);
+    border-radius:8px; padding:14px 16px; display:none; z-index:7;
+    box-shadow:0 0 24px rgba(61,255,234,.25); }
+  #dialog.show{ display:block; }
+  #dwho{ color:var(--aqua); font-size:10px; margin-bottom:8px; }
+  #dtxt{ font-size:10px; line-height:1.7; }
+  #dmore{ margin-top:10px; font-size:8px; color:var(--muted); text-align:right; }
+
+  /* center toast */
+  #toast{ position:fixed; left:50%; top:64px; transform:translateX(-50%);
+    background:var(--panel); border:1px solid var(--gold); border-radius:6px;
+    padding:8px 12px; font-size:9px; color:var(--gold); opacity:0;
+    transition:opacity .3s; z-index:6; pointer-events:none; text-align:center; }
+  #toast.show{ opacity:1; }
+
+  /* overlays (intro / win) */
+  .overlay{ position:fixed; inset:0; display:none; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; gap:18px; padding:24px; z-index:9;
+    background:radial-gradient(circle at 50% 40%,rgba(20,18,46,.86),rgba(5,4,15,.97)); }
+  .overlay.show{ display:flex; }
+  .overlay h1{ font-size:clamp(18px,5vw,34px); color:var(--gold); margin:0; text-shadow:0 0 18px rgba(232,197,71,.5); letter-spacing:1px; }
+  .overlay h2{ font-size:clamp(9px,2.4vw,13px); color:var(--aqua); margin:0; letter-spacing:2px; }
+  .overlay p{ font-size:10px; line-height:1.8; max-width:560px; color:#c8c8e8; }
+  .overlay .cta{ font-size:11px; color:#05040f; background:var(--aqua); padding:12px 18px;
+    border-radius:6px; box-shadow:0 0 22px rgba(61,255,234,.5); animation:pulse 1.4s infinite; }
+  @keyframes pulse{ 50%{ box-shadow:0 0 8px rgba(61,255,234,.3);} }
+  .overlay .small{ font-size:8px; color:var(--muted); line-height:1.9; }
+
+  /* touch controls */
+  #touch{ position:fixed; inset:0; z-index:4; display:none; }
+  #touch.show{ display:block; }
+  #dpad{ position:absolute; left:16px; bottom:20px; width:150px; height:150px; }
+  #dpad button{ position:absolute; width:50px; height:50px; background:rgba(40,36,86,.7);
+    border:2px solid rgba(120,120,200,.6); color:#cfd0ff; border-radius:8px; font-size:14px;
+    font-family:inherit; }
+  #dpad .up{ left:50px; top:0;} #dpad .down{ left:50px; bottom:0;}
+  #dpad .left{ left:0; top:50px;} #dpad .right{ right:0; top:50px;}
+  #abtn{ position:absolute; right:24px; bottom:42px; width:88px; height:88px; border-radius:50%;
+    background:rgba(61,255,234,.18); border:2px solid var(--aqua); color:var(--aqua);
+    font-family:inherit; font-size:13px; }
+  #dev{ position:fixed; top:40px; left:6px; color:#0f0; font:11px monospace; display:none; z-index:8; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+
+<div id="hud"></div>
+<div id="toast"></div>
+<div id="dev"></div>
+
+<div id="dialog">
+  <div id="dwho">—</div>
+  <div id="dtxt">—</div>
+  <div id="dmore">[E] ▾</div>
+</div>
+
+<div id="touch">
+  <div id="dpad">
+    <button type="button" class="up" data-k="up">▲</button>
+    <button type="button" class="left" data-k="left">◀</button>
+    <button type="button" class="right" data-k="right">▶</button>
+    <button type="button" class="down" data-k="down">▼</button>
+  </div>
+  <button type="button" id="abtn" data-k="action">E</button>
+</div>
+
+<div id="intro" class="overlay show">
+  <h2 id="introsub">16-BIT WORLD SIMULATOR</h2>
+  <h1 id="introtitle">MOBIUS HIVE</h1>
+  <p id="introp"></p>
+  <div class="cta" id="introcta">PRESS E / TAP / START</div>
+  <div class="small" id="introhint"></div>
+</div>
+
+<div id="win" class="overlay">
+  <h2 id="winsub">CYCLE C-344 SEALED</h2>
+  <h1 id="wintitle">RESTORED</h1>
+  <p id="winbody"></p>
+  <p class="aqua" id="winjade" style="font-size:9px"></p>
+  <div class="cta" id="wincta">[E] WALK THE HIVE AGAIN</div>
+</div>
+
+<script type="module" src="./game.js"></script>
+</body>
+</html>

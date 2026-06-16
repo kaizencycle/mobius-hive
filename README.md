@@ -36,6 +36,10 @@ A self-contained **16-bit style** tile world lives under `artifacts/hive-mmo-sim
 
 To embed the simulator inside the **browser shell's HIVE chamber** with live state, copy the artifact into the shell's `public/hive-simulator/` and iframe it from `HiveChamber.tsx` with `?data=/api/hive/world/&shell=<self>` so it rides the shell's existing edge proxy. Full copy-paste recipe (iframe component, sync script, portal router hook): [`docs/integrations/mobius-browser-shell-hive-chamber.md`](docs/integrations/mobius-browser-shell-hive-chamber.md).
 
+### HIVE 16-bit World Simulator (C-344 artifact)
+
+A polished, self-contained **16-bit top-down JRPG world simulator** lives under `artifacts/hive-world-simulator/`. You play a **Scout** who lifts the **Signal Fog** of cycle **C-344** by sweeping each realm's **integrity shards** and lighting its **beacon** (Sweep → Seal), then **Restores the Beacon** at the central Forge Fountain to seal the cycle (Ledger). It is built from the canonical `world/*.json` contracts (realms, keepers, sentinels, cycle/event/quest), ships a baked snapshot in `world-snapshot.js`, and overlays live `world/current-world.json` when served from the repo root or with `?data=<base>`. Crisp pixel-art kit under `assets/` is regenerable via `tools/gen_assets.py`. Built and published through the Higgsfield apps engine. See [`artifacts/hive-world-simulator/README.md`](artifacts/hive-world-simulator/README.md).
+
 ### C-287 flywheel lock — canonical world artifacts
 
 Committed JSON under `world/` is the **state projection** the browser shell and mesh consumers expect:

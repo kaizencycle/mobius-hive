@@ -1,0 +1,12 @@
+id,role,type,description,size_ratio,style_ref,source
+ground,overworld base tile (tinted per realm in engine),tile,deep cosmic indigo ground with dithered starfield,32x32 1:1,STYLE FORMULA,generate (procedural pixel art / PIL)
+path,walkable luminous stone path + water bridges,tile,violet brick path with bright mortar seams,32x32 1:1,STYLE FORMULA,generate (procedural pixel art / PIL)
+water,Ocean of Inquiry surface (blocking),tile,deep blue water with cyan wave crests,32x32 1:1,STYLE FORMULA,generate (procedural pixel art / PIL)
+wall,Forge castle wall (blocking),tile,violet stone brick rampart with dark outlines,32x32 1:1,STYLE FORMULA,generate (procedural pixel art / PIL)
+floor,Forge courtyard floor,tile,violet marble tiles with gold flecks,32x32 1:1,STYLE FORMULA,generate (procedural pixel art / PIL)
+scout,player Scout sprite sheet (down/up/left/right x2 walk frames),sprite,bright cyan-teal hooded scout,128x16 (8x 16x16),STYLE FORMULA,generate (procedural pixel art / PIL)
+agent,realm keeper / sentinel figure (white robe tinted per realm in engine),sprite,robed AI agent keeper,16x24,STYLE FORMULA,generate (procedural pixel art / PIL)
+shard,integrity shard pickup,sprite,glowing aqua crystal shard,16x16,STYLE FORMULA,generate (procedural pixel art / PIL)
+beacon,realm beacon monument (off | on states),sprite,crystal obelisk on bronze base; dormant violet vs lit aqua,64x48 (2x 32x48),STYLE FORMULA,generate (procedural pixel art / PIL)
+tree,realm-border decoration,sprite,cosmic crystal tree with glowing canopy,32x48,STYLE FORMULA,generate (procedural pixel art / PIL)
+fountain,central Forge Fountain (locked | active states),sprite,gold chalice fountain with crystal; locked dim vs active aqua/gold,96x48 (2x 48x48),STYLE FORMULA,generate (procedural pixel art / PIL)
