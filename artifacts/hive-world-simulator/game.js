@@ -901,12 +901,17 @@ function boot() {
   el("introcta").textContent = STR.start;
   el("introhint").textContent = STR.start_hint;
   syncHud();
-  tryLive();
-  emitEvent("ready");
   if (dev) window.__hive = { realms, npcs, player, fountain, sealRealm, winGame,
     isReachable: (tx, ty) => reachableSet.has(tx + "," + ty),
-    state: () => ({ sealedCount, won, gi: giNow(), mic: micNow() }) };
+    state: () => ({ sealedCount, won, gi: giNow(), mic: micNow(), live }) };
   requestAnimationFrame(tick);
+  // Emit `ready` only after the live overlay settles so the parent records the
+  // same live cycle/GI/vault the HUD shows (a safety timeout fires it regardless
+  // if the network stalls). (Codex P2)
+  let readyEmitted = false;
+  const emitReadyOnce = () => { if (!readyEmitted) { readyEmitted = true; emitEvent("ready"); } };
+  tryLive().then(emitReadyOnce, emitReadyOnce);
+  setTimeout(emitReadyOnce, 4000);
 }
 
 loadAssets().then(boot);
