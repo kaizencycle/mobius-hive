@@ -54,3 +54,13 @@ changes.
 Packaged at the archive root as `index.html` + `logic.js` (single-player engine
 stub) + `game.js` + supporting modules + `assets/`, then published via the
 Higgsfield apps engine (`deploy_game`).
+
+### Live build
+
+- **Play:** https://solid-crystal-164.higgsfield.gg/
+- **Higgsfield `game_id`** (to update the build in place): `e9ef5a16-8871-429f-98ef-a76672deb38f`
+
+To redeploy after changes: regenerate assets (`tools/gen_assets.py`), re-zip the
+root files + `assets/`, upload via `media_upload`, regenerate cards
+(`tools/gen_cards.py`), then call `deploy_game` passing the `game_id` above so
+the URL is preserved.
