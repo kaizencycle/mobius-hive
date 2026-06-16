@@ -252,9 +252,27 @@ function giNow() { return Math.min(1, giBase + (sealedCount / realms.length) * (
 function vaultNow() { return Math.min(1, vaultBase + (sealedCount / realms.length) * (1 - vaultBase)); }
 function micNow() { return Math.round(1000 + vaultNow() * 337); }
 
+// --------------------------------------------------- embed integration
+// The game is designed to live inside the Mobius browser shell's HIVE chamber
+// as a cross-origin iframe. The shell passes ?data=<worldBase> (live overlay,
+// handled in tryLive) and ?muted=1 (no autoplay sound). Progress is emitted to
+// the parent frame via postMessage AND mirrored on window.__hivePendingEvent so
+// the shell can write citizen_history to the ledger (C-341 write-back hook).
+const MUTED = new URLSearchParams(location.search).get("muted") === "1";
+function emitEvent(type, extra) {
+  const payload = Object.assign({
+    source: "mobius-hive-sim", type, cycle: liveCycle, live,
+    gi: giNow(), vault: vaultNow(), mic: micNow(),
+    sealed: sealedCount, total: realms.length, won, ts: Date.now(),
+  }, extra || {});
+  try { window.__hivePendingEvent = payload; } catch (e) { /* sandboxed */ }
+  try { if (window.parent && window.parent !== window) window.parent.postMessage(payload, "*"); } catch (e) { /* cross-origin */ }
+}
+
 // ------------------------------------------------------------------- audio
 let actx = null;
 function sfx(type) {
+  if (MUTED) return;
   try {
     if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
     if (actx.state === "suspended") actx.resume();
@@ -415,7 +433,8 @@ function sealRealm(r) {
   sfx("seal");
   toast(STR.beacon_lit.replace("{realm}", realmTitle(r.i)));
   syncHud();
-  if (sealedCount >= realms.length) { fountain.ready = true; toast(STR.fountain_unlocked); }
+  emitEvent("seal", { realm: r.def.id, realmTitle: realmTitle(r.i), realmColor: r.color });
+  if (sealedCount >= realms.length) { fountain.ready = true; toast(STR.fountain_unlocked); emitEvent("fountain_ready"); }
 }
 
 function winGame() {
@@ -428,6 +447,7 @@ function winGame() {
   el("wincta").textContent = STR.win_again;
   el("win").classList.add("show");
   syncHud();
+  emitEvent("win");
 }
 
 // --------------------------------------------------------------- dialog/ui
@@ -737,6 +757,7 @@ function startGame() {
   started = true;
   el("intro").classList.remove("show");
   if (!actx) sfx("talk");
+  emitEvent("start");
 }
 function resetGame() {
   el("win").classList.remove("show");
@@ -814,6 +835,7 @@ function boot() {
   el("introhint").textContent = STR.start_hint;
   syncHud();
   tryLive();
+  emitEvent("ready");
   if (dev) window.__hive = { realms, npcs, player, fountain, sealRealm, winGame,
     isReachable: (tx, ty) => reachableSet.has(tx + "," + ty),
     state: () => ({ sealedCount, won, gi: giNow(), mic: micNow() }) };
