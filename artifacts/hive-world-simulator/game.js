@@ -206,8 +206,12 @@ let nearHint = "";
 const 
   el = (id) => document.getElementById(id);
 
-function giNow() { return Math.min(1, GI_BASE + (sealedCount / realms.length) * (1 - GI_BASE)); }
-function vaultNow() { return Math.min(1, WORLD_SNAPSHOT.vault.progress + (sealedCount / realms.length) * (1 - WORLD_SNAPSHOT.vault.progress)); }
+// integrity/vault baselines — overridden by live current-world.json when found,
+// then gameplay (sealing realms) raises them toward 1.0
+let giBase = GI_BASE;
+let vaultBase = WORLD_SNAPSHOT.vault.progress;
+function giNow() { return Math.min(1, giBase + (sealedCount / realms.length) * (1 - giBase)); }
+function vaultNow() { return Math.min(1, vaultBase + (sealedCount / realms.length) * (1 - vaultBase)); }
 function micNow() { return Math.round(1000 + vaultNow() * 337); }
 
 // ------------------------------------------------------------------- audio
@@ -667,7 +671,8 @@ async function tryLive() {
       const w = await res.json();
       if (w && w.cycle) {
         liveCycle = w.cycle; live = true;
-        if (w.integrity && typeof w.integrity.gi === "number") { /* snapshot gi already close; keep base */ }
+        if (w.integrity && typeof w.integrity.gi === "number") giBase = Math.max(0, Math.min(1, w.integrity.gi));
+        if (w.vault && typeof w.vault.progress === "number") vaultBase = Math.max(0, Math.min(1, w.vault.progress));
         syncHud();
         return;
       }
