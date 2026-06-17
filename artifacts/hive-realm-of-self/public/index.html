@@ -71,6 +71,30 @@ const TILEMAP = await loadMap("./assets/realm-of-self.tmj", import.meta.url);
 const TS = TILEMAP.tileWidth;
 const ZOOM = 2; // upscale 16px tiles -> 32px on screen
 
+// ---------- sprite loading (Higgsfield CDN, magenta #FF00FF chroma-keyed) ----------
+const _CDN = "https://d8j0ntlcm91z4.cloudfront.net/user_3F2PABGvyVcGW7reYUvfdeGy258/";
+const _SURLS = {
+  hero:   _CDN+"hf_20260617_150611_49ab4ed7-366b-44f5-a597-e09e88914b93.png",
+  echo:   _CDN+"hf_20260617_150702_2be103db-d902-4c3e-ac7d-f3124d936a48.png",
+  athena: _CDN+"hf_20260617_150641_d8cd24ab-2659-4acc-96e8-30934c2822de.png",
+  dao:    _CDN+"hf_20260617_150702_2be103db-d902-4c3e-ac7d-f3124d936a48.png",
+  sofia:  _CDN+"hf_20260617_150737_5d314bbb-02f4-44fc-8112-9bd055f5dc39.png",
+};
+async function _loadSprite(url) {
+  const img = new Image(); img.crossOrigin = "anonymous";
+  await new Promise(res => { img.onload = res; img.onerror = res; img.src = url; });
+  try {
+    const oc = new OffscreenCanvas(img.naturalWidth, img.naturalHeight);
+    const oc2 = oc.getContext("2d"); oc2.drawImage(img, 0, 0);
+    const d = oc2.getImageData(0, 0, oc.width, oc.height);
+    for (let i = 0; i < d.data.length; i += 4)
+      if (d.data[i] > 200 && d.data[i+1] < 80 && d.data[i+2] > 200) d.data[i+3] = 0;
+    oc2.putImageData(d, 0, 0); return await createImageBitmap(oc);
+  } catch(e) { return img; }
+}
+const SPRITES = {};
+await Promise.all(Object.entries(_SURLS).map(async ([k,u]) => { SPRITES[k] = await _loadSprite(u); }));
+
 // ---------- entities ----------
 const spawn = TILEMAP.rect("spawn");
 const hero = { x: spawn.x+8, y: spawn.y+8, r: 5, spd: 1.6 };
@@ -87,11 +111,16 @@ npcs.forEach(n => n.home = {x:n.x, y:n.y});
 let restored = 0;
 let msg = STR.questHint, msgT = 360, won = false, winT=0;
 
-// ---------- formula-palette fallback sprites (same as C-340; used until art swap) ----------
+// ---------- palette + sprite draw (Higgsfield art; fbCircle is the fallback) ----------
 const PAL = { amber:"#e8b54a", amberHi:"#f6d488", teal:"#3de8d4", indigo:"#1a1d36",
   echo:"#cdb8e8", athena:"#9fb8e8", dao:"#9fe8c4", sofia:"#e8b89f" };
 function fbCircle(color){ return (x,y,s,ctx)=>{ ctx.fillStyle=PAL.indigo; ctx.fillRect(x-s/2-2,y-s/2-2,s+4,s+4);
   ctx.fillStyle=color; ctx.fillRect(x-s/2,y-s/2,s,s); ctx.fillStyle=PAL.amberHi; ctx.fillRect(x-s/6,y-s/3,s/8,s/8); }; }
+function drawSprite(ctx, key, cx, cy, size) {
+  const s = SPRITES[key];
+  if (s) { ctx.drawImage(s, cx - size/2, cy - size/2, size, size); return; }
+  fbCircle(PAL[key] || PAL.amber)(cx, cy, size * 0.46, ctx);
+}
 
 // ---------- simulation ----------
 function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
@@ -168,8 +197,8 @@ function render(){
     if (!nd.done && nd.charge>0){ ctx.strokeStyle=PAL.teal; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.arc(nd.x,nd.y,6,-Math.PI/2,-Math.PI/2+nd.charge*Math.PI*2); ctx.stroke(); }
   }
-  for (const n of npcs) fbCircle(PAL[n.id]||"#ccc")(n.x, n.y, 12, ctx);
-  fbCircle(PAL.amber)(hero.x, hero.y, 11, ctx);
+  for (const n of npcs) drawSprite(ctx, n.id, n.x, n.y, 28);
+  drawSprite(ctx, "hero", hero.x, hero.y, 28);
   ctx.restore();
 
   // fog of integrity
