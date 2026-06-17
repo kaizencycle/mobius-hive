@@ -42,8 +42,8 @@ function rng(seed) {
 // ----------------------------------------------------------------- assets
 const ASSET_FILES = {
   ground: "ground.png", path: "path.png", water: "water.png", wall: "wall.png",
-  floor: "floor.png", scout: "scout.png", agent: "agent.png", shard: "shard.png",
-  beacon: "beacon.png", tree: "tree.png", fountain: "fountain.png",
+  floor: "floor.png", scout: "scout.png", agent: "agent.png", sentinel: "sentinel.png",
+  shard: "shard.png", beacon: "beacon.png", tree: "tree.png", fountain: "fountain.png",
 };
 const IMG = {};
 function loadAssets() {
@@ -698,25 +698,37 @@ function glow(wx, wy, r, color, frame) {
 
 function drawNpc(npc, frame) {
   const bob = Math.sin(frame * 0.05 + npc.wx) * 2;
-  const img = tinted(IMG.agent, npc.color, 0.5) || IMG.agent;
-  blit(img, npc.wx - 16, npc.wy - 40 + bob, 32, 48);
-  // nameplate
+  const isSent = npc.kind === "sentinel";
+  const img = isSent ? (IMG.sentinel || IMG.agent) : (tinted(IMG.agent, npc.color, 0.3) || IMG.agent);
+  const DW = 36, DH = 48;
+  // soft shadow
+  ctx.fillStyle = "rgba(0,0,0,.3)";
+  ctx.beginPath(); ctx.ellipse((npc.wx - camX) * ZOOM, (npc.wy + 10 - camY) * ZOOM, 11 * ZOOM, 4 * ZOOM, 0, 0, 7); ctx.fill();
+  blit(img, npc.wx - DW / 2, npc.wy - DH + 12 + bob, DW, DH);
+  // nameplate just above the head
   ctx.font = "8px 'Press Start 2P', monospace"; ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(11,10,31,.7)";
   const sx = (npc.wx - camX) * ZOOM, sy = (npc.wy - camY) * ZOOM;
-  ctx.fillStyle = npc.color; ctx.fillText(npc.name, sx, sy - 52 * ZOOM / ZOOM - 6);
+  ctx.fillStyle = npc.color; ctx.fillText(npc.name, sx, sy - 40 * ZOOM);
 }
 
 function drawPlayer(frame) {
-  const frames = { down: 0, up: 2, left: 4, right: 6 };
-  const base = frames[player.dir] ?? 0;
-  const f = base + (player.anim ? 1 : 0);
+  const dirFrame = { down: 0, up: 1, left: 2, right: 2 };
+  const fi = dirFrame[player.dir] ?? 0;
+  const flip = player.dir === "right";
   const im = IMG.scout;
-  const dx = Math.round((player.wx - 16 - camX) * ZOOM), dy = Math.round((player.wy - 22 - camY) * ZOOM);
-  // shadow
+  const DW = 40, DH = 40, SW = 24, SH = 24;
+  const bob = player.anim ? -1 : 0;
+  const dx = Math.round((player.wx - DW / 2 - camX) * ZOOM);
+  const dy = Math.round((player.wy - DH + 14 + bob - camY) * ZOOM);
   ctx.fillStyle = "rgba(0,0,0,.35)";
-  ctx.beginPath(); ctx.ellipse((player.wx - camX) * ZOOM, (player.wy + 12 - camY) * ZOOM, 11 * ZOOM, 4 * ZOOM, 0, 0, 7); ctx.fill();
-  if (im) ctx.drawImage(im, f * 16, 0, 16, 16, dx, dy, 32 * ZOOM, 32 * ZOOM);
+  ctx.beginPath(); ctx.ellipse((player.wx - camX) * ZOOM, (player.wy + 12 - camY) * ZOOM, 12 * ZOOM, 4 * ZOOM, 0, 0, 7); ctx.fill();
+  if (!im) return;
+  if (flip) {
+    ctx.save(); ctx.translate(dx + DW * ZOOM, dy); ctx.scale(-1, 1);
+    ctx.drawImage(im, fi * SW, 0, SW, SH, 0, 0, DW * ZOOM, DH * ZOOM); ctx.restore();
+  } else {
+    ctx.drawImage(im, fi * SW, 0, SW, SH, dx, dy, DW * ZOOM, DH * ZOOM);
+  }
 }
 
 // Per-realm Signal Fog. Global density is driven by live GI + how many realms
