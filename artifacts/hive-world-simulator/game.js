@@ -40,26 +40,41 @@ function rng(seed) {
 }
 
 // ----------------------------------------------------------------- assets
-const ASSET_FILES = {
-  ground: "ground.png", path: "path.png", water: "water.png", wall: "wall.png",
-  floor: "floor.png", scout: "scout.png", agent: "agent.png", sentinel: "sentinel.png",
-  shard: "shard.png", beacon: "beacon.png", tree: "tree.png", fountain: "fountain.png",
-};
+// C-346 PERF-2: single spritesheet replaces 12 individual HTTP requests.
+// Sprites are sliced into per-name canvases so all existing IMG[k] usage
+// and the tinted() helper continue to work unchanged.
 const IMG = {};
-function loadAssets() {
-  return Promise.all(Object.entries(ASSET_FILES).map(([k, f]) => new Promise((res) => {
-    const im = new Image();
-    im.onload = () => { IMG[k] = im; res(); };
-    im.onerror = () => { IMG[k] = null; res(); };
-    im.src = "./assets/" + f;
-  })));
+async function loadAssets() {
+  // Try spritesheet first; fall back to individual PNGs if fetch fails.
+  try {
+    const [sheetImg, manifest] = await Promise.all([
+      new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = "./assets/spritesheet.png"; }),
+      fetch("./assets/spritesheet-manifest.json").then(r => r.json()),
+    ]);
+    for (const [name, spec] of Object.entries(manifest)) {
+      const cv = document.createElement("canvas");
+      cv.width = spec.w; cv.height = spec.h;
+      cv.getContext("2d").drawImage(sheetImg, spec.x, spec.y, spec.w, spec.h, 0, 0, spec.w, spec.h);
+      cv._spriteName = name; // used as tint cache key
+      IMG[name] = cv;
+    }
+  } catch (_) {
+    // fallback: individual PNGs (original behaviour)
+    const FILES = { ground:"ground.png",path:"path.png",water:"water.png",wall:"wall.png",
+      floor:"floor.png",scout:"scout.png",agent:"agent.png",sentinel:"sentinel.png",
+      shard:"shard.png",beacon:"beacon.png",tree:"tree.png",fountain:"fountain.png" };
+    await Promise.all(Object.entries(FILES).map(([k, f]) => new Promise(res => {
+      const im = new Image(); im.onload = () => { IMG[k] = im; res(); };
+      im.onerror = () => { IMG[k] = null; res(); }; im.src = "./assets/" + f;
+    })));
+  }
 }
 
 // tint a source image with a colour (cached) -> returns canvas
 const _tintCache = new Map();
 function tinted(img, color, alpha) {
   if (!img) return null;
-  const key = img.src + color + alpha;
+  const key = (img._spriteName || img.src) + color + alpha;
   if (_tintCache.has(key)) return _tintCache.get(key);
   const cv = document.createElement("canvas");
   cv.width = img.width; cv.height = img.height;
@@ -272,6 +287,17 @@ function micNow() { return Math.round(1000 + vaultNow() * 337); }
 // the parent frame via postMessage AND mirrored on window.__hivePendingEvent so
 // the shell can write citizen_history to the ledger (C-341 write-back hook).
 const MUTED = new URLSearchParams(location.search).get("muted") === "1";
+
+// C-346 FIX-9: pseudonymous civic_id for standalone players (same pattern as HiveGameEmbed).
+// Persisted in localStorage so returning citizens accumulate a chronicle without accounts.
+function getCivicId() {
+  try {
+    const k = "hive_civic_id"; let id = localStorage.getItem(k);
+    if (!id || !id.startsWith("mobius-anon-")) { id = "mobius-anon-" + Math.random().toString(36).slice(2, 10); localStorage.setItem(k, id); }
+    return id;
+  } catch { return "mobius-anon-" + Math.random().toString(36).slice(2, 10); }
+}
+
 function emitEvent(type, extra) {
   const payload = Object.assign({
     source: "mobius-hive-sim", type, cycle: liveCycle, live,
@@ -280,6 +306,15 @@ function emitEvent(type, extra) {
   }, extra || {});
   try { window.__hivePendingEvent = payload; } catch (e) { /* sandboxed */ }
   try { if (window.parent && window.parent !== window) window.parent.postMessage(payload, "*"); } catch (e) { /* cross-origin */ }
+  // C-346 FIX-9: when running standalone (not in shell iframe), POST directly to CPC ledger
+  // so players at solid-crystal-164.higgsfield.gg also write to citizen_history.
+  if ((type === "seal" || type === "win") && window.parent === window) {
+    fetch("https://civic-protocol-core-ledger.onrender.com/ledger/attest", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ civic_id: getCivicId(), lab_source: "hive", event_type: "hive.player_event",
+        payload: Object.assign({ type, cycle: liveCycle }, extra || {}), timestamp: new Date().toISOString() }),
+    }).catch(() => {}); // fire-and-forget; never blocks gameplay
+  }
 }
 
 // ------------------------------------------------------------------- audio
@@ -347,8 +382,9 @@ function bindTouch() {
     b.addEventListener("touchstart", press(k, true), { passive: false });
     b.addEventListener("touchend", press(k, false), { passive: false });
     b.addEventListener("touchcancel", press(k, false), { passive: false });
-    b.addEventListener("pointerdown", press(k, true));
+    b.addEventListener("pointerdown", (e) => { press(k, true)(e); b.setPointerCapture(e.pointerId); }); // C-346 FIX-7: capture prevents losing drag mid-movement
     b.addEventListener("pointerup", press(k, false));
+    b.addEventListener("pointercancel", press(k, false));
     b.addEventListener("pointerleave", press(k, false));
   });
   const a = el("abtn");
@@ -848,8 +884,7 @@ addEventListener("focus", () => { paused = false; last = performance.now(); });
 function tick(now) {
   requestAnimationFrame(tick);
   if (paused) { last = now; return; }
-  acc += now - last; last = now;
-  if (acc > 250) acc = 250;
+  acc += Math.min(now - last, 100); last = now; // C-346 PERF-1: cap at ~6 frames, prevents spiral-of-death on tab-return
   const cmds = commands();
   const aPressed = cmds.has("action");
   const actionEdge = pendingAction || (aPressed && !prevAction);

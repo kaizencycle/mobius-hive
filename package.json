@@ -14,7 +14,8 @@
     "world:validate-schemas": "node scripts/world/validate-schemas.mjs",
     "world:quest-proposal": "node scripts/world/generate-quest-proposal.js",
     "world:write-quest-marker": "node scripts/world/write-quest-proposal-marker.js",
-    "world:build-blocks": "node scripts/world/build-blocks.js"
+    "world:build-blocks": "node scripts/world/build-blocks.js",
+    "world:bake-snapshot": "node scripts/world/bake-snapshot.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1"

@@ -51,6 +51,9 @@ jobs:
       - name: Validate world JSON schemas
         run: npm run world:validate-schemas
 
+      - name: Bake world snapshot into game artifact
+        run: node scripts/world/bake-snapshot.mjs
+
       - name: Report Phase 4 outputs
         run: |
           echo "Phase 4 HIVE world signal outputs:"
@@ -67,6 +70,6 @@ jobs:
         run: |
           git config user.name "mobius-hive-bot"
           git config user.email "bot@mobius.systems"
-          git add world/ ledger/ schemas/
+          git add world/ ledger/ schemas/ artifacts/hive-world-simulator/world-snapshot.js
           git commit -m "chore(hive): refresh world state from pulse [skip ci]" || exit 0
           git push
