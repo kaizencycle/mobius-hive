@@ -1,5 +1,13 @@
 # HIVE 16-bit World Simulator — Changelog
 
+## C-445 — Detailed character art
+
+- Reworked the three character sprites to match richer reference designs (parametric PIL drawing + silhouette outline):
+  - **Scout** (player, 24×24, down/up/side + horizontal flip): silver helmet, orange scarf, violet cape, steel armor, hip satchel, glowing teal chest shard.
+  - **Realm keeper** (agent, 24×32): gold hood + robe holding a glowing tablet and a hanging emerald shard; subtle per-realm tint.
+  - **Sentinel** (NEW, 24×32): dark armor, greathelm with a teal eye-slit, spear, glowing chest emblem — the Forge council is now visually distinct from realm keepers.
+- Engine: 24px scout frames with right-facing flip, dedicated `sentinel` sprite for `kind=sentinel`, larger draw sizes, soft shadows, nameplates.
+
 ## C-344 — Per-realm fog + Chronicle
 
 - **Per-realm Signal Fog.** Fog is now spatial, not a flat global vignette: rendered to an offscreen buffer and carved with `destination-out` so **sealed realms become fully-clear windows**, the player keeps a torch, and global density tracks live GI + how many realms remain. Reads optional live per-realm GI (`world.realm_integrity[id]` / `realm_gi`) so an unsealed zone clears proportionally when the substrate provides it.
