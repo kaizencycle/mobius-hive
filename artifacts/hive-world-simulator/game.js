@@ -309,10 +309,20 @@ function emitEvent(type, extra) {
   // C-346 FIX-9: when running standalone (not in shell iframe), POST directly to CPC ledger
   // so players at solid-crystal-164.higgsfield.gg also write to citizen_history.
   if ((type === "seal" || type === "win") && window.parent === window) {
-    fetch("https://civic-protocol-core-ledger.onrender.com/ledger/attest", {
+    fetch("https://civic-protocol-core.onrender.com/ledger/attest", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ civic_id: getCivicId(), lab_source: "hive", event_type: "hive.player_event",
-        payload: Object.assign({ type, cycle: liveCycle }, extra || {}), timestamp: new Date().toISOString() }),
+      body: JSON.stringify({
+        event_type: "hive.player_event",
+        payload: {
+          world: "hive-citadel",
+          zone: (extra && extra.zone) || "castle",
+          action: (extra && extra.action) || type,
+          target_id: (extra && extra.target_id) || "",
+          cycle_id: liveCycle,
+          civic_id: getCivicId(),
+          client_ts: new Date().toISOString(),
+        },
+      }),
     }).catch(() => {}); // fire-and-forget; never blocks gameplay
   }
 }
