@@ -3,12 +3,12 @@
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
-    "gi": 0.753,
+    "gi": 0.73,
     "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.739,
+    "progress": 0.748,
     "fountain_status": "locked"
   },
   "active_events": [
