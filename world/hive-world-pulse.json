@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-06-20T11:34:41.180Z",
+  "generated_at": "2026-06-20T13:13:14.480Z",
   "cycle": "C-348",
   "current_cycle": {
     "cycle_id": "C-348",
-    "updated_at": "2026-06-20T11:34:41.136Z",
+    "updated_at": "2026-06-20T13:13:14.434Z",
     "rules_fired": [
       "kv_degraded"
     ],
@@ -17,7 +17,7 @@
     "signals": {
       "kv_status": "degraded",
       "gi": 0.82,
-      "vault_progress": 0.787
+      "vault_progress": 0.777
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -36,7 +36,7 @@
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.787,
+      "progress": 0.777,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -72,7 +72,7 @@
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-348",
-      "updated_at": "2026-06-20T11:34:41.136Z"
+      "updated_at": "2026-06-20T13:13:14.434Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -104,7 +104,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-348",
-      "updated_at": "2026-06-20T11:34:41.136Z",
+      "updated_at": "2026-06-20T13:13:14.434Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -125,7 +125,7 @@
         "gate_unsafe_actions"
       ],
       "cycle_id": "C-348",
-      "updated_at": "2026-06-20T11:34:41.136Z",
+      "updated_at": "2026-06-20T13:13:14.434Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -150,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "45dfe74dc53363bfe95e4fd4ad4e6eb3fdc5029962886448dea524c784207596",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-348:45dfe74dc53363bf:world-update"
+  "source_hash": "e4d2a7689ad9ea03a8c7a1f05f80ad0927f9f607405d1945fb2c562709995296",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-348:e4d2a7689ad9ea03:world-update"
 }
