@@ -3,21 +3,21 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-06-23T21:58:18.238Z",
+  "generated_at": "2026-06-23T23:15:59.061Z",
   "cycle": "C-351",
   "current_cycle": {
     "cycle_id": "C-351",
-    "updated_at": "2026-06-23T21:58:18.190Z",
+    "updated_at": "2026-06-23T23:15:59.014Z",
     "rules_fired": [
-      "vault_rising_and_gi"
+      "kv_degraded"
     ],
-    "active_event_id": "fountain-murmur",
-    "active_quest_id": "prepare-the-seal",
-    "active_sentinel_id": "hermes",
+    "active_event_id": "signal-fog",
+    "active_quest_id": "restore-the-beacon",
+    "active_sentinel_id": "zeus",
     "signals": {
-      "kv_status": "unknown",
-      "gi": 0.768,
-      "vault_progress": 0.798
+      "kv_status": "degraded",
+      "gi": 0.774,
+      "vault_progress": 0.766
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -31,19 +31,19 @@
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.768,
-      "kv_status": "unknown",
+      "gi": 0.774,
+      "kv_status": "degraded",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.798,
-      "fountain_status": "stirring"
+      "progress": 0.766,
+      "fountain_status": "locked"
     },
     "active_events": [
-      "fountain-murmur"
+      "signal-fog"
     ],
     "active_quests": [
-      "prepare-the-seal"
+      "restore-the-beacon"
     ],
     "active_sentinels": [
       "zeus",
@@ -54,72 +54,84 @@
   },
   "world": {
     "active_event": {
-      "id": "fountain-murmur",
+      "id": "signal-fog",
       "type": "integrity_event",
-      "severity": "low",
-      "title": "Fountain Murmur",
-      "description": "The vault deepens and integrity rises; the city hears water again.",
-      "sentinel_owner": "hermes",
-      "ui": {
-        "overlay": "shimmer",
-        "color": "warm",
-        "priority": 2
+      "severity": "medium",
+      "title": "Signal Fog",
+      "description": "The lattice is visible, but unstable. Memory remains, live sight fades.",
+      "trigger": {
+        "kv_status": "degraded",
+        "gi_below": 0.8
       },
-      "tone": "hope",
-      "summary": "The vault deepens and integrity rises; the city hears water again.",
+      "sentinel_owner": "zeus",
+      "ui": {
+        "overlay": "fog",
+        "color": "dim",
+        "priority": 1
+      },
+      "tone": "warning",
+      "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-351",
-      "updated_at": "2026-06-23T21:58:18.190Z"
+      "updated_at": "2026-06-23T23:15:59.014Z"
     },
     "active_quest": {
-      "id": "prepare-the-seal",
-      "type": "governance_quest",
-      "title": "Prepare the Seal",
-      "description": "Align proofs and ledger anchors before the next cycle boundary.",
-      "assigned_by": "hermes",
+      "id": "restore-the-beacon",
+      "type": "stability_quest",
+      "title": "Restore the Beacon",
+      "description": "Re-establish live signal continuity across the Castle.",
+      "assigned_by": "zeus",
       "status": "active",
       "progress": 0,
       "steps": [
         {
-          "id": "gather",
-          "label": "Gather proofs",
+          "id": "inspect",
+          "label": "Inspect Beacon",
           "completed": false
         },
         {
-          "id": "align",
-          "label": "Align anchors",
+          "id": "fallback",
+          "label": "Verify Fallback Path",
+          "completed": false
+        },
+        {
+          "id": "ack",
+          "label": "Acknowledge Sentinel",
           "completed": false
         }
       ],
       "reward_preview": {
-        "vault_effect": "seal_readiness",
+        "vault_effect": "stability_credit",
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-351",
-      "updated_at": "2026-06-23T21:58:18.190Z",
-      "sentinel_id": "hermes"
+      "updated_at": "2026-06-23T23:15:59.014Z",
+      "sentinel_id": "zeus"
     },
     "active_sentinel": {
-      "id": "hermes",
-      "title": "Sentinel of Flow",
-      "role": "economy",
-      "mood": "watching",
+      "id": "zeus",
+      "title": "Sentinel of Integrity",
+      "role": "integrity",
+      "mood": "alert",
       "location": "castle",
       "dialogue": {
-        "default": "Movement gathers near the Fountain.",
-        "vault_rising": "Flow strengthens; keep it steady."
+        "default": "The signal is unstable.",
+        "inspect_pending": "The Beacon has not been examined.",
+        "fallback_pending": "You see the fracture. Now stabilize it.",
+        "complete": "The signal stabilizes. The fog recedes."
       },
       "abilities": [
-        "signal_economy",
-        "prepare_fountain"
+        "warn",
+        "open_integrity_quest",
+        "gate_unsafe_actions"
       ],
       "cycle_id": "C-351",
-      "updated_at": "2026-06-23T21:58:18.190Z",
-      "display_name": "HERMES",
-      "voice": "Carry the proof, not the rumor. Speed without drift.",
+      "updated_at": "2026-06-23T23:15:59.014Z",
+      "display_name": "ZEUS",
+      "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
-        "display_name": "HERMES",
-        "voice": "Carry the proof, not the rumor. Speed without drift.",
-        "role": "courier"
+        "display_name": "ZEUS",
+        "voice": "Hold the line. We do not ship fog as truth.",
+        "role": "stabilization"
       }
     }
   },
@@ -127,7 +139,7 @@
     "world_pressure": "elevated",
     "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "rules_fired": [
-      "vault_rising_and_gi"
+      "kv_degraded"
     ]
   },
   "route": [
@@ -138,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "7001eef66e1e52ea603b1ed49fbfcf9d32e1c157edddcc5a0d8ac0837ea7c024",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-351:7001eef66e1e52ea:world-update"
+  "source_hash": "20196335b4631a32f85841b07164ab61618f96e8b9c1f5ebb66cfb9035fcc45d",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-351:20196335b4631a32:world-update"
 }
