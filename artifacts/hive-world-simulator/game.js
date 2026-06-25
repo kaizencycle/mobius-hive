@@ -233,7 +233,11 @@ function placeShards(r, reachable, rand) {
 }
 
 // ----------------------------------------------------------------- state
-const player = { wx: wcx(HX), wy: (HY + 6) * TILE + 16, dir: "up", step: 0, anim: 0 };
+const player = {
+  wx: wcx(HX), wy: (HY + 6) * TILE + 16, dir: "up", step: 0, anim: 0,
+  // RPG stats (MMORPG layer, C-353)
+  hp: 100, maxHp: 100, mp: 60, maxMp: 60, xp: 0, xpNext: 100, level: 1, mic: 60,
+};
 let sealedCount = 0;
 let won = false;
 let started = false;
@@ -263,7 +267,26 @@ let giBase = GI_BASE;
 let vaultBase = WORLD_SNAPSHOT.vault.progress;
 function giNow() { return Math.min(1, giBase + (sealedCount / realms.length) * (1 - giBase)); }
 function vaultNow() { return Math.min(1, vaultBase + (sealedCount / realms.length) * (1 - vaultBase)); }
-function micNow() { return Math.round(1000 + vaultNow() * 337); }
+function micNow() { return Math.round(player.mic); }   // spendable MIC wallet (MMORPG economy)
+
+// ----------------------------------------------------- RPG progression
+function gainMic(amt) { player.mic = Math.max(0, player.mic + amt); syncHud(); }
+function spendMic(amt) { if (player.mic < amt) return false; player.mic -= amt; syncHud(); return true; }
+function gainGI(amt) { giBase = Math.max(0, Math.min(1, giBase + amt)); syncHud(); }
+function heal(amt) { player.hp = Math.min(player.maxHp, player.hp + amt); syncHud(); }
+function damage(amt) { player.hp = Math.max(0, player.hp - amt); syncHud(); return player.hp <= 0; }
+function gainXP(amt) {
+  player.xp += amt;
+  while (player.xp >= player.xpNext) {
+    player.xp -= player.xpNext; player.level++;
+    player.xpNext = Math.round(player.xpNext * 1.4);
+    player.maxHp += 12; player.maxMp += 6; player.hp = player.maxHp; player.mp = player.maxMp;
+    toast(`LEVEL UP \u2192 ${player.level}`); sfx("win");
+    pushChronicle({ kind: "session", text: `Reached level ${player.level}`, cycle: liveCycle, color: "#c4b5fd" });
+    emitEvent("level_up", { level: player.level });
+  }
+  syncHud();
+}
 
 // --------------------------------------------------- embed integration
 // The game is designed to live inside the Mobius browser shell's HIVE chamber
@@ -319,6 +342,7 @@ let prevAction = false, pendingAction = false;
 addEventListener("keydown", (e) => {
   if (e.code === "KeyQ" || e.code === "Tab") { toggleObjectives(); e.preventDefault(); return; }
   if (e.code === "Escape") { closeAll(); toggleObjectives(false); return; }
+  if (/^Digit[1-4]$/.test(e.code)) { useSkill(+e.code.slice(5) - 1); e.preventDefault(); return; }
   const c = BIND[e.code]; if (!c) return;
   if (c === "action" && !held.has("action")) pendingAction = true;   // latch edge for fast taps
   held.add(c); e.preventDefault();
@@ -394,15 +418,21 @@ function nearestInteractable() {
     if (d < bestD) { bestD = d; best = { type: "beacon", realm: r }; }
   }
   const fd = (fountain.wx - player.wx) ** 2 + (fountain.wy - player.wy) ** 2;
-  if (fd < (INTERACT_R + 14) ** 2 && fd < bestD) best = { type: "fountain" };
+  if (fd < (INTERACT_R + 14) ** 2 && fd < bestD) { bestD = fd; best = { type: "fountain" }; }
+  for (const p of overworldPortals) {
+    const d = (p.wx - player.wx) ** 2 + (p.wy - player.wy) ** 2;
+    if (d < bestD) { bestD = d; best = { type: "portal", portal: p }; }
+  }
   return best;
 }
 
 function realmTitle(i) { return realmDefs[i].title; }
 
 function doInteract() {
+  if (instance) { interactInstance(); return; }
   const it = nearestInteractable();
   if (!it) return;
+  if (it.type === "portal") { enterInstance(it.portal.dest); return; }
   if (it.type === "npc") {
     const npc = it.npc;
     let lines = npc.lines.slice();
@@ -550,14 +580,23 @@ function syncHud() {
   if (objectivesOpen) buildObjectives();
   const gi = Math.round(giNow() * 100);
   const tag = live ? `<span class="aqua pill">${STR.hud_live}</span>` : `<span class="muted pill">${STR.hud_demo}</span>`;
+  const zone = instance ? instance.name : STR.title;
   el("hud").innerHTML = `
-    <span class="gold pill">${STR.title}</span>
+    <span class="gold pill">${zone}</span>
     <span class="gold pill">${STR.hud_cycle} ${liveCycle}</span>
-    <span class="green pill">${STR.hud_mic} ${micNow()}</span>
+    <span class="purple pill">LVL ${player.level}</span>
+    <span class="gold pill">${STR.hud_mic} ${micNow()}</span>
     <span class="green pill">${STR.hud_gi} ${gi}%</span>
     <span class="aqua pill">${STR.hud_realms} ${sealedCount}/${realms.length}</span>
     <span class="${won ? "green" : "red"} pill">${STR.hud_event} ${won ? "CLEAR" : WORLD_SNAPSHOT.event.title}</span>
     ${tag}`;
+  // RPG stat bars
+  const setBar = (id, val, max) => { const e = el(id); if (e) e.style.width = Math.max(0, Math.min(100, (val / max) * 100)) + "%"; };
+  setBar("bar-hp", player.hp, player.maxHp);
+  setBar("bar-mp", player.mp, player.maxMp);
+  setBar("bar-xp", player.xp, player.xpNext);
+  const lbl = el("rpg-label");
+  if (lbl) lbl.textContent = `HP ${Math.round(player.hp)}/${player.maxHp}  MP ${Math.round(player.mp)}/${player.maxMp}`;
 }
 
 // ---------------------------------------------------------------- render
@@ -617,6 +656,7 @@ function blit(img, wx, wy, w, h) {
 
 function render(frame) {
   ctx.imageSmoothingEnabled = false;
+  if (instance) { renderInstance(frame); return; }
   // camera (integer-snapped for crisp nearest-neighbour blits)
   const vwW = viewW / ZOOM, vwH = viewH / ZOOM;
   camX = Math.floor(Math.max(2 * TILE, Math.min(MAP_W * TILE - 2 * TILE - vwW, player.wx - vwW / 2)));
@@ -663,6 +703,14 @@ function render(frame) {
   } });
   // npcs
   for (const npc of npcs) if (cull(npc.wx, npc.wy)) draw.push({ y: npc.wy, fn: () => drawNpc(npc, frame) });
+  // travel portals (to instanced maps)
+  for (const p of overworldPortals) if (cull(p.wx, p.wy)) draw.push({ y: p.wy, fn: () => {
+    glow(p.wx, p.wy, 20, p.color, frame);
+    const im = IMG.fountain;
+    if (im) ctx.drawImage(im, 48, 0, 48, 48, Math.round((p.wx - 24 - camX) * ZOOM), Math.round((p.wy - 36 - camY) * ZOOM), Math.round(48 * ZOOM), Math.round(48 * ZOOM));
+    ctx.font = "8px 'Press Start 2P', monospace"; ctx.textAlign = "center"; ctx.fillStyle = p.color;
+    ctx.fillText(p.label, (p.wx - camX) * ZOOM, (p.wy - 30 - camY) * ZOOM);
+  } });
   // player
   draw.push({ y: player.wy, fn: () => drawPlayer(frame) });
 
@@ -675,16 +723,7 @@ function render(frame) {
   // live minimap while objectives panel is open
   if (objectivesOpen && frame % 3 === 0) drawMinimap();
 
-  // nearby hint
-  if (nearHint && !dialog) {
-    ctx.fillStyle = "rgba(11,10,31,.85)";
-    const w = ctx.measureText(nearHint).width;
-    ctx.font = "10px 'Press Start 2P', monospace"; ctx.textAlign = "center";
-    const tw = Math.max(120, nearHint.length * 8);
-    ctx.fillRect(viewW / 2 - tw / 2, viewH - 84, tw, 22);
-    ctx.fillStyle = "#3dffea";
-    ctx.fillText(nearHint, viewW / 2, viewH - 69);
-  }
+  drawHint();
 }
 
 function glow(wx, wy, r, color, frame) {
@@ -776,10 +815,308 @@ function drawFog(frame) {
   ctx.restore();
 }
 
+// ================================================================
+//  MMORPG LAYER (C-353): instanced maps, combat, economy, skills
+// ================================================================
+let instance = null;          // active instance map, or null = overworld
+let combat = null;            // active combat encounter
+let savedOverworldPos = null;
+let overworldPortals = [];
+
+// per-tile overlay tint cache for instance maps
+const _tileCache = new Map();
+function tintedTile(img, color, alpha) {
+  if (!img) return null;
+  const k = img.src + color + alpha;
+  if (_tileCache.has(k)) return _tileCache.get(k);
+  const cv = document.createElement("canvas"); cv.width = img.width; cv.height = img.height;
+  const x = cv.getContext("2d");
+  x.drawImage(img, 0, 0);
+  x.globalCompositeOperation = "overlay"; x.globalAlpha = alpha; x.fillStyle = color;
+  x.fillRect(0, 0, cv.width, cv.height);
+  _tileCache.set(k, cv); return cv;
+}
+
+// Instanced map definitions. '#'=wall '.'=floor ','=ground '~'=water 'P'=spawn
+const INSTANCE_DEFS = {
+  commons: {
+    name: "Civic Commons", theme: "#3b82f6",
+    map: [
+      "###################",
+      "#.................#",
+      "#.................#",
+      "#.................#",
+      "#.................#",
+      "#.................#",
+      "#........P........#",
+      "#.................#",
+      "#.................#",
+      "#.................#",
+      "#.................#",
+      "###################",
+    ],
+    entities: [
+      { x: 4, y: 2, kind: "shop", name: "MIC Market", action: "market", color: "#c8a84b",
+        desc: "Trade 5 MIC for a Stim that restores 40 HP." },
+      { x: 9, y: 2, kind: "shop", name: "OAA Town Hall", action: "townhall", color: "#3b82f6",
+        desc: "Cast a vote (1 MIC) on EPICON v2.1 to earn 40 XP." },
+      { x: 14, y: 2, kind: "shop", name: "Bank of MIC", action: "bank", color: "#c8a84b",
+        desc: "Collect this cycle's vault dividend." },
+      { x: 6, y: 8, kind: "npc", name: "JUDAN", color: "#8cffa8", desc: "\"Participation is the reality anchor. Spend your MIC where it compounds.\"" },
+      { x: 12, y: 8, kind: "npc", name: "EVE", color: "#8cffa8", desc: "\"Global synthesis complete. The Commons holds steady this cycle.\"" },
+      { x: 9, y: 10, kind: "portal_back", name: "EXIT", desc: "Return to The HIVE." },
+    ],
+  },
+  conflict: {
+    name: "Conflict Zone", theme: "#ef4444",
+    map: [
+      "###################",
+      "#,,,,,,,,,,,,,,,,,#",
+      "#,,,,,,,,,,,,,,,,,#",
+      "#,,,###,,,,,###,,,#",
+      "#,,,,,,,,,,,,,,,,,#",
+      "#,,,,,,,,P,,,,,,,,#",
+      "#,,,,,,,,,,,,,,,,,#",
+      "#,,,###,,,,,###,,,#",
+      "#,,,,,,,,,,,,,,,,,#",
+      "#,,,,,,,,,,,,,,,,,#",
+      "#,,,,,,,,,,,,,,,,,#",
+      "###################",
+    ],
+    entities: [
+      { x: 5, y: 1, kind: "enemy", name: "Entropy Agent", hp: 40, reward: 5, color: "#ef4444",
+        desc: "A rogue actor corrupting GI readings." },
+      { x: 13, y: 2, kind: "enemy", name: "Canon Vandal", hp: 55, reward: 7, color: "#ef4444",
+        desc: "Trying to overwrite the canon laws." },
+      { x: 14, y: 9, kind: "enemy", name: "Cycle Drift Daemon", hp: 70, reward: 10, color: "#ef4444",
+        desc: "Responsible for the cycle.json drift." },
+      { x: 4, y: 9, kind: "enemy", name: "Double-Parse Bug", hp: 45, reward: 8, color: "#ef4444",
+        desc: "The substrate-rejection 500. Patch it." },
+      { x: 9, y: 9, kind: "boss", name: "URIEL", hp: 220, reward: 120, boss: true, color: "#a855f7",
+        desc: "The truth sentinel in adversarial mode. High stakes." },
+      { x: 9, y: 10, kind: "portal_back", name: "EXIT", desc: "Return to The HIVE." },
+    ],
+  },
+};
+
+function parseInstance(def) {
+  const rows = def.map, H = rows.length, W = rows[0].length;
+  const code = { "#": WALL, ".": FLOOR, ",": GROUND, "~": WATER, " ": VOID, "P": FLOOR };
+  const tiles = []; let sx = 9, sy = 6;
+  for (let y = 0; y < H; y++) {
+    tiles[y] = [];
+    for (let x = 0; x < W; x++) {
+      const ch = rows[y][x] || " ";
+      tiles[y][x] = code[ch] ?? FLOOR;
+      if (ch === "P") { sx = x; sy = y; }
+    }
+  }
+  const entities = def.entities.map((e) => ({ ...e, wx: e.x * TILE + TILE / 2, wy: e.y * TILE + TILE / 2, alive: true }));
+  const blocked = new Set();
+  for (const e of entities) if (e.kind !== "portal_back") blocked.add(e.x + "," + e.y);
+  const mc = document.createElement("canvas"); mc.width = W * TILE; mc.height = H * TILE;
+  const m = mc.getContext("2d"); m.imageSmoothingEnabled = false;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const c = tiles[y][x]; if (c === VOID) continue;
+    let img = IMG.floor;
+    if (c === WALL) img = IMG.wall; else if (c === WATER) img = IMG.water;
+    else if (c === GROUND) img = tintedTile(IMG.ground, def.theme, 0.34);
+    else if (c === FLOOR) img = tintedTile(IMG.floor, def.theme, 0.22);
+    if (img) m.drawImage(img, x * TILE, y * TILE);
+  }
+  return { def, name: def.name, theme: def.theme, tiles, W, H, blocked, entities, mapCanvas: mc, spawn: { x: sx, y: sy } };
+}
+
+function enterInstance(id) {
+  const def = INSTANCE_DEFS[id]; if (!def) return;
+  savedOverworldPos = { wx: player.wx, wy: player.wy, dir: player.dir };
+  instance = parseInstance(def);
+  player.wx = instance.spawn.x * TILE + TILE / 2;
+  player.wy = instance.spawn.y * TILE + TILE / 2; player.dir = "down";
+  toast("\u27f6 " + def.name); sfx("talk");
+  pushChronicle({ kind: "session", text: "Entered " + def.name, cycle: liveCycle, color: def.theme });
+  emitEvent("enter_map", { map: id, name: def.name });
+  syncHud();
+}
+function exitInstance() {
+  if (combat) return;
+  instance = null;
+  if (savedOverworldPos) { player.wx = savedOverworldPos.wx; player.wy = savedOverworldPos.wy; player.dir = savedOverworldPos.dir; }
+  toast("\u27f6 The HIVE"); emitEvent("enter_map", { map: "hive", name: "The HIVE" }); syncHud();
+}
+
+function instWalk(wx, wy) {
+  const I = instance; if (!I) return false;
+  const tx = Math.floor(wx / TILE), ty = Math.floor(wy / TILE);
+  if (ty < 0 || tx < 0 || ty >= I.H || tx >= I.W) return false;
+  if (!WALKABLE.has(I.tiles[ty][tx])) return false;
+  if (I.blocked.has(tx + "," + ty)) return false;
+  return true;
+}
+function instTryMove(dx, dy) {
+  const h = HALF;
+  const nx = player.wx + dx;
+  if (instWalk(nx - h, player.wy - h) && instWalk(nx + h, player.wy - h) && instWalk(nx - h, player.wy + h) && instWalk(nx + h, player.wy + h)) player.wx = nx;
+  const ny = player.wy + dy;
+  if (instWalk(player.wx - h, ny - h) && instWalk(player.wx + h, ny - h) && instWalk(player.wx - h, ny + h) && instWalk(player.wx + h, ny + h)) player.wy = ny;
+}
+function instNearest() {
+  let best = null, bd = INTERACT_R * INTERACT_R;
+  for (const e of instance.entities) {
+    if (!e.alive) continue;
+    const d = (e.wx - player.wx) ** 2 + (e.wy - player.wy) ** 2;
+    if (d < bd) { bd = d; best = e; }
+  }
+  return best;
+}
+
+const INST_ACTIONS = {
+  market: () => { if (spendMic(5)) { heal(40); toast("MIC Stim \u2014 +40 HP"); } else toast("Need 5 MIC"); },
+  townhall: () => { if (spendMic(1)) { gainXP(40); toast("Voted on EPICON v2.1 \u2014 +40 XP"); } else toast("Need 1 MIC"); },
+  bank: (e) => { if (!e._claimed) { e._claimed = true; gainMic(3); toast("Vault dividend \u2014 +3 MIC"); } else toast("Dividend already claimed this visit"); },
+};
+
+function updateInstance(cmds) {
+  if (combat) return;
+  let dx = 0, dy = 0;
+  if (cmds.has("left")) dx -= SPEED; if (cmds.has("right")) dx += SPEED;
+  if (cmds.has("up")) dy -= SPEED; if (cmds.has("down")) dy += SPEED;
+  if (dx && dy) { dx *= 0.7071; dy *= 0.7071; }
+  if (dx || dy) {
+    player.dir = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down");
+    instTryMove(dx, dy); player.anim = Math.floor(performance.now() / 140) % 2;
+  } else player.anim = 0;
+  const e = instNearest();
+  nearHint = !e ? "" : (e.kind === "enemy" || e.kind === "boss") ? `[E] FIGHT ${e.name}`
+    : e.kind === "portal_back" ? "[E] EXIT TO THE HIVE" : `[E] ${e.name}`;
+}
+function interactInstance() {
+  if (combat) return;
+  const e = instNearest(); if (!e) return;
+  if (e.kind === "portal_back") { exitInstance(); return; }
+  if (e.kind === "enemy" || e.kind === "boss") { startCombat(e); return; }
+  if (e.action && INST_ACTIONS[e.action]) { INST_ACTIONS[e.action](e); return; }
+  openDialog(e.name, [e.desc || "\u2026"]);
+}
+
+function startCombat(e) {
+  if (e.boss && player.mic < 60) { toast("URIEL demands a 60 MIC wager"); return; }
+  if (e.boss) spendMic(60);
+  combat = { e, eHp: e.hp, eMax: e.hp, round: 0 };
+  toast("\u2694 " + e.name + " engaged"); sfx("deny");
+  combat.timer = setInterval(combatRound, 700);
+}
+function combatRound() {
+  if (!combat) return;
+  combat.round++;
+  const atk = 8 + Math.floor(Math.random() * 10) + player.level * 2;
+  combat.eHp -= atk;
+  const ret = combat.e.boss ? 10 + Math.floor(Math.random() * 16) : 4 + Math.floor(Math.random() * 8);
+  const dead = damage(ret);
+  toast(`You hit ${atk} \u00b7 take ${ret} \u00b7 ${combat.e.name} ${Math.max(0, combat.eHp)}/${combat.eMax}`);
+  if (combat.eHp <= 0) return endCombat(true);
+  if (dead) return endCombat(false);
+}
+function endCombat(win) {
+  clearInterval(combat.timer);
+  const e = combat.e; combat = null;
+  if (win) {
+    e.alive = false;
+    const rew = e.reward || 5;
+    gainMic(rew); gainXP(e.boss ? 500 : rew * 8); gainGI(e.boss ? 0.03 : 0.01);
+    toast(`\u2713 ${e.name} defeated \u2014 +${rew} MIC`); sfx("seal");
+    pushChronicle({ kind: "session", text: "Defeated " + e.name, cycle: liveCycle, color: "#8cffa8" });
+    emitEvent("combat_win", { enemy: e.name, boss: !!e.boss });
+    if (e.boss) toast("URIEL falls. Integrity restored to the network.");
+  } else {
+    player.hp = Math.max(20, Math.round(player.maxHp * 0.4));
+    player.wx = instance.spawn.x * TILE + TILE / 2; player.wy = instance.spawn.y * TILE + TILE / 2;
+    toast("Defeated \u2014 respawned at the gate"); sfx("deny"); syncHud();
+  }
+}
+
+function drawInstEntity(e, frame) {
+  const bob = Math.sin(frame * 0.05 + e.wx) * 2;
+  if (e.kind === "enemy" || e.kind === "boss") {
+    const img = tinted(IMG.sentinel, e.color, 0.5) || IMG.sentinel;
+    ctx.fillStyle = "rgba(0,0,0,.3)"; ctx.beginPath();
+    ctx.ellipse((e.wx - camX) * ZOOM, (e.wy + 10 - camY) * ZOOM, 12 * ZOOM, 4 * ZOOM, 0, 0, 7); ctx.fill();
+    blit(img, e.wx - (e.boss ? 22 : 18), e.wy - (e.boss ? 44 : 36) + bob, e.boss ? 44 : 36, e.boss ? 58 : 48);
+  } else if (e.kind === "npc") {
+    const img = tinted(IMG.agent, e.color || instance.theme, 0.35) || IMG.agent;
+    blit(img, e.wx - 18, e.wy - 36 + bob, 36, 48);
+  } else if (e.kind === "portal_back") {
+    glow(e.wx, e.wy, 22, "#3dffea", frame);
+    blit(IMG.shard, e.wx - 12, e.wy - 12 + bob, 24, 24);
+  } else { // structure
+    const im = IMG.beacon;
+    if (im) ctx.drawImage(im, 32, 0, 32, 48, Math.round((e.wx - 18 - camX) * ZOOM), Math.round((e.wy - 50 - camY) * ZOOM), Math.round(36 * ZOOM), Math.round(54 * ZOOM));
+    glow(e.wx, e.wy - 26, 16, e.color || instance.theme, frame);
+  }
+  ctx.font = "8px 'Press Start 2P', monospace"; ctx.textAlign = "center";
+  ctx.fillStyle = e.color || instance.theme;
+  ctx.fillText(e.name, (e.wx - camX) * ZOOM, (e.wy - camY) * ZOOM - 42 * ZOOM);
+}
+
+function renderInstance(frame) {
+  ctx.imageSmoothingEnabled = false;
+  const I = instance, vwW = viewW / ZOOM, vwH = viewH / ZOOM;
+  camX = Math.floor(Math.max(0, Math.min(I.W * TILE - vwW, player.wx - vwW / 2)));
+  camY = Math.floor(Math.max(0, Math.min(I.H * TILE - vwH, player.wy - vwH / 2)));
+  ctx.fillStyle = "#05040f"; ctx.fillRect(0, 0, viewW, viewH);
+  const sw = Math.min(I.W * TILE - camX, Math.ceil(vwW) + 1), sh = Math.min(I.H * TILE - camY, Math.ceil(vwH) + 1);
+  if (I.mapCanvas) ctx.drawImage(I.mapCanvas, camX, camY, sw, sh, 0, 0, sw * ZOOM, sh * ZOOM);
+  const draw = [];
+  for (const e of I.entities) if (e.alive) draw.push({ y: e.wy, fn: () => drawInstEntity(e, frame) });
+  draw.push({ y: player.wy, fn: () => drawPlayer(frame) });
+  draw.sort((a, b) => a.y - b.y);
+  for (const d of draw) d.fn();
+  drawHint();
+}
+
+function drawHint() {
+  if (!nearHint || dialog) return;
+  ctx.font = "10px 'Press Start 2P', monospace"; ctx.textAlign = "center";
+  const tw = Math.max(120, nearHint.length * 8);
+  ctx.fillStyle = "rgba(11,10,31,.85)"; ctx.fillRect(viewW / 2 - tw / 2, viewH - 84, tw, 22);
+  ctx.fillStyle = "#3dffea"; ctx.fillText(nearHint, viewW / 2, viewH - 69);
+}
+
+// ----------------------------------------------------------- skills
+const SKILLS = [
+  { key: "1", name: "ATTEST", mp: 6, fn: () => { gainGI(0.006); gainMic(0.2); toast("EPICON attest \u2014 GI rises"); } },
+  { key: "2", name: "SHIELD", mp: 8, fn: () => { heal(15); toast("Integrity Shield \u2014 +15 HP"); } },
+  { key: "3", name: "HEAL", mp: 16, fn: () => { heal(35); toast("Recovery \u2014 +35 HP"); } },
+  { key: "4", name: "SCAN", mp: 6, fn: () => { toast(`Scan: ${instance ? instance.name : "The HIVE"} \u00b7 GI ${Math.round(giNow() * 100)}% \u00b7 LVL ${player.level}`); } },
+];
+const skillCd = {};
+function useSkill(i) {
+  const s = SKILLS[i]; if (!s) return;
+  if (skillCd[i]) { toast(`${s.name} cooling`); return; }
+  if (player.mp < s.mp) { toast("Not enough MP"); return; }
+  player.mp -= s.mp; s.fn(); syncHud();
+  skillCd[i] = true; const b = el("sk" + i); if (b) b.classList.add("cd");
+  setTimeout(() => { skillCd[i] = false; const bb = el("sk" + i); if (bb) bb.classList.remove("cd"); }, 2200);
+}
+function buildSkillbar() {
+  const bar = el("skillbar"); if (!bar) return;
+  bar.innerHTML = SKILLS.map((s, i) => `<button class="sk" id="sk${i}" data-i="${i}"><span class="k">${s.key}</span>${s.name}</button>`).join("");
+  bar.querySelectorAll(".sk").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); useSkill(+b.dataset.i); }));
+}
+
+function buildPortals() {
+  overworldPortals = [
+    { wx: wcx(HX - 3), wy: wcx(HY + 1), dest: "commons", label: "CIVIC COMMONS", color: "#3b82f6" },
+    { wx: wcx(HX + 3), wy: wcx(HY + 1), dest: "conflict", label: "CONFLICT ZONE", color: "#ef4444" },
+  ];
+}
+
 // ----------------------------------------------------------------- update
 function update(cmds) {
-  if (!started || won) return;
-  if (dialog) { return; }
+  if (!started) return;
+  if (dialog) return;
+  if (instance) { updateInstance(cmds); return; }
+  if (won) return;
   let dx = 0, dy = 0;
   if (cmds.has("left")) dx -= SPEED; if (cmds.has("right")) dx += SPEED;
   if (cmds.has("up")) dy -= SPEED; if (cmds.has("down")) dy += SPEED;
@@ -807,6 +1144,7 @@ function update(cmds) {
   const it = nearestInteractable();
   if (it) {
     if (it.type === "npc") nearHint = STR.hint_talk + " " + it.npc.name;
+    else if (it.type === "portal") nearHint = "[E] ENTER " + it.portal.label;
     else if (it.type === "beacon") {
       const r = it.realm;
       nearHint = r.sealed ? STR.hint_beacon_done
@@ -830,6 +1168,8 @@ function startGame() {
 }
 function resetGame() {
   el("win").classList.remove("show");
+  if (combat) { clearInterval(combat.timer); combat = null; }
+  instance = null; savedOverworldPos = null;
   for (const r of realms) { r.sealed = false; r.talked = false; r.revealed = false; for (const s of r.shards) s.taken = false; }
   sealedCount = 0; won = false; fountain.ready = false; fountain.active = false;
   chronicle = chronicle.filter((c) => c.kind === "history");   // keep ledger history, drop this run's deeds
@@ -857,6 +1197,7 @@ function tick(now) {
   while (acc >= STEP) { update(cmds); acc -= STEP; }
   if (actionEdge) onAction();
   frame++;
+  if (started && frame % 24 === 0 && player.mp < player.maxMp) { player.mp = Math.min(player.maxMp, player.mp + 1); syncHud(); }
   if (toastT > 0 && --toastT === 0) el("toast").classList.remove("show");
   render(frame);
   if (dev) {
@@ -903,6 +1244,8 @@ async function tryLive() {
 function boot() {
   buildWorld();
   buildMapCanvas();
+  buildPortals();
+  buildSkillbar();
   bindTouch();
   resize();
   // intro copy
@@ -914,8 +1257,10 @@ function boot() {
   el("introhint").textContent = STR.start_hint;
   syncHud();
   if (dev) window.__hive = { realms, npcs, player, fountain, sealRealm, winGame,
+    enterInstance, exitInstance, startCombat, useSkill, gainXP,
+    instance: () => instance, combat: () => combat,
     isReachable: (tx, ty) => reachableSet.has(tx + "," + ty),
-    state: () => ({ sealedCount, won, gi: giNow(), mic: micNow(), live }) };
+    state: () => ({ sealedCount, won, gi: giNow(), mic: micNow(), live, level: player.level, hp: player.hp, mp: player.mp, map: instance ? instance.name : "hive" }) };
   requestAnimationFrame(tick);
   // Emit `ready` only after the live overlay settles so the parent records the
   // same live cycle/GI/vault the HUD shows (a safety timeout fires it regardless

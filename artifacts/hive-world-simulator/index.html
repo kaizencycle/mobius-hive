@@ -89,6 +89,27 @@
   #objbody .chron{ font-size:8px; line-height:1.8; color:#c8c8e8; padding:1px 0; }
   #objbody .chron.muted{ color:var(--muted); }
   #objclose{ margin-top:14px; font-size:8px; color:var(--muted); text-align:center; }
+
+  /* RPG layer (C-353) */
+  .purple{ color:#c4b5fd; }
+  #rpgbar{ position:fixed; top:34px; left:10px; z-index:6; display:flex; flex-direction:column; gap:3px; width:154px; pointer-events:none; }
+  #rpgbar .rb{ height:8px; background:rgba(8,7,20,.8); border:1px solid #2a2350; border-radius:3px; overflow:hidden; }
+  #rpgbar .rf{ height:100%; width:100%; transition:width .2s; }
+  #rpgbar .rf.hp{ background:linear-gradient(90deg,#ef4444,#f87171); }
+  #rpgbar .rf.mp{ background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+  #rpgbar .rf.xp{ background:linear-gradient(90deg,#c8a84b,#f6c860); }
+  #rpg-label{ font-size:7px; color:#9a9ac0; font-family:'Press Start 2P',monospace; line-height:1.6; }
+  #skillbar{ position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:6; display:flex; gap:6px; }
+  #skillbar .sk{ width:62px; height:38px; background:rgba(12,11,31,.85); border:1px solid var(--aqua);
+    border-radius:6px; color:var(--aqua); font-family:'Press Start 2P',monospace; font-size:7px;
+    cursor:pointer; position:relative; padding-top:8px; }
+  #skillbar .sk .k{ position:absolute; top:2px; left:4px; font-size:6px; color:#7a7a9a; }
+  #skillbar .sk.cd{ opacity:.4; }
+  @media (max-width:520px){
+    #skillbar{ left:auto; right:6px; bottom:auto; top:30px; transform:none; gap:4px; }
+    #skillbar .sk{ width:46px; height:30px; font-size:6px; padding-top:6px; }
+    #rpgbar{ width:108px; }
+  }
 </style>
 </head>
 <body>
@@ -97,6 +118,14 @@
 <div id="hud"></div>
 <div id="toast"></div>
 <div id="dev"></div>
+
+<div id="rpgbar">
+  <div class="rb"><div id="bar-hp" class="rf hp"></div></div>
+  <div class="rb"><div id="bar-mp" class="rf mp"></div></div>
+  <div class="rb"><div id="bar-xp" class="rf xp"></div></div>
+  <div id="rpg-label">HP 100/100  MP 60/60</div>
+</div>
+<div id="skillbar"></div>
 
 <button id="objbtn" type="button" aria-label="Objectives">◧ OBJECTIVES <b>0/9</b></button>
 <aside id="objectives" aria-label="Objectives panel">
