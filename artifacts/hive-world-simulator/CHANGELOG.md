@@ -1,5 +1,21 @@
 # HIVE 16-bit World Simulator — Changelog
 
+## C-353 — MMORPG layer: multiple maps, RPG progression, combat, economy
+
+Grew the world simulator into a multi-map action-RPG on the same pixel engine
+(art, live overlay, fog, Chronicle, embed contract all preserved).
+
+- **Multiple maps.** Beyond the HIVE overworld there are now travelable
+  **instanced maps**, entered via glowing portals in the Forge courtyard:
+  - **Civic Commons** (blue) — MIC Market, OAA Town Hall, Bank of MIC, citizen NPCs (JUDAN, EVE). Economy + XP.
+  - **Conflict Zone** (red) — adversarial agents (Entropy Agent, Canon Vandal, Cycle Drift Daemon, Double-Parse Bug) and the boss **URIEL** (60 MIC wager). Combat + rewards.
+  Each instance is its own tilemap (pre-baked, themed tint) with an exit portal back to the HIVE.
+- **RPG progression.** Player now has **HP / MP / XP / Level** plus a spendable **MIC wallet**; leveling raises max HP/MP and fully restores. HUD gains a stat-bar strip + level readout.
+- **Skill bar.** Four skills on a bar (keys **1–4** / tap): **ATTEST** (+GI, earn MIC), **SHIELD** (+HP), **HEAL** (+HP), **SCAN** (status), with MP costs and cooldowns; MP regenerates over time.
+- **Combat.** Auto-resolving encounters with damage rolls scaled by level; win → MIC + XP + GI, lose → respawn at the map gate. Boss URIEL grants a large XP/MIC payout.
+- **Economy.** Spend MIC at Commons shops (stim heal, vote-for-XP, vault dividend); earn MIC from combat, attestation, and the GI drip.
+- **Embed events** extended: `enter_map`, `combat_win`, `level_up` join the existing `ready`/`seal`/`win` stream for the shell/ledger.
+
 ## C-445 — Detailed character art
 
 - Reworked the three character sprites to match richer reference designs (parametric PIL drawing + silhouette outline):
