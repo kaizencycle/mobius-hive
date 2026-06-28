@@ -1,14 +1,14 @@
 {
-  "cycle": "C-355",
+  "cycle": "C-356",
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
-    "gi": 0.82,
+    "gi": 0.761,
     "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.789,
+    "progress": 0.758,
     "fountain_status": "locked"
   },
   "active_events": [
