@@ -3,10 +3,10 @@
   "node_id": "mobius-hive",
   "event_type": "QUEST_SIGNAL_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-06-30T17:17:06.983Z",
+  "generated_at": "2026-06-30T19:19:45.455Z",
   "cycle": "C-358",
   "world_pressure": "elevated",
-  "gi": 0.63,
+  "gi": 0.81,
   "kv_status": "degraded",
   "source_mode": "kv_preferred",
   "rules_fired": [
@@ -31,7 +31,7 @@
     "tone": "warning",
     "summary": "Operator memory lanes are noisy; continuity is at risk.",
     "cycle_id": "C-358",
-    "updated_at": "2026-06-30T17:17:06.935Z"
+    "updated_at": "2026-06-30T19:19:45.402Z"
   },
   "active_quest": {
     "id": "restore-the-beacon",
@@ -63,7 +63,7 @@
       "mic_effect": "none_until_eligible"
     },
     "cycle_id": "C-358",
-    "updated_at": "2026-06-30T17:17:06.935Z",
+    "updated_at": "2026-06-30T19:19:45.402Z",
     "sentinel_id": "zeus"
   },
   "active_sentinel": {
@@ -84,7 +84,7 @@
       "gate_unsafe_actions"
     ],
     "cycle_id": "C-358",
-    "updated_at": "2026-06-30T17:17:06.935Z",
+    "updated_at": "2026-06-30T19:19:45.402Z",
     "display_name": "ZEUS",
     "voice": "Hold the line. We do not ship fog as truth.",
     "runtime_overlay": {
@@ -95,6 +95,6 @@
   },
   "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
   "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-  "source_hash": "3710e180fc14067743a8e8a57bba88f97bc1371dc48e0caaa2ea2a1dbd86d88e",
-  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-358:3710e180fc140677:world-update"
+  "source_hash": "ab3e008f90807a8ef67e83ff01c42f791a673da047262d8879de0b941c363a62",
+  "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-358:ab3e008f90807a8e:world-update"
 }
