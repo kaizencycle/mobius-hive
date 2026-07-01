@@ -1,9 +1,9 @@
 {
-  "cycle": "C-358",
+  "cycle": "C-359",
   "zone": "castle",
   "world_mood": "fogged",
   "integrity": {
-    "gi": 0.793,
+    "gi": 0.81,
     "kv_status": "degraded",
     "source_mode": "kv_preferred"
   },
