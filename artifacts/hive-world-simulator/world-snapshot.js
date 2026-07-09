@@ -7,19 +7,20 @@
  * try to fetch the live `world/current-world.json` and overlay it on top of
  * this snapshot — so the simulator stays accurate as the cycle advances.
  *
- * Re-baked: 2026-07-09T17:34:06.796Z
+ * Re-baked: 2026-07-09T19:13:52.539Z
  */
 
 export const WORLD_SNAPSHOT = {
   cycle: "C-367",
-  updated_at: "2026-07-09T17:34:06.796Z",
+  updated_at: "2026-07-09T19:13:52.539Z",
   world_mood: "fogged",
-  integrity: { gi: 0.92, kv_status: "degraded", source_mode: "kv_preferred" },
-  vault: { progress: 0.767, fountain_status: "locked" },
+  integrity: { gi: 0.71, kv_status: "degraded", source_mode: "kv_preferred" },
+  vault: { progress: 0.788, fountain_status: "locked" },
   active_events: ["signal-fog"],
   active_quests: ["restore-the-beacon"],
   active_sentinels: ["zeus","jade","hermes"],
   citizen_history: [],
+
 
 
 
