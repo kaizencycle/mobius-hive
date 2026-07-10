@@ -6,11 +6,15 @@
     "**/*.md",
     "*.md",
     "assets/**",
-    "artifacts/**",
+    "artifacts/**/*.md",
+    "artifacts/**/*.csv",
+    "artifacts/**/*.json",
+    "artifacts/**/README.md",
     "LIGHTWEIGHT_DESIGN_PRINCIPLES.md",
     "ROADMAP.md"
   ],
   "EP-2": [
+    "artifacts/**",
     "scripts/**",
     "schemas/**",
     "package.json",
