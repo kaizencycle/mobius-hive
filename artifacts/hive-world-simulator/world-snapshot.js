@@ -7,19 +7,20 @@
  * try to fetch the live `world/current-world.json` and overlay it on top of
  * this snapshot — so the simulator stays accurate as the cycle advances.
  *
- * Re-baked: 2026-07-11T06:39:20.829Z
+ * Re-baked: 2026-07-11T08:30:01.918Z
  */
 
 export const WORLD_SNAPSHOT = {
   cycle: "C-369",
-  updated_at: "2026-07-11T06:39:20.829Z",
-  world_mood: "resonant",
-  integrity: { gi: 0.9, kv_status: "unknown", source_mode: "kv_preferred" },
-  vault: { progress: 0.784, fountain_status: "stirring" },
-  active_events: ["fountain-murmur"],
-  active_quests: ["prepare-the-seal"],
+  updated_at: "2026-07-11T08:30:01.918Z",
+  world_mood: "stable",
+  integrity: { gi: 0.8, kv_status: "unknown", source_mode: "kv_preferred" },
+  vault: { progress: 0.782, fountain_status: "locked" },
+  active_events: ["quiet-grid"],
+  active_quests: ["patrol-the-lanes"],
   active_sentinels: ["zeus","jade","hermes"],
   citizen_history: [],
+
 
 
 

@@ -1,21 +1,21 @@
 {
   "cycle": "C-369",
   "zone": "castle",
-  "world_mood": "resonant",
+  "world_mood": "stable",
   "integrity": {
-    "gi": 0.9,
+    "gi": 0.8,
     "kv_status": "unknown",
     "source_mode": "kv_preferred"
   },
   "vault": {
-    "progress": 0.784,
-    "fountain_status": "stirring"
+    "progress": 0.782,
+    "fountain_status": "locked"
   },
   "active_events": [
-    "fountain-murmur"
+    "quiet-grid"
   ],
   "active_quests": [
-    "prepare-the-seal"
+    "patrol-the-lanes"
   ],
   "active_sentinels": [
     "zeus",
