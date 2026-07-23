@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-07-23T04:40:06.997Z",
+  "generated_at": "2026-07-23T07:20:51.048Z",
   "cycle": "C-381",
   "current_cycle": {
     "cycle_id": "C-381",
-    "updated_at": "2026-07-23T04:40:06.943Z",
+    "updated_at": "2026-07-23T07:20:50.998Z",
     "rules_fired": [
       "kv_degraded"
     ],
@@ -16,8 +16,8 @@
     "active_sentinel_id": "zeus",
     "signals": {
       "kv_status": "degraded",
-      "gi": 0.756,
-      "vault_progress": 0.752
+      "gi": 0.761,
+      "vault_progress": 0.766
     },
     "ingest_health": {
       "terminal_snapshot": true,
@@ -31,12 +31,12 @@
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.756,
+      "gi": 0.761,
       "kv_status": "degraded",
       "source_mode": "kv_preferred"
     },
     "vault": {
-      "progress": 0.752,
+      "progress": 0.766,
       "fountain_status": "locked"
     },
     "active_events": [
@@ -72,7 +72,7 @@
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-381",
-      "updated_at": "2026-07-23T04:40:06.943Z"
+      "updated_at": "2026-07-23T07:20:50.998Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -104,7 +104,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-381",
-      "updated_at": "2026-07-23T04:40:06.943Z",
+      "updated_at": "2026-07-23T07:20:50.998Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -125,7 +125,7 @@
         "gate_unsafe_actions"
       ],
       "cycle_id": "C-381",
-      "updated_at": "2026-07-23T04:40:06.943Z",
+      "updated_at": "2026-07-23T07:20:50.998Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -150,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "2de75c6c564b651e489f91f7f167c9703b9c446e7d4662510c17c04d7d9b7039",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-381:2de75c6c564b651e:world-update"
+  "source_hash": "edda0f8613bda765623376003d430a701e1fd877e1cf569efe1a0ff1b8370882",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-381:edda0f8613bda765:world-update"
 }
