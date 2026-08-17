@@ -1,6 +1,6 @@
 {
   "cycle_id": "C-406",
-  "updated_at": "2026-08-17T15:03:14.827Z",
+  "updated_at": "2026-08-17T15:41:34.193Z",
   "rules_fired": [
     "kv_degraded"
   ],
@@ -9,13 +9,13 @@
   "active_sentinel_id": "zeus",
   "signals": {
     "kv_status": "degraded",
-    "gi": 0.74,
-    "vault_progress": 0.747
+    "gi": 0.754,
+    "vault_progress": 0.763
   },
   "ingest_health": {
     "terminal_snapshot": true,
     "cycle_state": true,
-    "mobius_pulse": false,
+    "mobius_pulse": true,
     "oaa_kv_latest": false
   }
 }
