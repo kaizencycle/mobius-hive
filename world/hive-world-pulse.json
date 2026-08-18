@@ -3,19 +3,19 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-08-18T19:41:26.983Z",
+  "generated_at": "2026-08-18T19:59:18.165Z",
   "cycle": "C-407",
   "current_cycle": {
     "cycle_id": "C-407",
-    "updated_at": "2026-08-18T19:41:26.932Z",
+    "updated_at": "2026-08-18T19:59:18.116Z",
     "rules_fired": [
-      "steady_state"
+      "kv_degraded"
     ],
-    "active_event_id": "quiet-grid",
-    "active_quest_id": "patrol-the-lanes",
-    "active_sentinel_id": "atlas",
+    "active_event_id": "signal-fog",
+    "active_quest_id": "restore-the-beacon",
+    "active_sentinel_id": "zeus",
     "signals": {
-      "kv_status": "unknown",
+      "kv_status": "degraded",
       "gi": 0.72,
       "vault_progress": 0.758
     },
@@ -32,7 +32,7 @@
     "world_mood": "fogged",
     "integrity": {
       "gi": 0.72,
-      "kv_status": "unknown",
+      "kv_status": "degraded",
       "source_mode": "kv_preferred"
     },
     "vault": {
@@ -40,10 +40,10 @@
       "fountain_status": "locked"
     },
     "active_events": [
-      "quiet-grid"
+      "signal-fog"
     ],
     "active_quests": [
-      "patrol-the-lanes"
+      "restore-the-beacon"
     ],
     "active_sentinels": [
       "zeus",
@@ -54,71 +54,84 @@
   },
   "world": {
     "active_event": {
-      "id": "quiet-grid",
-      "type": "calm_event",
-      "severity": "low",
-      "title": "Quiet Grid",
-      "description": "No mesh alarms fired on this tick.",
-      "sentinel_owner": "atlas",
-      "ui": {
-        "overlay": "clear",
-        "color": "neutral",
-        "priority": 0
+      "id": "signal-fog",
+      "type": "integrity_event",
+      "severity": "medium",
+      "title": "Signal Fog",
+      "description": "The lattice is visible, but unstable. Memory remains, live sight fades.",
+      "trigger": {
+        "kv_status": "degraded",
+        "gi_below": 0.8
       },
-      "tone": "calm",
-      "summary": "No mesh alarms fired on this tick.",
+      "sentinel_owner": "zeus",
+      "ui": {
+        "overlay": "fog",
+        "color": "dim",
+        "priority": 1
+      },
+      "tone": "warning",
+      "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-407",
-      "updated_at": "2026-08-18T19:41:26.932Z"
+      "updated_at": "2026-08-18T19:59:18.116Z"
     },
     "active_quest": {
-      "id": "patrol-the-lanes",
-      "type": "vigil_quest",
-      "title": "Patrol the Lanes",
-      "description": "Keep watch: terminal heartbeat, pulse freshness, OAA seals.",
-      "assigned_by": "atlas",
+      "id": "restore-the-beacon",
+      "type": "stability_quest",
+      "title": "Restore the Beacon",
+      "description": "Re-establish live signal continuity across the Castle.",
+      "assigned_by": "zeus",
       "status": "active",
       "progress": 0,
       "steps": [
         {
-          "id": "heartbeat",
-          "label": "Log heartbeat",
+          "id": "inspect",
+          "label": "Inspect Beacon",
           "completed": false
         },
         {
-          "id": "freshness",
-          "label": "Check pulse freshness",
+          "id": "fallback",
+          "label": "Verify Fallback Path",
+          "completed": false
+        },
+        {
+          "id": "ack",
+          "label": "Acknowledge Sentinel",
           "completed": false
         }
       ],
       "reward_preview": {
-        "vault_effect": "none",
+        "vault_effect": "stability_credit",
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-407",
-      "updated_at": "2026-08-18T19:41:26.932Z",
-      "sentinel_id": "atlas"
+      "updated_at": "2026-08-18T19:59:18.116Z",
+      "sentinel_id": "zeus"
     },
     "active_sentinel": {
-      "id": "atlas",
-      "title": "Sentinel of Verification",
-      "role": "verification",
-      "mood": "calm",
+      "id": "zeus",
+      "title": "Sentinel of Integrity",
+      "role": "integrity",
+      "mood": "alert",
       "location": "castle",
       "dialogue": {
-        "default": "No drama is also data. Log the null result."
+        "default": "The signal is unstable.",
+        "inspect_pending": "The Beacon has not been examined.",
+        "fallback_pending": "You see the fracture. Now stabilize it.",
+        "complete": "The signal stabilizes. The fog recedes."
       },
       "abilities": [
-        "verify_null",
-        "log_quiet_grid"
+        "warn",
+        "open_integrity_quest",
+        "gate_unsafe_actions"
       ],
       "cycle_id": "C-407",
-      "updated_at": "2026-08-18T19:41:26.932Z",
-      "display_name": "ATLAS",
-      "voice": "No drama is also data. Log the null result.",
+      "updated_at": "2026-08-18T19:59:18.116Z",
+      "display_name": "ZEUS",
+      "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
-        "display_name": "ATLAS",
-        "voice": "No drama is also data. Log the null result.",
-        "role": "verification"
+        "display_name": "ZEUS",
+        "voice": "Hold the line. We do not ship fog as truth.",
+        "role": "stabilization"
       }
     }
   },
@@ -126,7 +139,7 @@
     "world_pressure": "elevated",
     "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "rules_fired": [
-      "steady_state"
+      "kv_degraded"
     ]
   },
   "route": [
@@ -137,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "27b1c953889cfb70017bc3bb4a978b94c86a13d4fba878fa3e4b99fe8cbd4c8f",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-407:27b1c953889cfb70:world-update"
+  "source_hash": "98cdc92a71ed4a3c080ce680ba7ef18fa3a464cf884c96c203f8048eaa9dfca9",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-407:98cdc92a71ed4a3c:world-update"
 }
