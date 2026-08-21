@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-08-21T20:35:23.176Z",
+  "generated_at": "2026-08-21T21:02:08.066Z",
   "cycle": "C-410",
   "current_cycle": {
     "cycle_id": "C-410",
-    "updated_at": "2026-08-21T20:35:23.124Z",
+    "updated_at": "2026-08-21T21:02:08.021Z",
     "rules_fired": [
       "kv_degraded"
     ],
@@ -72,7 +72,7 @@
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-410",
-      "updated_at": "2026-08-21T20:35:23.124Z"
+      "updated_at": "2026-08-21T21:02:08.021Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -104,7 +104,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-410",
-      "updated_at": "2026-08-21T20:35:23.124Z",
+      "updated_at": "2026-08-21T21:02:08.021Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -125,7 +125,7 @@
         "gate_unsafe_actions"
       ],
       "cycle_id": "C-410",
-      "updated_at": "2026-08-21T20:35:23.124Z",
+      "updated_at": "2026-08-21T21:02:08.021Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -150,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "04e14bed4e7b15bc4b68f7acd06deee91d2bcdec34d85b07d1b0a1c6e62adb5e",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-410:04e14bed4e7b15bc:world-update"
+  "source_hash": "cae24638b5654d85cf5341453c41ca1e0dc04a4f4739a40097cdef9198c28a27",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-410:cae24638b5654d85:world-update"
 }
