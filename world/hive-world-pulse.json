@@ -3,11 +3,11 @@
   "node_id": "mobius-hive",
   "event_type": "HIVE_WORLD_PULSE_V1",
   "workflow_id": "world-update",
-  "generated_at": "2026-08-23T03:53:20.991Z",
-  "cycle": "C-411",
+  "generated_at": "2026-08-23T04:41:24.383Z",
+  "cycle": "C-412",
   "current_cycle": {
-    "cycle_id": "C-411",
-    "updated_at": "2026-08-23T03:53:20.936Z",
+    "cycle_id": "C-412",
+    "updated_at": "2026-08-23T04:41:24.333Z",
     "rules_fired": [
       "kv_degraded"
     ],
@@ -16,7 +16,7 @@
     "active_sentinel_id": "zeus",
     "signals": {
       "kv_status": "degraded",
-      "gi": 0.781,
+      "gi": 0.92,
       "vault_progress": 0.781
     },
     "ingest_health": {
@@ -27,11 +27,11 @@
     }
   },
   "current_world": {
-    "cycle": "C-411",
+    "cycle": "C-412",
     "zone": "castle",
     "world_mood": "fogged",
     "integrity": {
-      "gi": 0.781,
+      "gi": 0.92,
       "kv_status": "degraded",
       "source_mode": "kv_preferred"
     },
@@ -71,8 +71,8 @@
       },
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
-      "cycle_id": "C-411",
-      "updated_at": "2026-08-23T03:53:20.936Z"
+      "cycle_id": "C-412",
+      "updated_at": "2026-08-23T04:41:24.333Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -103,8 +103,8 @@
         "vault_effect": "stability_credit",
         "mic_effect": "none_until_eligible"
       },
-      "cycle_id": "C-411",
-      "updated_at": "2026-08-23T03:53:20.936Z",
+      "cycle_id": "C-412",
+      "updated_at": "2026-08-23T04:41:24.333Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -124,8 +124,8 @@
         "open_integrity_quest",
         "gate_unsafe_actions"
       ],
-      "cycle_id": "C-411",
-      "updated_at": "2026-08-23T03:53:20.936Z",
+      "cycle_id": "C-412",
+      "updated_at": "2026-08-23T04:41:24.333Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -150,6 +150,6 @@
     "SUBSTRATE_MEMORY",
     "CIVIC_LEDGER_PROOF"
   ],
-  "source_hash": "f47c843aa451f4dadba5fe7001ba30ba7ac54b759ebe157ac225c923584275f7",
-  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-411:f47c843aa451f4da:world-update"
+  "source_hash": "a77a5630ae1215456f947ee3fa7c1572e96c0e7b3c09a669dec7807f60523e4f",
+  "idempotency_key": "mobius-hive:HIVE_WORLD_PULSE_V1:C-412:a77a5630ae121545:world-update"
 }
