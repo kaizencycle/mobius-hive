@@ -4,10 +4,10 @@
   "event_type": "WORLD_STATE_V1",
   "workflow_id": "world-update",
   "cycle_id": "C-413",
-  "updated_at": "2026-08-24T22:09:48.928Z",
+  "updated_at": "2026-08-24T22:45:53.970Z",
   "previous_ledger_shape": {
     "cycle_id": "C-413",
-    "updated_at": "2026-08-24T22:09:48.880Z",
+    "updated_at": "2026-08-24T22:45:53.919Z",
     "hive": {
       "active_event": {
         "id": "signal-fog",
@@ -48,7 +48,7 @@
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-413",
-      "updated_at": "2026-08-24T22:09:48.880Z"
+      "updated_at": "2026-08-24T22:45:53.919Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -80,7 +80,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-413",
-      "updated_at": "2026-08-24T22:09:48.880Z",
+      "updated_at": "2026-08-24T22:45:53.919Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -101,7 +101,7 @@
         "gate_unsafe_actions"
       ],
       "cycle_id": "C-413",
-      "updated_at": "2026-08-24T22:09:48.880Z",
+      "updated_at": "2026-08-24T22:45:53.919Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -116,7 +116,7 @@
     "node_id": "mobius-hive",
     "event_type": "QUEST_SIGNAL_V1",
     "workflow_id": "world-update",
-    "generated_at": "2026-08-24T22:09:48.928Z",
+    "generated_at": "2026-08-24T22:45:53.970Z",
     "cycle": "C-413",
     "world_pressure": "elevated",
     "gi": 0.71,
@@ -144,7 +144,7 @@
       "tone": "warning",
       "summary": "Operator memory lanes are noisy; continuity is at risk.",
       "cycle_id": "C-413",
-      "updated_at": "2026-08-24T22:09:48.880Z"
+      "updated_at": "2026-08-24T22:45:53.919Z"
     },
     "active_quest": {
       "id": "restore-the-beacon",
@@ -176,7 +176,7 @@
         "mic_effect": "none_until_eligible"
       },
       "cycle_id": "C-413",
-      "updated_at": "2026-08-24T22:09:48.880Z",
+      "updated_at": "2026-08-24T22:45:53.919Z",
       "sentinel_id": "zeus"
     },
     "active_sentinel": {
@@ -197,7 +197,7 @@
         "gate_unsafe_actions"
       ],
       "cycle_id": "C-413",
-      "updated_at": "2026-08-24T22:09:48.880Z",
+      "updated_at": "2026-08-24T22:45:53.919Z",
       "display_name": "ZEUS",
       "voice": "Hold the line. We do not ship fog as truth.",
       "runtime_overlay": {
@@ -208,9 +208,9 @@
     },
     "recommendation": "Prioritize ZEUS verification and lane recovery before canon promotion.",
     "canon_rule": "HIVE may simulate world pressure and civic meaning. Canon still requires human merge.",
-    "source_hash": "fbe295e0f27a942f7f8c3669abba976a852309bfea1393148884642f6997f1d5",
-    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-413:fbe295e0f27a942f:world-update"
+    "source_hash": "53b134ad30037150ff5ded99a3deb7c03314805411663c7af7b6202f8c93188f",
+    "idempotency_key": "mobius-hive:QUEST_SIGNAL_V1:C-413:53b134ad30037150:world-update"
   },
-  "source_hash": "f24c709f9fd58e3df0626058c984723d65a532b146a98326654d9be677142abc",
-  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-413:f24c709f9fd58e3d:world-update"
+  "source_hash": "e4d15e63b087735ed6231a0058ec6780b7e0a3631fa8886c7f80a4f4c493ffa4",
+  "idempotency_key": "mobius-hive:WORLD_STATE_V1:C-413:e4d15e63b087735e:world-update"
 }
