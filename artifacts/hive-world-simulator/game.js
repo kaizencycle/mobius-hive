@@ -336,6 +336,8 @@ function emitEvent(type, extra) {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         event_type: "hive.player_event",
+        civic_id: getCivicId(),
+        lab_source: "hive",
         payload: {
           world: "hive-citadel",
           zone: (extra && extra.zone) || "castle",

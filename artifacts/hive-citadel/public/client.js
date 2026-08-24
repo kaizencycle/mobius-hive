@@ -62,6 +62,8 @@ async function postOnce(url, body) {
 export async function postPlayerEvent(attestUrl, { world, zone, action, targetId, cycleId, civicId }) {
   const body = {
     event_type: "hive.player_event",
+    civic_id: civicId,
+    lab_source: "hive",
     payload: {
       world,
       zone,
