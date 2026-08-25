@@ -11,6 +11,7 @@
  */
 import { STR } from "./strings.js";
 import { WORLD_SNAPSHOT } from "./world-snapshot.js";
+import { postHivePlayerEvent } from "./operation-id.js";
 
 // ---------------------------------------------------------------- constants
 const TILE = 32;                       // world px per tile
@@ -332,27 +333,15 @@ function emitEvent(type, extra) {
   // C-346 FIX-9: when running standalone (not in shell iframe), POST directly to CPC ledger
   // so players at solid-crystal-164.higgsfield.gg also write to citizen_history.
   if ((type === "seal" || type === "win") && window.parent === window) {
-    // Computed once: getCivicId()'s localStorage-unavailable fallback is a fresh
-    // random id per call, so calling it twice could attribute the envelope and
-    // payload civic_id to two different pseudonyms in the same attestation.
     const civicId = getCivicId();
-    fetch("https://civic-protocol-core.onrender.com/ledger/attest", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event_type: "hive.player_event",
-        civic_id: civicId,
-        lab_source: "hive",
-        payload: {
-          world: "hive-citadel",
-          zone: (extra && extra.zone) || "castle",
-          action: (extra && extra.action) || type,
-          target_id: (extra && extra.target_id) || "",
-          cycle_id: liveCycle,
-          civic_id: civicId,
-          client_ts: new Date().toISOString(),
-        },
-      }),
-    }).catch(() => {}); // fire-and-forget; never blocks gameplay
+    postHivePlayerEvent("https://civic-protocol-core.onrender.com/ledger/attest", {
+      world: "hive-citadel",
+      zone: (extra && extra.zone) || "castle",
+      action: (extra && extra.action) || type,
+      targetId: (extra && extra.target_id) || (extra && extra.realm) || type,
+      cycleId: liveCycle,
+      civicId,
+    }).catch(() => {});
   }
 }
 

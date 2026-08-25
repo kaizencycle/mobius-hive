@@ -2,6 +2,11 @@
 // Keeps index.html's no-import-except-strings/snapshot convention; this is
 // the one additional module Brief F allows.
 
+import {
+  buildHivePlayerEventBody,
+  sanitizeAttestError,
+} from "./operation-id.js";
+
 const CIVIC_ID_KEY = "hive.civic_id";
 const POSTED_KEY = "hive.posted_targets";
 
@@ -44,43 +49,48 @@ export function hasPosted(cycleId, targetId) {
   return readPosted().has(cacheKey(cycleId, targetId));
 }
 
+const RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
+
 async function postOnce(url, body) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error("HTTP " + res.status);
+  if (!res.ok) {
+    const err = new Error("HTTP " + res.status);
+    err.status = res.status;
+    throw err;
+  }
   return res;
 }
 
 /**
- * Fire-and-forget POST of a hive.player_event with one retry. Never throws —
- * returns { ok: true } or { ok: false, error }. Marks targetId as posted on
- * success so a reload doesn't re-POST a completed node.
+ * Fire-and-forget POST of a hive.player_event with bounded retry on ambiguous
+ * failures. Never throws — returns { ok: true } or { ok: false, error }.
+ * operation_id is stable across retries; markPosted runs only after success.
  */
 export async function postPlayerEvent(attestUrl, { world, zone, action, targetId, cycleId, civicId }) {
-  const body = {
-    event_type: "hive.player_event",
-    civic_id: civicId,
-    lab_source: "hive",
-    payload: {
-      world,
-      zone,
-      action,
-      target_id: targetId,
-      cycle_id: cycleId,
-      civic_id: civicId,
-      client_ts: new Date().toISOString(),
-    },
-  };
+  const body = await buildHivePlayerEventBody({
+    world,
+    zone,
+    action,
+    targetId,
+    cycleId,
+    civicId,
+  });
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       await postOnce(attestUrl, body);
       markPosted(cacheKey(cycleId, targetId));
-      return { ok: true };
+      return { ok: true, operationId: body.operation_id };
     } catch (err) {
-      if (attempt === 1) return { ok: false, error: err instanceof Error ? err.message : String(err) };
+      const retryable =
+        err instanceof TypeError ||
+        (err && typeof err.status === "number" && RETRYABLE_STATUSES.has(err.status));
+      if (attempt === 1 || !retryable) {
+        return { ok: false, error: sanitizeAttestError(err), operationId: body.operation_id };
+      }
     }
   }
 }
