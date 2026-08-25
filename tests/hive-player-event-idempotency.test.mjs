@@ -139,6 +139,21 @@ describe("generateHiveOperationId", () => {
     assert.notEqual(a, c);
   });
 
+  it("session fallback returns stable id across retries without explicit storage", () => {
+    const targetId = `node-session-${Date.now()}`;
+    const a = getOrCreateOperationId("C-414", targetId);
+    const b = getOrCreateOperationId("C-414", targetId);
+    assert.equal(a, b);
+  });
+
+  it("seal events in different realms get distinct operation_ids", () => {
+    const storage = new Map();
+    const cycleId = "C-414";
+    const realmAlpha = getOrCreateOperationId(cycleId, "realm-alpha", storage);
+    const realmBeta = getOrCreateOperationId(cycleId, "realm-beta", storage);
+    assert.notEqual(realmAlpha, realmBeta);
+  });
+
   it("includes top-level civic_id and lab_source in attest body", () => {
     const operationId = generateHiveOperationId();
     const body = buildHivePlayerEventBody({

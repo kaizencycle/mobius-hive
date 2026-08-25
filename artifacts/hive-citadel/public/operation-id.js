@@ -4,6 +4,9 @@
 
 const OPERATION_ID_RE = /^hive-op-[a-f0-9]{32}$/;
 
+/** Session fallback when localStorage is unavailable or throws. */
+const sessionOperationIds = new Map();
+
 export function generateHiveOperationId() {
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
@@ -16,15 +19,27 @@ export function operationStorageKey(cycleId, targetId) {
 
 export function getOrCreateOperationId(cycleId, targetId) {
   const key = operationStorageKey(cycleId, targetId);
+  const sessionCached = sessionOperationIds.get(key);
+  if (sessionCached && OPERATION_ID_RE.test(sessionCached)) return sessionCached;
+
   try {
     const existing = localStorage.getItem(key);
-    if (existing && OPERATION_ID_RE.test(existing)) return existing;
-    const created = generateHiveOperationId();
-    localStorage.setItem(key, created);
-    return created;
+    if (existing && OPERATION_ID_RE.test(existing)) {
+      sessionOperationIds.set(key, existing);
+      return existing;
+    }
   } catch {
-    return generateHiveOperationId();
+    /* storage unavailable — allocate into session cache below */
   }
+
+  const created = generateHiveOperationId();
+  sessionOperationIds.set(key, created);
+  try {
+    localStorage.setItem(key, created);
+  } catch {
+    /* session cache already holds created for retries in this page load */
+  }
+  return created;
 }
 
 export async function buildHivePlayerEventBody(fields) {
