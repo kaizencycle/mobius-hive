@@ -15,7 +15,9 @@
     "world:quest-proposal": "node scripts/world/generate-quest-proposal.js",
     "world:write-quest-marker": "node scripts/world/write-quest-proposal-marker.js",
     "world:build-blocks": "node scripts/world/build-blocks.js",
-    "world:bake-snapshot": "node scripts/world/bake-snapshot.mjs"
+    "world:bake-snapshot": "node scripts/world/bake-snapshot.mjs",
+    "test": "node --test tests/hive-player-event-idempotency.test.mjs",
+    "test:idempotency": "node --test tests/hive-player-event-idempotency.test.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1"
