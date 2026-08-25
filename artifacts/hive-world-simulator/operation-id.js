@@ -1,23 +1,35 @@
 /**
- * Browser mirror of lib/hive-player-event.mjs (async Web Crypto).
+ * Browser mirror of lib/hive-player-event.mjs (Web Crypto random operation IDs).
  */
 
-export async function buildHivePlayerEventOperationId({
-  civicId,
-  world,
-  zone,
-  action,
-  targetId,
-  cycleId,
-}) {
-  const material = [civicId, world, zone, action, targetId, cycleId].join("\0");
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(material));
-  const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  return `hive-op-${hex.slice(0, 32)}`;
+const OPERATION_ID_RE = /^hive-op-[a-f0-9]{32}$/;
+
+export function generateHiveOperationId() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return `hive-op-${[...bytes].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+
+export function operationStorageKey(cycleId, targetId) {
+  return `hive.operation_id.${cycleId}:${targetId}`;
+}
+
+export function getOrCreateOperationId(cycleId, targetId) {
+  const key = operationStorageKey(cycleId, targetId);
+  try {
+    const existing = localStorage.getItem(key);
+    if (existing && OPERATION_ID_RE.test(existing)) return existing;
+    const created = generateHiveOperationId();
+    localStorage.setItem(key, created);
+    return created;
+  } catch {
+    return generateHiveOperationId();
+  }
 }
 
 export async function buildHivePlayerEventBody(fields) {
-  const operationId = await buildHivePlayerEventOperationId(fields);
+  const operationId =
+    fields.operationId ?? getOrCreateOperationId(fields.cycleId, fields.targetId);
   const clientTs = fields.clientTs ?? new Date().toISOString();
   return {
     event_type: "hive.player_event",

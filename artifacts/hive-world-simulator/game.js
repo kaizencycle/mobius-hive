@@ -338,7 +338,7 @@ function emitEvent(type, extra) {
       world: "hive-citadel",
       zone: (extra && extra.zone) || "castle",
       action: (extra && extra.action) || type,
-      targetId: (extra && extra.target_id) || "",
+      targetId: (extra && extra.target_id) || (extra && extra.realm) || type,
       cycleId: liveCycle,
       civicId,
     }).catch(() => {});

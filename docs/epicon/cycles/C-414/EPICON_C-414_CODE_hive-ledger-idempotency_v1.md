@@ -41,7 +41,7 @@ ambiguous network failure.
 ```intent
 epicon_id: EPICON_C-414_CODE_hive-ledger-idempotency_v1
 ledger_id: kaizencycle
-scope: code
+scope: core
 mode: normal
 issued_at: 2026-08-25T16:45:00Z
 expires_at: 2026-11-25T16:45:00Z

@@ -9,7 +9,8 @@ import { describe, it } from "node:test";
 
 import {
   buildHivePlayerEventBody,
-  buildHivePlayerEventOperationId,
+  generateHiveOperationId,
+  getOrCreateOperationId,
   isValidHiveOperationId,
   sanitizeAttestError,
 } from "../lib/hive-player-event.mjs";
@@ -24,6 +25,7 @@ const FIXTURE = {
 };
 
 function createMockCpcServer() {
+  /** @type {Map<string, { fingerprint: string, civic_id: string, response: object }>} */
   const events = new Map();
   const server = createServer(async (req, res) => {
     if (req.method !== "POST" || req.url !== "/ledger/attest") {
@@ -49,9 +51,10 @@ function createMockCpcServer() {
       return;
     }
 
-    const existing = events.get(body.operation_id);
+    const scopeKey = `${body.civic_id}:${body.operation_id}`;
+    const existing = events.get(scopeKey);
     if (existing) {
-      if (existing.fingerprint !== fingerprint || existing.civic_id !== body.civic_id) {
+      if (existing.fingerprint !== fingerprint) {
         res.writeHead(409);
         res.end(JSON.stringify({ detail: "payload conflict" }));
         return;
@@ -77,7 +80,7 @@ function createMockCpcServer() {
       confirmed: true,
       idempotent: false,
     };
-    events.set(body.operation_id, {
+    events.set(scopeKey, {
       fingerprint,
       civic_id: body.civic_id,
       response,
@@ -119,30 +122,35 @@ async function postBody(baseUrl, body, headers = {}) {
   return { status: res.status, json };
 }
 
-describe("buildHivePlayerEventOperationId", () => {
-  it("is stable for the same logical write", () => {
-    const a = buildHivePlayerEventOperationId(FIXTURE);
-    const b = buildHivePlayerEventOperationId(FIXTURE);
-    assert.equal(a, b);
+describe("generateHiveOperationId", () => {
+  it("produces unguessable valid ids", () => {
+    const a = generateHiveOperationId();
+    const b = generateHiveOperationId();
+    assert.notEqual(a, b);
     assert.ok(isValidHiveOperationId(a));
   });
 
-  it("differs across separate legitimate events", () => {
-    const a = buildHivePlayerEventOperationId(FIXTURE);
-    const b = buildHivePlayerEventOperationId({ ...FIXTURE, targetId: "node-fixture-1" });
-    assert.notEqual(a, b);
+  it("persists operation_id per logical write in storage", () => {
+    const storage = new Map();
+    const a = getOrCreateOperationId("C-414", "node-0", storage);
+    const b = getOrCreateOperationId("C-414", "node-0", storage);
+    const c = getOrCreateOperationId("C-414", "node-1", storage);
+    assert.equal(a, b);
+    assert.notEqual(a, c);
   });
 
   it("includes top-level civic_id and lab_source in attest body", () => {
+    const operationId = generateHiveOperationId();
     const body = buildHivePlayerEventBody({
       ...FIXTURE,
+      operationId,
       clientTs: "2026-08-25T12:00:00.000Z",
     });
     assert.equal(body.event_type, "hive.player_event");
     assert.equal(body.civic_id, FIXTURE.civicId);
     assert.equal(body.lab_source, "hive");
     assert.equal(body.payload.civic_id, FIXTURE.civicId);
-    assert.ok(isValidHiveOperationId(body.operation_id));
+    assert.equal(body.operation_id, operationId);
   });
 });
 
@@ -151,7 +159,10 @@ describe("mock CPC idempotency", () => {
     const mock = createMockCpcServer();
     const baseUrl = await mock.listen();
     try {
-      const body = buildHivePlayerEventBody(FIXTURE);
+      const body = buildHivePlayerEventBody({
+        ...FIXTURE,
+        operationId: generateHiveOperationId(),
+      });
       const result = await postBody(baseUrl, body);
       assert.equal(result.status, 200);
       assert.equal(result.json.idempotent, false);
@@ -165,7 +176,8 @@ describe("mock CPC idempotency", () => {
     const mock = createMockCpcServer();
     const baseUrl = await mock.listen();
     try {
-      const body = buildHivePlayerEventBody(FIXTURE);
+      const operationId = generateHiveOperationId();
+      const body = buildHivePlayerEventBody({ ...FIXTURE, operationId });
       const first = await postBody(baseUrl, body);
       const retry = await postBody(baseUrl, body);
       assert.equal(first.status, 200);
@@ -182,16 +194,50 @@ describe("mock CPC idempotency", () => {
     const mock = createMockCpcServer();
     const baseUrl = await mock.listen();
     try {
-      const body = buildHivePlayerEventBody(FIXTURE);
+      const operationId = generateHiveOperationId();
+      const body = buildHivePlayerEventBody({ ...FIXTURE, operationId });
       const first = await postBody(baseUrl, body);
       assert.equal(first.status, 200);
       const conflict = buildHivePlayerEventBody({
         ...FIXTURE,
+        operationId,
         action: "restore_beacon",
       });
-      conflict.operation_id = body.operation_id;
       const second = await postBody(baseUrl, conflict);
       assert.equal(second.status, 409);
+    } finally {
+      await mock.close();
+    }
+  });
+
+  it("same operation_id under different civic_id cannot poison", async () => {
+    const mock = createMockCpcServer();
+    const baseUrl = await mock.listen();
+    try {
+      const sharedOp = generateHiveOperationId();
+      const attacker = buildHivePlayerEventBody({
+        ...FIXTURE,
+        civicId: "mobius-anon-attacker1",
+        operationId: sharedOp,
+        action: "restore_beacon",
+      });
+      attacker.civic_id = "mobius-anon-attacker1";
+      attacker.payload.civic_id = "mobius-anon-attacker1";
+
+      const victim = buildHivePlayerEventBody({
+        ...FIXTURE,
+        civicId: "mobius-anon-victim01",
+        operationId: sharedOp,
+      });
+      victim.civic_id = "mobius-anon-victim01";
+      victim.payload.civic_id = "mobius-anon-victim01";
+
+      const attackerRes = await postBody(baseUrl, attacker);
+      const victimRes = await postBody(baseUrl, victim);
+      assert.equal(attackerRes.status, 200);
+      assert.equal(victimRes.status, 200);
+      assert.notEqual(attackerRes.json.event_id, victimRes.json.event_id);
+      assert.equal(mock.events.size, 2);
     } finally {
       await mock.close();
     }
@@ -201,7 +247,12 @@ describe("mock CPC idempotency", () => {
     const mock = createMockCpcServer();
     const baseUrl = await mock.listen();
     try {
-      const body = buildHivePlayerEventBody({ ...FIXTURE, targetId: "node-retry-5xx" });
+      const operationId = generateHiveOperationId();
+      const body = buildHivePlayerEventBody({
+        ...FIXTURE,
+        targetId: "node-retry-5xx",
+        operationId,
+      });
       const first = await postBody(baseUrl, body, { "x-simulate-5xx": "1" });
       assert.equal(first.status, 503);
       assert.equal(mock.events.size, 0);
