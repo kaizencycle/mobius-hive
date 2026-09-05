@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "created_at": "2026-09-05T10:18:22.367Z",
+  "created_at": "2026-09-05T13:46:54.577Z",
   "cycle_id": "C-425",
   "note": "Automated quest proposal marker committed to default branch (no ephemeral PR branch)."
 }
