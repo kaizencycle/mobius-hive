@@ -1,5 +1,5 @@
 /**
- * Mobius HIVE — baked world snapshot (cycle C-454, auto-baked by bake-snapshot.mjs).
+ * Mobius HIVE — baked world snapshot (cycle C-455, auto-baked by bake-snapshot.mjs).
  *
  * This is a frozen projection of the live `world/*.json` contracts in the
  * mobius-hive repo, embedded so the deployed game is fully self-contained.
@@ -7,19 +7,20 @@
  * try to fetch the live `world/current-world.json` and overlay it on top of
  * this snapshot — so the simulator stays accurate as the cycle advances.
  *
- * Re-baked: 2026-10-05T01:51:20.141Z
+ * Re-baked: 2026-10-05T08:41:52.266Z
  */
 
 export const WORLD_SNAPSHOT = {
-  cycle: "C-454",
-  updated_at: "2026-10-05T01:51:20.141Z",
+  cycle: "C-455",
+  updated_at: "2026-10-05T08:41:52.266Z",
   world_mood: "fogged",
-  integrity: { gi: 0.9, kv_status: "degraded", source_mode: "kv_preferred" },
-  vault: { progress: 0.796, fountain_status: "locked" },
+  integrity: { gi: 0.82, kv_status: "degraded", source_mode: "kv_preferred" },
+  vault: { progress: 0.789, fountain_status: "locked" },
   active_events: ["signal-fog"],
   active_quests: ["restore-the-beacon"],
   active_sentinels: ["zeus","jade","hermes"],
   citizen_history: [],
+
 
 
 
