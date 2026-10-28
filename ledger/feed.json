@@ -1,8 +1,8 @@
 {
   "node_id": "mobius-hive",
   "schema_version": 1,
-  "updated_at": "2026-10-28T07:29:25.468Z",
-  "cycle_id": "C-477",
+  "updated_at": "2026-10-28T14:25:24.097Z",
+  "cycle_id": "C-478",
   "lanes": {
     "world": {
       "status": "alarm",
